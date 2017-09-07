@@ -1,1 +1,1 @@
-"# OpenHabBachelor" 
+OpenHabBachelor
