@@ -207,6 +207,54 @@ public class APIManager {
         return binarySensors;
     }
 
+    public boolean disArmSensor(String gatewaySerial, int nodeId) {
+        boolean success = false;
+        String url = BASE_URL + "/main/disArmUserComponent?token=" + token.getToken() + "&user=" + token.getUser();
+        Request request = httpHelper.buildPost(url, "gateway_id=" + gatewaySerial + "&node_id=" + nodeId);
+
+        try (Response response = httpHelper.httpClient.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                JSONObject body = new JSONObject(response.body().string());
+                if (body.isNull("errors")) {
+                    success = true;
+                } else {
+                    System.out.println("ERROR: " + body.getString("errors"));
+                    success = false;
+                }
+            } else {
+                System.out.println("ERROR: " + response.message() + " (" + response.code() + ")");
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+        return  success;
+    }
+
+    public boolean armSensor(String gatewaySerial, int nodeId) {
+        boolean success = false;
+        String url = BASE_URL + "/main/reArmUserComponent?token=" + token.getToken() + "&user=" + token.getUser();
+        Request request = httpHelper.buildPost(url, "gateway_id=" + gatewaySerial + "&node_id=" + nodeId);
+
+        try (Response response = httpHelper.httpClient.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                JSONObject body = new JSONObject(response.body().string());
+                if (body.isNull("errors")) {
+                    success = true;
+                } else {
+                    System.out.println("ERROR: " + body.getString("errors"));
+                    success = false;
+                }
+            } else {
+                System.out.println("ERROR: " + response.message() + " (" + response.code() + ")");
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+        return  success;
+    }
+
     @Deprecated
     public List<Thermostat> getThermostats(String gatewaySerial) {
         String gatewayStatus = getGatewayStatus(gatewaySerial);

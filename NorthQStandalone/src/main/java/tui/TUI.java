@@ -154,10 +154,10 @@ public class TUI {
 
     private void binarySensorsMenu() {
         List<BinarySensor> binarySensors = apiManager.getBinarySensors(chosenGateway.getSerial());
-        System.out.println("Choose sensor to see more information");
+        System.out.println("Choose sensor to arm/disarm");
         for (int i = 0; i < binarySensors.size(); i++) {
             System.out.println(i + 1 + ": " + binarySensors.get(i).getName() +
-                    ", " + (binarySensors.get(i).isArmed() ? "armed" : "not armed"));
+                    ", " + (binarySensors.get(i).isArmed() ? "armed" : "not armed") +  ".\n\tInfo: " + binarySensors.get(i).toString());
         }
         System.out.println("0: Back");
         Boolean done = false;
@@ -171,7 +171,16 @@ public class TUI {
                 if (selection - 1 > binarySensors.size()) {
                     System.out.println("Please enter valid number!");
                 } else {
-                    System.out.println(binarySensors.get(selection - 1).toString());
+                    BinarySensor chosenBinarySensor = binarySensors.get(selection - 1);
+                    if (chosenBinarySensor.isArmed()) {
+                        if (apiManager.disArmSensor(chosenGateway.getSerial(), chosenBinarySensor.getNode_id())) {
+                            System.out.println("Sensor disarmed!");
+                        }
+                    } else {
+                        if (apiManager.armSensor(chosenGateway.getSerial(), chosenBinarySensor.getNode_id())) {
+                            System.out.println("Sensor armed!");
+                        }
+                    }
                     binarySensorsMenu();
                     done = true;
                 }
