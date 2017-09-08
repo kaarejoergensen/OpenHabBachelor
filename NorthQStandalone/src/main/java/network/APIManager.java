@@ -179,19 +179,35 @@ public class APIManager {
                 JSONObject body = new JSONObject(response.body().string());
                 if (body.isNull("errors")) {
                     success = true;
-                } else  {
+                } else {
                     System.out.println("ERROR: " + body.getString("errors"));
                     success = false;
                 }
             } else {
                 System.out.println("ERROR: " + response.message() + " (" + response.code() + ")");
             }
-        } catch (IOException|JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         return success;
     }
 
+    public List<BinarySensor> getBinarySensors(String gatewaySerial) {
+        String gatewayStatus = getGatewayStatus(gatewaySerial);
+        List<BinarySensor> binarySensors = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(gatewayStatus);
+            JSONArray array = jsonObject.getJSONArray("BinarySensors");
+            for (int i = 0; i < array.length(); i++) {
+                binarySensors.add(BinarySensor.parseJSON(array.getJSONObject(i)));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return binarySensors;
+    }
+
+    @Deprecated
     public List<Thermostat> getThermostats(String gatewaySerial) {
         String gatewayStatus = getGatewayStatus(gatewaySerial);
         List<Thermostat> thermostats = new ArrayList<>();

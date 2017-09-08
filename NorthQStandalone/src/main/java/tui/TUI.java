@@ -61,7 +61,7 @@ public class TUI {
         String answer = "";
 
         while (!answer.equals("0")) {
-            System.out.println("1: See list of switches\n2: See list of rooms\n0: Exit");
+            System.out.println("1: See list of switches\n2: See list of rooms\n3: See list of binary sensors\n0: Exit");
             answer = scanner.nextLine();
             switch (answer) {
                 case "1":
@@ -69,6 +69,9 @@ public class TUI {
                     break;
                 case "2":
                     roomTemperatureMenu();
+                    break;
+                case "3":
+                    binarySensorsMenu();
                     break;
             }
         }
@@ -142,6 +145,35 @@ public class TUI {
                             System.out.println("Please enter valid number!");
                         }
                     }
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter valid number!");
+            }
+        }
+    }
+
+    private void binarySensorsMenu() {
+        List<BinarySensor> binarySensors = apiManager.getBinarySensors(chosenGateway.getSerial());
+        System.out.println("Choose sensor to see more information");
+        for (int i = 0; i < binarySensors.size(); i++) {
+            System.out.println(i + 1 + ": " + binarySensors.get(i).getName() +
+                    ", " + (binarySensors.get(i).isArmed() ? "armed" : "not armed"));
+        }
+        System.out.println("0: Back");
+        Boolean done = false;
+        while (!done) {
+            String answer = scanner.nextLine();
+            try {
+                int selection = Integer.parseInt(answer);
+                if (selection == 0) {
+                    return;
+                }
+                if (selection - 1 > binarySensors.size()) {
+                    System.out.println("Please enter valid number!");
+                } else {
+                    System.out.println(binarySensors.get(selection - 1).toString());
+                    binarySensorsMenu();
+                    done = true;
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Please enter valid number!");
