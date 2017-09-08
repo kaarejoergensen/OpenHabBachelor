@@ -10,7 +10,6 @@ public class NorthQStandalone {
         if (apiManager.authenticate("kaare1994@gmail.com", "Bachelor123")) {
             TUI tui = new TUI(apiManager);
             tui.start();
-//            System.out.println(apiManager.getGatewayStatus("0000003703"));
         }
     }
 }
