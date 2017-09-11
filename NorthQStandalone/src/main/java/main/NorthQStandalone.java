@@ -8,9 +8,13 @@ import tui.TUI;
 
 public class NorthQStandalone {
     public static void main(String[] args) {
+        if (args.length != 2) {
+            System.out.println("Usage: NorthQStandalone 'user' 'password'");
+            return;
+        }
         APIManager apiManager = new APIManager(new OkHttpClient());
         try {
-            apiManager.authenticate("kaare1994@gmail.com", "Bachelor123");
+            apiManager.authenticate(args[0], args[1]);
             TUI tui = new TUI(apiManager);
             tui.start();
         } catch (NetworkErrorException | JSONException e) {
