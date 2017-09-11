@@ -44,6 +44,7 @@ public class TUI {
                 System.out.println(i + 1 + ": " + houseList.get(i).getName());
             }
             String answer = scanner.nextLine();
+            System.out.println();
             try {
                 int selection = Integer.parseInt(answer);
                 if ((selection - 1) > houseList.size()) {
@@ -74,6 +75,7 @@ public class TUI {
         while (!answer.equals("0")) {
             System.out.println("1: See list of switches\n2: See list of rooms\n3: See list of binary sensors\n0: Exit");
             answer = scanner.nextLine();
+            System.out.println();
             switch (answer) {
                 case "1":
                     switchMenu();
@@ -103,6 +105,7 @@ public class TUI {
         Boolean done = false;
         while (!done) {
             String answer = scanner.nextLine();
+            System.out.println();
             try {
                 int selection = Integer.parseInt(answer);
                 if (selection == 0) {
@@ -142,6 +145,7 @@ public class TUI {
         Boolean done = false;
         while (!done) {
             String answer = scanner.nextLine();
+            System.out.println();
             try {
                 int selection = Integer.parseInt(answer);
                 if (selection == 0) {
@@ -154,6 +158,7 @@ public class TUI {
                     System.out.println("Please enter value between 5 and 28 (current temperature: " + chosenRoom.getTemperature() + ")");
                     while (!done) {
                         answer = scanner.nextLine();
+                        System.out.println();
                         try {
                             double newTemperature = Double.parseDouble(answer);
                             if (newTemperature >= 5 && newTemperature <= 28) {
@@ -195,6 +200,7 @@ public class TUI {
         Boolean done = false;
         while (!done) {
             String answer = scanner.nextLine();
+            System.out.println();
             try {
                 int selection = Integer.parseInt(answer);
                 if (selection == 0) {

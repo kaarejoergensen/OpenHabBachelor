@@ -48,7 +48,7 @@ class HttpHelper {
                                 || (success instanceof Integer && ((Integer) success) == 1)) {
                             return responseBody;
                         } else {
-                            throw  new NetworkErrorException("Unknown error, success false. Body: " + responseBody);
+                            throw  new NetworkErrorException("Unknown error. Body: " + responseBody);
                         }
                     }
                 }
