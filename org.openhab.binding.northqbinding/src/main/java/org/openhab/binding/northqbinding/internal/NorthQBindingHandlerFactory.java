@@ -8,24 +8,24 @@
  */
 package org.openhab.binding.northqbinding.internal;
 
-import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
+import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.THING_TYPE_SAMPLE;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link NorthQBindingHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author K†re J›rgensen - Initial contribution
+ * @author Kaare Joergensen - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.northqbinding")
 public class NorthQBindingHandlerFactory extends BaseThingHandlerFactory {

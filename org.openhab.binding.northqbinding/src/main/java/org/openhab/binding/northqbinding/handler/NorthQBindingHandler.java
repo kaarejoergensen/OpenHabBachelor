@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.northqbinding.handler;
 
-import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
+import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.CHANNEL_1;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * The {@link NorthQBindingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author K†re J›rgensen - Initial contribution
+ * @author Kaare Joergensen - Initial contribution
  */
 public class NorthQBindingHandler extends BaseThingHandler {
 

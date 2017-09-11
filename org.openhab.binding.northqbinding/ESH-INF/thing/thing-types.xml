@@ -5,18 +5,18 @@
 						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<label>NorthQBinding Binding Thing</label>
-		<description>Sample thing for NorthQBinding Binding</description>
+	<thing-type id="binary-switch">
+		<label>NorthQ Q-plug</label>
+		<description>Thing for NorthQ Q-plug</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="channel1" typeId="binaryswitch-channel"/>
 		</channels>
 	</thing-type>
 
 	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>northqbindingItem</item-type>
+	<channel-type id="binaryswitch-channel">
+		<item-type>Switch</item-type>
 		<label>NorthQBinding Binding Channel</label>
 		<description>Sample channel for NorthQBinding Binding</description>
 	</channel-type>
