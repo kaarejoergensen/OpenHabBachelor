@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/NorthQStandalone.iml" filepath="$PROJECT_DIR$/.idea/modules/NorthQStandalone.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/NorthQStandalone_main.iml" filepath="$PROJECT_DIR$/.idea/modules/NorthQStandalone_main.iml" group="NorthQStandalone" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/NorthQStandalone_test.iml" filepath="$PROJECT_DIR$/.idea/modules/NorthQStandalone_test.iml" group="NorthQStandalone" />
+    </modules>
+  </component>
+</project>
