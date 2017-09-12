@@ -12,9 +12,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
@@ -35,6 +37,18 @@ public class NorthQBindingHandlerFactory extends BaseThingHandlerFactory {
             .concat(NorthQBridgeHandler.SUPPORTED_THING_TYPES.stream(),
                     NorthQBindingHandler.SUPPORTED_THING_TYPES.stream())
             .collect(Collectors.toSet());
+
+    @Override
+    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
+            ThingUID bridgeUID) {
+        if (NorthQBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return super.createThing(thingTypeUID, configuration, thingUID, null);
+        } else if (NorthQBindingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+        }
+        throw new IllegalArgumentException(
+                "The thing type " + thingTypeUID + " is not supported by the NorthQ binding");
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

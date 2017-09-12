@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Switch Channel Type -->
+	<channel-type id="binaryswitch-channel">
+		<item-type>Switch</item-type>
+		<label>NorthQBinding Binding Channel</label>
+		<description>Sample channel for NorthQBinding Binding</description>
+	</channel-type>
+
+</thing:thing-descriptions>

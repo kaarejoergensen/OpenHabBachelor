@@ -23,12 +23,17 @@ public class APIManager {
         this.httpHelper = new HttpHelper();
     }
 
-    public void authenticate(String user, String pass) throws NetworkErrorException, JSONException {
+    public void authenticate(String user, String pass) throws NetworkErrorException {
         String url = BASE_URL + "/token/new.json";
         String post = "username=" + user + "&password=" + pass;
         String response = httpHelper.sendPost(url, post);
-        JSONObject body = new JSONObject(response);
-        token = Token.parseJSON(body);
+        JSONObject body;
+        try {
+            body = new JSONObject(response);
+            token = Token.parseJSON(body);
+        } catch (JSONException e) {
+            throw new NetworkErrorException(e);
+        }
     }
 
     public List<House> getHouses() throws NetworkErrorException, JSONException {

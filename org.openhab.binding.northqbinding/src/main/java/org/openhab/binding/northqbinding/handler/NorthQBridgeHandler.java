@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.json.JSONException;
 import org.openhab.binding.northqbinding.network.APIManager;
 import org.openhab.binding.northqbinding.network.NetworkErrorException;
 import org.slf4j.Logger;
@@ -54,7 +53,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
             try {
                 apimanager.authenticate((String) getConfig().get(USER_NAME), (String) getConfig().get(PASSWORD));
                 logger.debug("Logged in to NorthQ");
-            } catch (NetworkErrorException | JSONException e) {
+            } catch (NetworkErrorException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
                 logger.warn("Authentication error: " + e.getMessage());
             }
