@@ -8,12 +8,16 @@
  */
 package org.openhab.binding.northqbinding.handler;
 
-import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.CHANNEL_1;
+import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
+
+import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
@@ -28,6 +32,7 @@ import org.slf4j.LoggerFactory;
 public class NorthQBindingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NorthQBindingHandler.class);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SAMPLE);
 
     public NorthQBindingHandler(@NonNull Thing thing) {
         super(thing);
