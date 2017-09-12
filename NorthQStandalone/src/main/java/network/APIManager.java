@@ -1,7 +1,6 @@
 package network;
 
 import models.*;
-import okhttp3.OkHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,8 +14,8 @@ public class APIManager {
     private HttpHelper httpHelper;
     private Token token;
 
-    public APIManager(OkHttpClient okHttpClient) {
-        this.httpHelper = new HttpHelper(okHttpClient);
+    public APIManager() {
+        this.httpHelper = new HttpHelper();
     }
 
     public void authenticate(String user, String pass) throws NetworkErrorException, JSONException {

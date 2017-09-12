@@ -9,10 +9,10 @@ import java.io.IOException;
 class HttpHelper {
 
     private static final MediaType URLENCODED = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
-    final OkHttpClient httpClient;
+    private final OkHttpClient httpClient;
 
-    HttpHelper(OkHttpClient okHttpClient) {
-        this.httpClient = okHttpClient;
+    HttpHelper() {
+        this.httpClient = new OkHttpClient();
     }
 
     private Request buildGet(String url) {
@@ -32,16 +32,15 @@ class HttpHelper {
     }
 
     private String handleResponse(Request request) throws NetworkErrorException {
-        String responseBody = "";
         try (Response response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                responseBody = response.body().string();
+                String responseBody = response.body().string();
                 if (responseBody.startsWith("[")) {
                     return responseBody;
                 } else {
                     JSONObject jsonObject = new JSONObject(responseBody);
                     if (!jsonObject.isNull("errors")) {
-                        throw new NetworkErrorException(jsonObject.getString("errors"));
+                        throw new NetworkErrorException("errors: " + jsonObject.getString("errors") + "\njsonbody: " + responseBody);
                     } else if (!jsonObject.isNull("success")) {
                         Object success = jsonObject.get("success");
                         if ((success instanceof Boolean && ((Boolean) success))
@@ -50,6 +49,8 @@ class HttpHelper {
                         } else {
                             throw  new NetworkErrorException("Unknown error. Body: " + responseBody);
                         }
+                    } else {
+                        return responseBody;
                     }
                 }
             } else {
@@ -58,7 +59,5 @@ class HttpHelper {
         } catch (IOException | JSONException e) {
             throw new NetworkErrorException(e.getMessage(), e);
         }
-
-        return responseBody;
     }
 }
