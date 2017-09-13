@@ -24,12 +24,14 @@ public class NorthQBindingBindingConstants {
     public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "binary-switch");
+    public static final ThingTypeUID BINARY_SWITCH = new ThingTypeUID(BINDING_ID, "binary-switch");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String BINARY_SWITCH_SWITCH_CHANNEL = "binaryswitch_switch_channel";
+    public static final String BINARY_SWITCH_WATTAGE_CHANNEL = "binaryswitch_wattage_channel";
 
     // List of all config string
     public static final String USER_NAME = "username";
     public static final String PASSWORD = "password";
+    public static final String NODE_ID = "nodeId";
 }

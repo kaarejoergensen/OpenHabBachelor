@@ -1,24 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="northqbinding"
-						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="binary-switch">
-		<label>NorthQ Q-plug</label>
-		<description>Thing for NorthQ Q-plug</description>
+    <!-- Sample Thing Type -->
+    <thing-type id="binary-switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+        <label>NorthQ Q-plug</label>
+        <description>Thing for NorthQ Q-plug</description>
 
-		<channels>
-			<channel id="channel1" typeId="binaryswitch-channel"/>
-		</channels>
-		
-		<config-description>
-		  <parameter name="thingId" type="text">
-		      <label>Thing ID</label>
-		      <description>The id that is used with the NorthQ sensor</description>
-		      <required>true</required>
-		  </parameter>
-		</config-description>	
-	</thing-type>
+        <channels>
+            <channel id="binaryswitch_switch_channel" typeId="binaryswitch-channel"/>
+            <channel id="binaryswitch_wattage_channel" typeId="binaryswitch-wattage-channel"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="nodeId" type="text">
+                <label>Node ID</label>
+                <description>The node identifier identifies one certain switch.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+        
+    </thing-type>
+
+    <!-- Sample Channel Type -->
+    <channel-type id="binaryswitch-channel">
+        <item-type>Switch</item-type>
+        <label>NorthQBinding Binding Channel</label>
+        <description>Sample channel for NorthQBinding Binding</description>
+    </channel-type>
+    
+    <channel-type id="binaryswitch-wattage-channel">
+       <item-type>Number</item-type>
+       <label>Wattage</label>
+       <description>Current usage of the switch in watt</description>
+       <state readOnly="true"/>
+    </channel-type>
+
 </thing:thing-descriptions>

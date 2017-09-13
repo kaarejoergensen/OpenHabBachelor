@@ -79,6 +79,14 @@ public class QStickBridge {
         return gateways;
     }
 
+    public List<Room> getAllRooms() throws APIException, IOException {
+        List<Room> rooms = new ArrayList<>();
+        for (Gateway gateway : gateways) {
+            rooms.addAll(getRooms(gateway.getSerial_nr()));
+        }
+        return rooms;
+    }
+
     public List<Room> getRooms(String gatewaySerial) throws APIException, IOException {
         String url = BASE_URL + "/main/getRoomsStatus?token=" + token.getToken() + "&user=" + token.getUser()
                 + "&gateway=" + gatewaySerial;
@@ -103,6 +111,14 @@ public class QStickBridge {
         return result.getBody();
     }
 
+    public List<BinarySwitch> getAllSwitches() throws APIException, IOException {
+        List<BinarySwitch> binarySwitchs = new ArrayList<>();
+        for (Gateway gateway : gateways) {
+            binarySwitchs.addAll(getSwitches(gateway.getSerial_nr()));
+        }
+        return binarySwitchs;
+    }
+
     public List<BinarySwitch> getSwitches(String gatewaySerial) throws APIException, IOException {
         JsonObject jsonObject = (JsonObject) new JsonParser().parse(getGatewayStatus(gatewaySerial));
         List<BinarySwitch> binarySwitchs = gson.fromJson(jsonObject.getAsJsonArray("BinarySwitches"),
@@ -113,18 +129,28 @@ public class QStickBridge {
         return binarySwitchs;
     }
 
-    public void changeSwitchState(BinarySwitch binarySwitch) throws IOException {
+    public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {
         boolean turnedOn = binarySwitch.isTurnedOn();
         String url = BASE_URL + "/main/setBinaryValue?token=" + token.getToken() + "&user=" + token.getUser();
         String post = "gateway=" + binarySwitch.getGateway() + "&node_id=" + binarySwitch.getNode_id() + "&pos="
                 + (turnedOn ? 0 : 255);
-        httpClient.post(url, post);
+        Result result = httpClient.post(url, post);
+        handleErrors(result);
     }
 
-    public void setRoomTemperature(Room room, double newTemperature) throws IOException {
+    public void setRoomTemperature(Room room, double newTemperature) throws IOException, APIException {
         String url = BASE_URL + "/main/setRoomTemperature?token=" + token.getToken() + "&user=" + token.getUser();
         String post = "gateway=" + room.getGateway() + "&room_id=" + room.getId() + "&temperature=" + newTemperature;
-        httpClient.post(url, post);
+        Result result = httpClient.post(url, post);
+        handleErrors(result);
+    }
+
+    public List<BinarySensor> getAllBinarySensors() throws APIException, IOException {
+        List<BinarySensor> binarySensors = new ArrayList<>();
+        for (Gateway gateway : gateways) {
+            binarySensors.addAll(getBinarySensors(gateway.getSerial_nr()));
+        }
+        return binarySensors;
     }
 
     public List<BinarySensor> getBinarySensors(String gatewaySerial) throws APIException, IOException {
@@ -137,16 +163,18 @@ public class QStickBridge {
         return binarySensors;
     }
 
-    public void disArmSensor(BinarySensor binarySensor) throws IOException {
+    public void disArmSensor(BinarySensor binarySensor) throws IOException, APIException {
         String url = BASE_URL + "/main/disArmUserComponent?token=" + token.getToken() + "&user=" + token.getUser();
         String post = "gateway_id=" + binarySensor.getGateway() + "&node_id=" + binarySensor.getNode_id();
-        httpClient.post(url, post);
+        Result result = httpClient.post(url, post);
+        handleErrors(result);
     }
 
-    public void armSensor(BinarySensor binarySensor) throws IOException {
+    public void armSensor(BinarySensor binarySensor) throws IOException, APIException {
         String url = BASE_URL + "/main/reArmUserComponent?token=" + token.getToken() + "&user=" + token.getUser();
         String post = "gateway_id=" + binarySensor.getGateway() + "&node_id=" + binarySensor.getNode_id();
-        httpClient.post(url, post);
+        Result result = httpClient.post(url, post);
+        handleErrors(result);
     }
 
     private void handleErrors(HttpClient.Result result) throws IOException, APIException {
