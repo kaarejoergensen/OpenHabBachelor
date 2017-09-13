@@ -1,11 +1,14 @@
 package models;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 public class Gateway {
+    public static final Type gsonType = new TypeToken<List<Gateway>>() {}.getType();
     private int id;
-    private String serial;
+    private String serial_nr;
 
     public int getId() {
         return id;
@@ -15,20 +18,11 @@ public class Gateway {
         this.id = id;
     }
 
-    public String getSerial() {
-        return serial;
+    public String getSerial_nr() {
+        return serial_nr;
     }
 
-    public void setSerial(String serial) {
-        this.serial = serial;
-    }
-
-    public static Gateway parseJSON(JSONObject body) throws JSONException {
-        Gateway gateway = new Gateway();
-
-        gateway.setId(body.getInt("id"));
-        gateway.setSerial(body.getString("serial_nr"));
-
-        return gateway;
+    public void setSerial_nr(String serial_nr) {
+        this.serial_nr = serial_nr;
     }
 }

@@ -1,21 +1,22 @@
 package tui;
 
+import exceptions.APIException;
 import models.*;
-import network.APIManager;
-import network.NetworkErrorException;
-import org.json.JSONException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import network.QStickBridge;
+
 public class TUI {
-    private APIManager apiManager;
+    private QStickBridge qStickBridge;
     private Gateway chosenGateway;
     private Scanner scanner;
 
-    public TUI(APIManager apiManager) {
-        this.apiManager = apiManager;
+    public TUI(QStickBridge qStickBridge) {
+        this.qStickBridge = qStickBridge;
         scanner = new Scanner(System.in);
     }
 
@@ -29,8 +30,8 @@ public class TUI {
     private boolean chooseHouse() {
         List<House> houseList = new ArrayList<>();
         try {
-            houseList = apiManager.getHouses();
-        } catch (NetworkErrorException | JSONException e) {
+            houseList = qStickBridge.getHouses();
+        } catch (APIException | IOException e) {
             System.out.println(e.getMessage());
         }
         if (houseList.isEmpty()) {
@@ -53,8 +54,8 @@ public class TUI {
                     House chosenHouse = houseList.get(selection - 1);
                     List<Gateway> gateways = new ArrayList<>();
                     try {
-                        gateways = apiManager.getGateways(chosenHouse.getId());
-                    } catch (NetworkErrorException | JSONException e) {
+                        gateways = qStickBridge.getGateways(chosenHouse.getId());
+                    } catch (APIException | IOException e) {
                         System.out.println(e.getMessage());
                     }
                     if (!gateways.isEmpty()) {
@@ -93,8 +94,8 @@ public class TUI {
     private void switchMenu() {
         List<BinarySwitch> binarySwitches = new ArrayList<>();
         try {
-            binarySwitches = apiManager.getSwitches(chosenGateway.getSerial());
-        } catch (NetworkErrorException | JSONException e) {
+            binarySwitches = qStickBridge.getSwitches(chosenGateway.getSerial_nr());
+        } catch (APIException | IOException e) {
             System.out.println(e.getMessage());
         }
         System.out.println("Choose switch to switch power state");
@@ -115,9 +116,9 @@ public class TUI {
                     System.out.println("Please enter valid number!");
                 } else {
                     try {
-                        apiManager.changeSwitchState(chosenGateway.getSerial(), binarySwitches.get(selection - 1));
+                        qStickBridge.changeSwitchState(chosenGateway.getSerial_nr(), binarySwitches.get(selection - 1));
                         System.out.println("State changed!");
-                    } catch (NetworkErrorException e) {
+                    } catch (IOException e) {
                         System.out.println(e.getMessage());
                     }
                     switchMenu();
@@ -132,8 +133,8 @@ public class TUI {
     private void roomTemperatureMenu() {
         List<Room> rooms = new ArrayList<>();
         try {
-            rooms = apiManager.getRooms(chosenGateway.getSerial());
-        } catch (NetworkErrorException | JSONException e) {
+            rooms = qStickBridge.getRooms(chosenGateway.getSerial_nr());
+        } catch (APIException | IOException e) {
             System.out.println(e.getMessage());
         }
         System.out.println("Choose room to change temperature");
@@ -163,9 +164,9 @@ public class TUI {
                             double newTemperature = Double.parseDouble(answer);
                             if (newTemperature >= 5 && newTemperature <= 28) {
                                 try {
-                                    apiManager.setRoomTemperature(chosenGateway.getSerial(), chosenRoom, newTemperature);
+                                    qStickBridge.setRoomTemperature(chosenGateway.getSerial_nr(), chosenRoom, newTemperature);
                                     System.out.println("Temperature changed!");
-                                } catch (NetworkErrorException e) {
+                                } catch (IOException e) {
                                     System.out.println(e.getMessage());
                                 }
                                 roomTemperatureMenu();
@@ -187,8 +188,8 @@ public class TUI {
     private void binarySensorsMenu() {
         List<BinarySensor> binarySensors = new ArrayList<>();
         try {
-            binarySensors = apiManager.getBinarySensors(chosenGateway.getSerial());
-        } catch (NetworkErrorException | JSONException e) {
+            binarySensors = qStickBridge.getBinarySensors(chosenGateway.getSerial_nr());
+        } catch (APIException | IOException e) {
             System.out.println(e.getMessage());
         }
         System.out.println("Choose sensor to arm/disarm");
@@ -212,16 +213,16 @@ public class TUI {
                     BinarySensor chosenBinarySensor = binarySensors.get(selection - 1);
                     if (chosenBinarySensor.isArmed()) {
                         try {
-                            apiManager.disArmSensor(chosenGateway.getSerial(), chosenBinarySensor.getNode_id());
+                            qStickBridge.disArmSensor(chosenGateway.getSerial_nr(), chosenBinarySensor.getNode_id());
                             System.out.println("Sensor disarmed!");
-                        } catch (NetworkErrorException e) {
+                        } catch (IOException e) {
                             System.out.println(e.getMessage());
                         }
                     } else {
                         try {
-                            apiManager.armSensor(chosenGateway.getSerial(), chosenBinarySensor.getNode_id());
+                            qStickBridge.armSensor(chosenGateway.getSerial_nr(), chosenBinarySensor.getNode_id());
                             System.out.println("Sensor armed!");
-                        } catch (NetworkErrorException e) {
+                        } catch (IOException e) {
                             System.out.println(e.getMessage());
                         }
                     }

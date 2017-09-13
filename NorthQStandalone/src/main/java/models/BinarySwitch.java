@@ -1,13 +1,17 @@
 package models;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 public class BinarySwitch {
+    public static final Type gsonType = new TypeToken<List<BinarySwitch>>() {}.getType();
     private int node_id;
     private String name;
-    private boolean turnedOn;
+    private int pos;
     private double wattage;
+
 
     public int getNode_id() {
         return node_id;
@@ -26,11 +30,11 @@ public class BinarySwitch {
     }
 
     public boolean isTurnedOn() {
-        return turnedOn;
+        return pos == 255;
     }
 
     public void setTurnedOn(boolean turnedOn) {
-        this.turnedOn = turnedOn;
+        this.pos = turnedOn ? 255 : 0;
     }
 
     public double getWattage() {
@@ -39,16 +43,5 @@ public class BinarySwitch {
 
     public void setWattage(double wattage) {
         this.wattage = wattage;
-    }
-
-    public static BinarySwitch parseJSON(JSONObject body) throws JSONException {
-        BinarySwitch binarySwitch = new BinarySwitch();
-
-        binarySwitch.setNode_id(body.getInt("node_id"));
-        binarySwitch.setName(body.getString("name"));
-        binarySwitch.setTurnedOn(body.getInt("pos") == 255);
-        binarySwitch.setWattage(body.getDouble("wattage"));
-
-        return binarySwitch;
     }
 }

@@ -1,125 +1,143 @@
 package network;
 
+import exceptions.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import models.*;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import network.HttpClient.Result;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class APIManager {
+public class QStickBridge {
     private static final String BASE_URL = "https://homemanager.tv";
-    private HttpHelper httpHelper;
+    private HttpClient httpClient;
     private Token token;
+    private Gson gson;
 
-    public APIManager() {
-        this.httpHelper = new HttpHelper();
+    public QStickBridge(String user, String pass) throws APIException, IOException {
+        this.httpClient = new HttpClient();
+        this.gson = new Gson();
+        authenticate(user, pass);
     }
 
-    public void authenticate(String user, String pass) throws NetworkErrorException, JSONException {
+    private void authenticate(String user, String pass) throws APIException, IOException {
         String url = BASE_URL + "/token/new.json";
         String post = "username=" + user + "&password=" + pass;
-        String response = httpHelper.sendPost(url, post);
-        JSONObject body = new JSONObject(response);
-        token = Token.parseJSON(body);
+        Result result = httpClient.post(url, post);
+        handleErrors(result);
+        token = gson.fromJson(result.getBody(), Token.class);
     }
 
-    public List<House> getHouses() throws NetworkErrorException, JSONException {
+    public List<House> getHouses() throws APIException, IOException {
         String url = BASE_URL + "/main/getCurrentUserHouses?token=" + token.getToken() + "&user=" + token.getUser();
-        String body = httpHelper.sendGet(url);
-        List<House> houses = new ArrayList<>();
-        JSONArray array = new JSONArray(body);
-        for (int i = 0; i < array.length(); i++) {
-            houses.add(House.parseJSON(array.getJSONObject(i)));
+        Result result = httpClient.get(url);
+        try {
+            handleErrors(result);
+        } catch (NoActiveHousesException e) {
+            return new ArrayList<>();
         }
-        return houses;
+        return gson.fromJson(result.getBody(), House.gsonType);
     }
 
-    public List<Gateway> getGateways(int houseId) throws NetworkErrorException, JSONException {
+    public List<Gateway> getGateways(int houseId) throws APIException, IOException {
         String url = BASE_URL + "/main/getHouseGateways?token=" + token.getToken() + "&user=" + token.getUser() + "&house_id=" + houseId;
-        List<Gateway> gateways = new ArrayList<>();
-        String body = httpHelper.sendGet(url);
-        JSONArray array = new JSONArray(body);
-        for (int i = 0; i< array.length(); i++) {
-            gateways.add(Gateway.parseJSON(array.getJSONObject(i)));
+        Result result = httpClient.get(url);
+        try {
+            handleErrors(result);
+        } catch (NoActiveGatewaysException e) {
+            return new ArrayList<>();
         }
-        return gateways;
+        return gson.fromJson(result.getBody(), Gateway.gsonType);
     }
 
-    public List<Room> getRooms(String gatewaySerial) throws NetworkErrorException, JSONException {
+    public List<Room> getRooms(String gatewaySerial) throws APIException, IOException {
         String url = BASE_URL + "/main/getRoomsStatus?token=" + token.getToken() + "&user=" + token.getUser() + "&gateway=" + gatewaySerial;
-        List<Room> rooms = new ArrayList<>();
-        String body = httpHelper.sendGet(url);
-        JSONArray array = new JSONArray(body);
-        for (int i = 0; i < array.length(); i++) {
-            rooms.add(Room.parseJSON(array.getJSONObject(i)));
+        Result result = httpClient.get(url);
+        try {
+            handleErrors(result);
+        } catch (NoActiveRoomsException e) {
+            return new ArrayList<>();
         }
-        return rooms;
+        return gson.fromJson(result.getBody(), Room.gsonType);
     }
 
-    public String getGatewayStatus(String gatewaySerial) throws NetworkErrorException {
+    public String getGatewayStatus(String gatewaySerial) throws APIException, IOException {
         String url = BASE_URL + "/main/getGatewayStatus?token=" + token.getToken() + "&user=" + token.getUser() + "&gateway=" + gatewaySerial;
-        return httpHelper.sendGet(url);
+        Result result = httpClient.get(url);
+        handleErrors(result);
+        return result.getBody();
     }
 
-    public List<BinarySwitch> getSwitches(String gatewaySerial) throws NetworkErrorException, JSONException {
-        String gatewayStatus = getGatewayStatus(gatewaySerial);
-        List<BinarySwitch> binarySwitches = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(gatewayStatus);
-        JSONArray array = jsonObject.getJSONArray("BinarySwitches");
-        for (int i = 0; i < array.length(); i++) {
-            binarySwitches.add(BinarySwitch.parseJSON(array.getJSONObject(i)));
-        }
-        return binarySwitches;
+    public List<BinarySwitch> getSwitches(String gatewaySerial) throws APIException, IOException {
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(getGatewayStatus(gatewaySerial));
+        return gson.fromJson(jsonObject.getAsJsonArray("BinarySwitches"), BinarySwitch.gsonType);
     }
 
-    public void changeSwitchState(String gatewaySerial, BinarySwitch binarySwitch) throws NetworkErrorException {
+    public void changeSwitchState(String gatewaySerial, BinarySwitch binarySwitch) throws IOException {
         boolean turnedOn = binarySwitch.isTurnedOn();
         String url = BASE_URL + "/main/setBinaryValue?token=" + token.getToken() + "&user=" + token.getUser();
         String post = "gateway=" + gatewaySerial + "&node_id=" + binarySwitch.getNode_id() + "&pos=" + (turnedOn ? 0 : 255);
-        httpHelper.sendPost(url, post);
+        httpClient.post(url, post);
     }
 
-    public void setRoomTemperature(String gatewaySerial, Room room, double newTemperature) throws NetworkErrorException {
+    public void setRoomTemperature(String gatewaySerial, Room room, double newTemperature) throws IOException {
         String url = BASE_URL + "/main/setRoomTemperature?token=" + token.getToken() + "&user=" + token.getUser();
         String post = "gateway=" + gatewaySerial + "&room_id=" + room.getId() + "&temperature=" + newTemperature;
-        httpHelper.sendPost(url, post);
+        httpClient.post(url, post);
     }
 
-    public List<BinarySensor> getBinarySensors(String gatewaySerial) throws NetworkErrorException, JSONException {
-        String gatewayStatus = getGatewayStatus(gatewaySerial);
-        List<BinarySensor> binarySensors = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(gatewayStatus);
-        JSONArray array = jsonObject.getJSONArray("BinarySensors");
-        for (int i = 0; i < array.length(); i++) {
-            binarySensors.add(BinarySensor.parseJSON(array.getJSONObject(i)));
-        }
-        return binarySensors;
+    public List<BinarySensor> getBinarySensors(String gatewaySerial) throws APIException, IOException {
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(getGatewayStatus(gatewaySerial));
+        return gson.fromJson(jsonObject.getAsJsonArray("BinarySensors"), BinarySensor.gsonType);
     }
 
-    public void disArmSensor(String gatewaySerial, int nodeId) throws NetworkErrorException {
+    public void disArmSensor(String gatewaySerial, int nodeId) throws IOException {
         String url = BASE_URL + "/main/disArmUserComponent?token=" + token.getToken() + "&user=" + token.getUser();
         String post = "gateway_id=" + gatewaySerial + "&node_id=" + nodeId;
-        httpHelper.sendPost(url, post);
+        httpClient.post(url, post);
     }
 
-    public void armSensor(String gatewaySerial, int nodeId) throws NetworkErrorException {
+    public void armSensor(String gatewaySerial, int nodeId) throws IOException {
         String url = BASE_URL + "/main/reArmUserComponent?token=" + token.getToken() + "&user=" + token.getUser();
         String post = "gateway_id=" + gatewaySerial + "&node_id=" + nodeId;
-        httpHelper.sendPost(url, post);
+        httpClient.post(url, post);
     }
 
-    @Deprecated
-    public List<Thermostat> getThermostats(String gatewaySerial) throws NetworkErrorException, JSONException {
-        String gatewayStatus = getGatewayStatus(gatewaySerial);
-        List<Thermostat> thermostats = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(gatewayStatus);
-        JSONArray array = jsonObject.getJSONArray("Thermostats");
-        for (int i = 0; i < array.length(); i++) {
-            thermostats.add(Thermostat.parseJSON(array.getJSONObject(i)));
+    private void handleErrors(HttpClient.Result result) throws IOException, APIException {
+        if (result.getResponseCode() != 200) {
+            throw new IOException();
+        } else {
+            try {
+                ErrorResponse errorResponse = gson.fromJson(result.getBody(), ErrorResponse.gsonType);
+                if (errorResponse == null || errorResponse.isSuccess() || errorResponse.getErrors() == null) {
+                    return;
+                }
+
+                switch (errorResponse.getCode()) {
+                    case 999:
+                        throw new InvalidRequestException(errorResponse.getErrors());
+                    case 1000:
+                        throw new NoActiveHousesException(errorResponse.getErrors());
+                    case 1001:
+                        throw new NoActiveGatewaysException(errorResponse.getErrors());
+                    case 1002:
+                        throw new InvalidGatewaySerialException(errorResponse.getErrors());
+                    case 1003:
+                        throw new GatewayOfflineException(errorResponse.getErrors());
+                    case 1004:
+                        throw new NoActiveRoomsException(errorResponse.getErrors());
+                    default:
+                        throw new APIException(errorResponse.getErrors());
+                }
+            } catch (JsonParseException e) {
+                // JSON body does not contain an error
+            }
+
         }
-        return thermostats;
     }
 }

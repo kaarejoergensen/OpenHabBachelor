@@ -1,16 +1,16 @@
-package network;
+package exceptions;
 
-public class NetworkErrorException extends Exception {
+public class APIException extends Exception {
 
-    public NetworkErrorException(String message) {
+    public APIException(String message) {
         super(message);
     }
 
-    public NetworkErrorException(Throwable t) {
+    public APIException(Throwable t) {
         super(t);
     }
 
-    public NetworkErrorException(String message, Throwable t) {
+    public APIException(String message, Throwable t) {
         super(message, t);
     }
 }

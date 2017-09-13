@@ -8,9 +8,7 @@
         <outputRelativeToContentRoot value="true" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="main" target="1.8" />
-      <module name="NorthQ" target="1.5" />
+    <bytecodeTargetLevel target="1.8">
       <module name="NorthQStandalone_main" target="1.8" />
       <module name="NorthQStandalone_test" target="1.8" />
     </bytecodeTargetLevel>

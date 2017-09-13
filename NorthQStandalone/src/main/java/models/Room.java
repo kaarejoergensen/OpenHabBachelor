@@ -1,9 +1,13 @@
 package models;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 public class Room {
+    public final static Type gsonType = new TypeToken<List<Room>>() {}.getType();
+
     private int id;
     private String name;
     private double temperature;
@@ -30,15 +34,5 @@ public class Room {
 
     public void setTemperature(double temperature) {
         this.temperature = temperature;
-    }
-
-    public static Room parseJSON(JSONObject body) throws JSONException {
-        Room room = new Room();
-
-        room.setId(body.getInt("id"));
-        room.setName(body.getString("name"));
-        room.setTemperature(body.getDouble("temperature"));
-
-        return room;
     }
 }

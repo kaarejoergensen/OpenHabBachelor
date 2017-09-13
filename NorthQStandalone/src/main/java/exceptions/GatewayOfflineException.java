@@ -1,4 +1,15 @@
-package Exceptions;
+package exceptions;
 
-public class GatewayOfflineException {
+public class GatewayOfflineException extends APIException {
+    public GatewayOfflineException(String message) {
+        super(message);
+    }
+
+    public GatewayOfflineException(Throwable t) {
+        super(t);
+    }
+
+    public GatewayOfflineException(String message, Throwable t) {
+        super(message, t);
+    }
 }
