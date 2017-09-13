@@ -1,9 +1,14 @@
 package org.openhab.binding.northqbinding.models;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.lang.reflect.Type;
+import java.util.List;
+
+import com.google.gson.reflect.TypeToken;
 
 public class House {
+    public static final Type gsonType = new TypeToken<List<House>>() {
+    }.getType();
+
     private int id;
     private String name;
     private String type;
@@ -39,16 +44,5 @@ public class House {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public static House parseJSON(JSONObject body) throws JSONException {
-        House house = new House();
-
-        house.setId(body.getInt("id"));
-        house.setName(body.getString("name"));
-        house.setType(body.getString("type"));
-        house.setCountry(body.getString("country"));
-
-        return house;
     }
 }

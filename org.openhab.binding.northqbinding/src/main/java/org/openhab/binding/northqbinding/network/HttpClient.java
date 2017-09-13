@@ -22,10 +22,26 @@ import java.util.Scanner;
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
 class HttpClient {
-    private int timeout = 1000;
+    private int timeout = 20000;
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public Result get(String address) throws IOException {
+        return doNetwork(address, "GET", "");
+    }
+
+    public Result post(String address, String body) throws IOException {
+        return doNetwork(address, "POST", body);
+    }
+
+    public Result put(String address, String body) throws IOException {
+        return doNetwork(address, "PUT", body);
+    }
+
+    public Result delete(String address) throws IOException {
+        return doNetwork(address, "DELETE", "");
     }
 
     protected Result doNetwork(String address, String requestMethod, String body) throws IOException {

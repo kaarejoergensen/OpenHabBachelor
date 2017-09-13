@@ -1,19 +1,20 @@
 package org.openhab.binding.northqbinding.models;
 
-import java.util.ArrayList;
+import java.lang.reflect.Type;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.reflect.TypeToken;
 
 public class BinarySensor {
+    public static final Type gsonType = new TypeToken<List<BinarySensor>>() {
+    }.getType();
     private int node_id;
     private int room;
     private int battery;
     private String name;
-    private boolean armed;
-    private List<Sensor> sensorList;
+    private int armed;
+    private List<Sensor> sensors;
+    private String gateway;
 
     public int getNode_id() {
         return node_id;
@@ -48,44 +49,34 @@ public class BinarySensor {
     }
 
     public boolean isArmed() {
-        return armed;
+        return armed == 1;
     }
 
     public void setArmed(boolean armed) {
-        this.armed = armed;
+        this.armed = armed ? 1 : 0;
     }
 
     public List<Sensor> getSensorList() {
-        return sensorList;
+        return sensors;
     }
 
     public void setSensorList(List<Sensor> sensorList) {
-        this.sensorList = sensorList;
+        this.sensors = sensorList;
+    }
+
+    public String getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
     }
 
     @Override
     public String toString() {
         return "BinarySensor{" + "node_id=" + node_id + ", room=" + room + ", battery=" + battery + ", name='" + name
                 + '\'' + ", armed=" + armed + ", sensorList="
-                + sensorList.stream().map(Sensor::toString).reduce("", String::concat) + '}';
-    }
-
-    public static BinarySensor parseJSON(JSONObject body) throws JSONException {
-        BinarySensor binarySensor = new BinarySensor();
-
-        binarySensor.setNode_id(body.getInt("node_id"));
-        binarySensor.setRoom(body.getInt("room"));
-        binarySensor.setBattery(body.getInt("battery"));
-        binarySensor.setName(body.getString("name"));
-        binarySensor.setArmed(body.getInt("armed") == 1);
-        JSONArray jsonArray = body.getJSONArray("sensors");
-        List<Sensor> sensors = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            sensors.add(Sensor.parseJSON(jsonArray.getJSONObject(i)));
-        }
-        binarySensor.setSensorList(sensors);
-
-        return binarySensor;
+                + sensors.stream().map(Sensor::toString).reduce("", String::concat) + '}';
     }
 
     public static class Sensor {
@@ -120,16 +111,6 @@ public class BinarySensor {
         @Override
         public String toString() {
             return "Sensor{" + "scale=" + scale + ", type=" + type + ", value=" + value + '}';
-        }
-
-        public static Sensor parseJSON(JSONObject body) throws JSONException {
-            Sensor sensor = new Sensor();
-
-            sensor.setScale(body.getInt("scale"));
-            sensor.setType(body.getInt("type"));
-            sensor.setValue(body.getDouble("value"));
-
-            return sensor;
         }
     }
 }

@@ -1,12 +1,18 @@
 package org.openhab.binding.northqbinding.models;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.lang.reflect.Type;
+import java.util.List;
+
+import com.google.gson.reflect.TypeToken;
 
 public class Room {
+    public final static Type gsonType = new TypeToken<List<Room>>() {
+    }.getType();
+
     private int id;
     private String name;
     private double temperature;
+    private String gateway;
 
     public int getId() {
         return id;
@@ -32,13 +38,12 @@ public class Room {
         this.temperature = temperature;
     }
 
-    public static Room parseJSON(JSONObject body) throws JSONException {
-        Room room = new Room();
-
-        room.setId(body.getInt("id"));
-        room.setName(body.getString("name"));
-        room.setTemperature(body.getDouble("temperature"));
-
-        return room;
+    public String getGateway() {
+        return gateway;
     }
+
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
+    }
+
 }

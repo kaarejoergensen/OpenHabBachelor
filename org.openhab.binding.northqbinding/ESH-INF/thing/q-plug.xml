@@ -12,13 +12,13 @@
 		<channels>
 			<channel id="channel1" typeId="binaryswitch-channel"/>
 		</channels>
+		
+		<config-description>
+		  <parameter name="thingId" type="text">
+		      <label>Thing ID</label>
+		      <description>The id that is used with the NorthQ sensor</description>
+		      <required>true</required>
+		  </parameter>
+		</config-description>	
 	</thing-type>
-
-	<!-- Sample Channel Type -->
-	<channel-type id="binaryswitch-channel">
-		<item-type>Switch</item-type>
-		<label>NorthQBinding Binding Channel</label>
-		<description>Sample channel for NorthQBinding Binding</description>
-	</channel-type>
-
 </thing:thing-descriptions>
