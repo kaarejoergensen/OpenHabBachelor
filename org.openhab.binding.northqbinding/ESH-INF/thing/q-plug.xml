@@ -30,8 +30,8 @@
     <!-- Sample Channel Type -->
     <channel-type id="binaryswitch-channel">
         <item-type>Switch</item-type>
-        <label>NorthQBinding Binding Channel</label>
-        <description>Sample channel for NorthQBinding Binding</description>
+        <label>Turn switch on/off</label>
+        <description>Switch for changing the power-state</description>
     </channel-type>
     
     <channel-type id="binaryswitch-wattage-channel">

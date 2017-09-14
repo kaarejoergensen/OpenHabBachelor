@@ -42,11 +42,10 @@ import org.slf4j.LoggerFactory;
  */
 public class NorthQBindingHandler extends BaseThingHandler {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BINARY_SWITCH);
-    public final static int REFRESH = 60;
+    public final static int REFRESH = 10;
 
     private final Logger logger = LoggerFactory.getLogger(NorthQBindingHandler.class);
 
-    private long lastUpdateTime;
     private ScheduledFuture<?> refreshJob;
     private NorthQBridgeHandler bridgeHandler;
     private String node_id;
@@ -62,7 +61,7 @@ public class NorthQBindingHandler extends BaseThingHandler {
             logger.debug("No bridge found. Cannot handle command without bridge.");
             return;
         }
-
+        bridgeHandler.getAllBinarySwitches();
         BinarySwitch binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
         if (binarySwitch == null) {
             logger.debug("No BinarySwitch object found. Cannot handle command without object.");
@@ -70,7 +69,6 @@ public class NorthQBindingHandler extends BaseThingHandler {
         }
         try {
             if (command instanceof RefreshType) {
-                bridgeHandler.getAllBinarySwitches();
                 switch (channelUID.getId()) {
                     case BINARY_SWITCH_WATTAGE_CHANNEL:
                         binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
@@ -108,17 +106,31 @@ public class NorthQBindingHandler extends BaseThingHandler {
         String configNode_id = (String) getConfig().get(NODE_ID);
         if (configNode_id != null) {
             node_id = configNode_id;
-            updateStatus(ThingStatus.ONLINE);
+            startAutomaticRefresh();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
 
     }
 
+    @Override
+    public void dispose() {
+        refreshJob.cancel(true);
+    }
+
     private void startAutomaticRefresh() {
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             try {
-
+                NorthQBridgeHandler bridgeHandler = getBridgeHandler();
+                bridgeHandler.getAllBinarySwitches();
+                BinarySwitch binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
+                if (binarySwitch != null) {
+                    updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_SWITCH_CHANNEL),
+                            binarySwitch.isTurnedOn() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_WATTAGE_CHANNEL),
+                            new DecimalType(binarySwitch.getWattage()));
+                    updateStatus(ThingStatus.ONLINE);
+                }
             } catch (Exception e) {
                 logger.debug("Exception occured during execution: " + e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
