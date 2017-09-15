@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="northqbinding"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="binary-sensor">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+        <label>NorthQ Q-Motion</label>
+        <description>Thing for NorthQ Q-Motion</description>
+
+        <channels>
+            <channel id="binarysensor_arm_channel" typeId="binarysensor-arm-channel"/>
+            <channel id="binarysensor-temperature-channel" typeId="binarysensor-temperature-channel"/>
+            <channel id="binarysensor-luminance-channel" typeId="binarysensor-luminance-channel"/>
+            <channel id="binarysensor-humidity-channel" typeId="binarysensor-humidity-channel"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="nodeId" type="text">
+                <label>Node ID</label>
+                <description>The node identifier identifies one certain sensor.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+        
+    </thing-type>
+
+    <channel-type id="binarysensor-arm-channel">
+        <item-type>Switch</item-type>
+        <label>Arm/Disarm</label>
+        <description>Switch for arming/disarming the Q-Motion</description>
+    </channel-type>
+    
+    <channel-type id="binarysensor-temperature-channel">
+       <item-type>Number</item-type>
+       <label>Temperature</label>
+       <description>Current temperature</description>
+       <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="binarysensor-luminance-channel">
+       <item-type>Number</item-type>
+       <label>Luminance</label>
+       <description>Current luminance</description>
+       <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="binarysensor-humidity-channel">
+       <item-type>Number</item-type>
+       <label>Humidity</label>
+       <description>Current humidity</description>
+       <state readOnly="true"/>
+    </channel-type>
+</thing:thing-descriptions>
