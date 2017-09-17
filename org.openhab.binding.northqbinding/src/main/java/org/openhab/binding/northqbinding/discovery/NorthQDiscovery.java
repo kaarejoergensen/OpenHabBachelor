@@ -13,6 +13,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
 import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
 import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
+import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 
 public class NorthQDiscovery extends AbstractDiscoveryService {
@@ -41,6 +42,11 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
         for (BinarySwitch binarySwitch : binaryswitches) {
             addBinarySwitch(binarySwitch);
         }
+        List<BinarySensor> binarysensors = bridgeHandler.getAllBinarySensors();
+        for (BinarySensor binarySensor : binarysensors) {
+            addBinarySensor(binarySensor);
+        }
+
     }
 
     @Override
@@ -62,9 +68,27 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
 
     }
 
+    private void addBinarySensor(BinarySensor binarySensor) {
+        ThingUID thingUID = getBinarySensorUID(binarySensor);
+        ThingTypeUID thingTypeUID = NorthQBindingBindingConstants.BINARY_SENSOR;
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        Map<String, Object> properties = new HashMap<>(1);
+        properties.put(NorthQBindingBindingConstants.NODE_ID, String.valueOf(binarySensor.getNode_id()));
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                .withProperties(properties).withBridge(bridgeUID).withLabel(binarySensor.getName()).build();
+        thingDiscovered(discoveryResult);
+
+    }
+
     private ThingUID getThingUID(BinarySwitch binarySwitch) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingTypeUID thingTypeUID = NorthQBindingBindingConstants.BINARY_SWITCH;
         return new ThingUID(thingTypeUID, bridgeUID, String.valueOf(binarySwitch.getNode_id()));
+    }
+
+    private ThingUID getBinarySensorUID(BinarySensor binarySensor) {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingTypeUID thingTypeUID = NorthQBindingBindingConstants.BINARY_SENSOR;
+        return new ThingUID(thingTypeUID, bridgeUID, String.valueOf(binarySensor.getNode_id()));
     }
 }
