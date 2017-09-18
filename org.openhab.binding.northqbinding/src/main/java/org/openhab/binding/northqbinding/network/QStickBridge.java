@@ -18,6 +18,7 @@ import org.openhab.binding.northqbinding.models.Gateway;
 import org.openhab.binding.northqbinding.models.House;
 import org.openhab.binding.northqbinding.models.NorthQThing;
 import org.openhab.binding.northqbinding.models.Room;
+import org.openhab.binding.northqbinding.models.Thermostat;
 import org.openhab.binding.northqbinding.models.Token;
 import org.openhab.binding.northqbinding.network.HttpClient.Result;
 
@@ -126,6 +127,7 @@ public class QStickBridge {
 
         things.addAll(getAllBinarySensors(gatewayStatuses));
         things.addAll(getAllSwitches(gatewayStatuses));
+        things.addAll(getAllThermostats(gatewayStatuses));
 
         return things;
     }
@@ -148,6 +150,25 @@ public class QStickBridge {
             binarySwitch.setGateway(gatewaySerial);
         }
         return binarySwitchs;
+    }
+
+    public List<Thermostat> getAllThermostats(List<String> gatewayStatuses) {
+        List<Thermostat> thermostats = new ArrayList<>();
+        for (String gatewayStatus : gatewayStatuses) {
+            thermostats.addAll(getThermostats(gatewayStatus));
+        }
+        return thermostats;
+    }
+
+    public List<Thermostat> getThermostats(String gatewayStatus) {
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(gatewayStatus);
+        List<Thermostat> thermostats = gson.fromJson(jsonObject.getAsJsonArray("Thermostats"), Thermostat.gsonType);
+        JsonObject dongle = jsonObject.getAsJsonObject("dongle");
+        String gatewaySerial = dongle.get("serial").isJsonNull() ? "" : dongle.get("serial").getAsString();
+        for (Thermostat thermoStat : thermostats) {
+            thermoStat.setGateway(gatewaySerial);
+        }
+        return thermostats;
     }
 
     public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {

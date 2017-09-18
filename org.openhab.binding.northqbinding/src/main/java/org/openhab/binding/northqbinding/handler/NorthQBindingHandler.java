@@ -31,6 +31,7 @@ import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
+import org.openhab.binding.northqbinding.models.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,8 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
     // public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BINARY_SWITCH);
     public final static int REFRESH = 15;
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(BINARY_SWITCH, BINARY_SENSOR);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(BINARY_SWITCH, BINARY_SENSOR,
+            THERMOSTAT);
 
     private final Logger logger = LoggerFactory.getLogger(NorthQBindingHandler.class);
 
@@ -67,8 +69,9 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
         bridgeHandler.getAllNorthQThings();
         BinarySwitch binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
         BinarySensor binarySensor = bridgeHandler.getBinarySensorById(node_id);
+        Thermostat thermostat = bridgeHandler.getThermostatById(node_id);
 
-        if (binarySwitch == null && binarySensor == null) {
+        if (binarySwitch == null && binarySensor == null && thermostat == null) {
             logger.debug("No BinarySwitch object found. Cannot handle command without object.");
             return;
         }
@@ -91,6 +94,10 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                         } else {
                             updateState(channelUID, OnOffType.OFF);
                         }
+                        break;
+                    case THERMOSTAT_TEMP_CHANNEL:
+                        thermostat = bridgeHandler.getThermostatById(node_id);
+
                         break;
 
                 }

@@ -27,6 +27,7 @@ import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
+import org.openhab.binding.northqbinding.models.Thermostat;
 import org.openhab.binding.northqbinding.network.QStickBridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;;
@@ -129,6 +130,22 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         for (NorthQThing thing : things) {
             if (thing instanceof BinarySwitch) {
                 return (BinarySwitch) thing;
+            }
+        }
+        return null;
+    }
+
+    public Thermostat getThermostatById(String node_id) {
+        if (node_id == null || node_id.isEmpty()) {
+            return null;
+        }
+        List<NorthQThing> things = thingMap.get(node_id);
+        if (things == null) {
+            return null;
+        }
+        for (NorthQThing thing : things) {
+            if (thing instanceof Thermostat) {
+                return (Thermostat) thing;
             }
         }
         return null;
