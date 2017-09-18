@@ -14,9 +14,9 @@
 
         <channels>
             <channel id="binarysensor_arm_channel" typeId="binarysensor-arm-channel"/>
-            <channel id="binarysensor-temperature-channel" typeId="binarysensor-temperature-channel"/>
-            <channel id="binarysensor-luminance-channel" typeId="binarysensor-luminance-channel"/>
-            <channel id="binarysensor-humidity-channel" typeId="binarysensor-humidity-channel"/>
+            <channel id="binarysensor_temperature_channel" typeId="binarysensor-temperature-channel"/>
+            <channel id="binarysensor_luminance_channel" typeId="binarysensor-luminance-channel"/>
+            <channel id="binarysensor_humidity_channel" typeId="binarysensor-humidity-channel"/>
         </channels>
         
         <config-description>

@@ -30,7 +30,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
+import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
+import org.openhab.binding.northqbinding.models.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +48,8 @@ public class NorthQBindingHandler extends BaseThingHandler {
     // public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BINARY_SWITCH);
     public final static int REFRESH = 10;
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(BINARY_SWITCH, BINARY_SENSOR);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(BINARY_SWITCH, BINARY_SENSOR,
+            THERMOSTAT);
 
     private final Logger logger = LoggerFactory.getLogger(NorthQBindingHandler.class);
 
@@ -71,7 +74,10 @@ public class NorthQBindingHandler extends BaseThingHandler {
         bridgeHandler.getAllBinarySensors();
         BinarySensor binarySensor = bridgeHandler.getBinarySensorById(node_id);
 
-        if (binarySwitch == null && binarySensor == null) {
+        bridgeHandler.getAllThermostats();
+        Thermostat thermostat = bridgeHandler.getThermostatById(node_id);
+
+        if (binarySwitch == null && binarySensor == null && thermostat == null) {
             logger.debug("No BinarySwitch object found. Cannot handle command without object.");
             return;
         }
@@ -97,6 +103,10 @@ public class NorthQBindingHandler extends BaseThingHandler {
                         } else {
                             updateState(channelUID, OnOffType.OFF);
                         }
+                        break;
+                    case THERMOSTAT_TEMP_CHANNEL:
+                        thermostat = bridgeHandler.getThermostatById(node_id);
+
                         break;
 
                 }
@@ -151,8 +161,11 @@ public class NorthQBindingHandler extends BaseThingHandler {
                 NorthQBridgeHandler bridgeHandler = getBridgeHandler();
                 bridgeHandler.getAllBinarySwitches();
                 bridgeHandler.getAllBinarySensors();
+                bridgeHandler.getAllThermostats();
                 BinarySwitch binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
                 BinarySensor binarySensor = bridgeHandler.getBinarySensorById(node_id);
+                Thermostat thermostat = bridgeHandler.getThermostatById(node_id);
+
                 if (binarySwitch != null) {
                     updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_SWITCH_CHANNEL),
                             binarySwitch.isTurnedOn() ? OnOffType.ON : OnOffType.OFF);
@@ -161,9 +174,34 @@ public class NorthQBindingHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
 
                 }
+                if (thermostat != null) {
+
+                    // updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
+                    // new DecimalType(thermostat.getTemperature()));
+                    updateStatus(ThingStatus.ONLINE);
+
+                }
+
                 if (binarySensor != null) {
                     updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_ARM_CHANNEL),
                             binarySensor.isArmed() ? OnOffType.ON : OnOffType.OFF);
+
+                    for (Sensor s : binarySensor.getSensorList()) {
+                        switch (s.getType()) {
+                            case TEMPERATURE:
+                                updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TEMP_CHANNEL),
+                                        new DecimalType(s.getValue()));
+                                break;
+                            case lUMINANCE:
+                                updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_LUMINANCE_CHANNEL),
+                                        new DecimalType(s.getValue()));
+                                break;
+                            case HUMIDITY:
+                                updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_HUMIDITY_CHANNEL),
+                                        new DecimalType(s.getValue()));
+                                break;
+                        }
+                    }
 
                     updateStatus(ThingStatus.ONLINE);
                 }

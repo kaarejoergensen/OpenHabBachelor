@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
+import org.openhab.binding.northqbinding.models.Thermostat;
 import org.openhab.binding.northqbinding.network.QStickBridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;;
@@ -34,6 +35,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     private QStickBridge qStickBridge;
     private Map<String, BinarySwitch> binarySwitches = new ConcurrentHashMap<>();
     private Map<String, BinarySensor> binarySensors = new ConcurrentHashMap<>();
+    private Map<String, Thermostat> thermostats = new ConcurrentHashMap<>();
 
     public NorthQBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -92,6 +94,33 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
                     binarySwitches.put(String.valueOf(b.getNode_id()), b);
                 }
                 return binarySwitchs;
+            } catch (APIException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    public Thermostat getThermostatById(String node_id) {
+        if (node_id == null || node_id.isEmpty()) {
+            return null;
+        }
+        Thermostat thermostat = thermostats.get(node_id);
+        if (thermostat == null) {
+            getAllThermostats();
+            thermostat = thermostats.get(node_id);
+        }
+        return thermostat;
+    }
+
+    public List<Thermostat> getAllThermostats() {
+        if (qStickBridge != null) {
+            try {
+                List<Thermostat> Thermostats = qStickBridge.getAllThermostats();
+                for (Thermostat t : Thermostats) {
+                    thermostats.put(String.valueOf(t.getNode_id()), t);
+                }
+                return Thermostats;
             } catch (APIException | IOException e) {
                 e.printStackTrace();
             }

@@ -26,6 +26,7 @@ public class NorthQBindingBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID BINARY_SWITCH = new ThingTypeUID(BINDING_ID, "binary-switch");
     public static final ThingTypeUID BINARY_SENSOR = new ThingTypeUID(BINDING_ID, "binary-sensor");
+    public static final ThingTypeUID THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
     // List of all Channel ids
     public static final String BINARY_SWITCH_SWITCH_CHANNEL = "binaryswitch_switch_channel";
@@ -35,6 +36,8 @@ public class NorthQBindingBindingConstants {
     public static final String BINARY_SENSOR_TEMP_CHANNEL = "binarysensor_temperature_channel";
     public static final String BINARY_SENSOR_LUMINANCE_CHANNEL = "binarysensor_luminance_channel";
     public static final String BINARY_SENSOR_HUMIDITY_CHANNEL = "binarysensor_humidity_channel";
+
+    public static final String THERMOSTAT_TEMP_CHANNEL = "thermostat_temperature_channel";
 
     // List of all config string
     public static final String USER_NAME = "username";

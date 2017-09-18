@@ -17,6 +17,7 @@ import org.openhab.binding.northqbinding.models.ErrorResponse;
 import org.openhab.binding.northqbinding.models.Gateway;
 import org.openhab.binding.northqbinding.models.House;
 import org.openhab.binding.northqbinding.models.Room;
+import org.openhab.binding.northqbinding.models.Thermostat;
 import org.openhab.binding.northqbinding.models.Token;
 import org.openhab.binding.northqbinding.network.HttpClient.Result;
 
@@ -127,6 +128,23 @@ public class QStickBridge {
             binarySwitch.setGateway(gatewaySerial);
         }
         return binarySwitchs;
+    }
+
+    public List<Thermostat> getAllThermostats() throws APIException, IOException {
+        List<Thermostat> thermostats = new ArrayList<>();
+        for (Gateway gateway : gateways) {
+            thermostats.addAll(getThermostats(gateway.getSerial_nr()));
+        }
+        return thermostats;
+    }
+
+    public List<Thermostat> getThermostats(String gatewaySerial) throws APIException, IOException {
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(getGatewayStatus(gatewaySerial));
+        List<Thermostat> thermostats = gson.fromJson(jsonObject.getAsJsonArray("Thermostats"), Thermostat.gsonType);
+        for (Thermostat thermoStat : thermostats) {
+            thermoStat.setGateway(gatewaySerial);
+        }
+        return thermostats;
     }
 
     public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {

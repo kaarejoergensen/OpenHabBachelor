@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<thing:thing-descriptions bindingId="northqbinding"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="thermostat">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+        <label>Danfoss living connect</label>
+        <description>Thing for Danfoss living connect</description>
+
+        <channels>
+            <channel id="thermostat_temperature_channel" typeId="thermostat-temperature-channel"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="nodeId" type="text">
+                <label>Node ID</label>
+                <description>The node identifier identifies one certain thermostat.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+        
+    </thing-type>
+    
+    
+     <!-- Sample Channel Type -->
+    <channel-type id="thermostat-temperature-channel">
+        <item-type>Dimmer</item-type>
+        <label>get/set temperature</label>
+        <description>Get or set current temperature on thermostat</description>
+    </channel-type>
+    
+    
+    </thing:thing-descriptions>
