@@ -12,8 +12,6 @@ import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -30,7 +28,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
+import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
+import org.openhab.binding.northqbinding.models.NorthQThing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +42,14 @@ import com.google.common.collect.Sets;
  *
  * @author Kaare Joergensen - Initial contribution
  */
-public class NorthQBindingHandler extends BaseThingHandler {
+public class NorthQBindingHandler extends BaseThingHandler implements BindingHandlerInterface {
     // public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BINARY_SWITCH);
-    public final static int REFRESH = 10;
+    public final static int REFRESH = 15;
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(BINARY_SWITCH, BINARY_SENSOR);
 
     private final Logger logger = LoggerFactory.getLogger(NorthQBindingHandler.class);
 
-    private ScheduledFuture<?> refreshJob;
     private NorthQBridgeHandler bridgeHandler;
     private String node_id;
 
@@ -65,10 +64,8 @@ public class NorthQBindingHandler extends BaseThingHandler {
             logger.debug("No bridge found. Cannot handle command without bridge.");
             return;
         }
-        bridgeHandler.getAllBinarySwitches();
+        bridgeHandler.getAllNorthQThings();
         BinarySwitch binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
-
-        bridgeHandler.getAllBinarySensors();
         BinarySensor binarySensor = bridgeHandler.getBinarySensorById(node_id);
 
         if (binarySwitch == null && binarySensor == null) {
@@ -79,11 +76,9 @@ public class NorthQBindingHandler extends BaseThingHandler {
             if (command instanceof RefreshType) {
                 switch (channelUID.getId()) {
                     case BINARY_SWITCH_WATTAGE_CHANNEL:
-                        binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
                         updateState(channelUID, new DecimalType(binarySwitch.getWattage()));
                         break;
                     case BINARY_SWITCH_SWITCH_CHANNEL:
-                        binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
                         if (binarySwitch.isTurnedOn()) {
                             updateState(channelUID, OnOffType.ON);
                         } else {
@@ -91,7 +86,6 @@ public class NorthQBindingHandler extends BaseThingHandler {
                         }
                         break;
                     case BINARY_SENSOR_ARM_CHANNEL:
-                        binarySensor = bridgeHandler.getBinarySensorById(node_id);
                         if (binarySensor.isArmed()) {
                             updateState(channelUID, OnOffType.ON);
                         } else {
@@ -130,49 +124,39 @@ public class NorthQBindingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing NorthQBindingHandler");
+        initializeThing(getBridge() == null ? null : getBridge().getStatus());
+    }
+
+    private void initializeThing(ThingStatus bridgeStatus) {
+        logger.debug("Initialize thing " + getThing().getUID() + " bridge status " + bridgeStatus);
         String configNode_id = (String) getConfig().get(NODE_ID);
         if (configNode_id != null) {
             node_id = configNode_id;
-            startAutomaticRefresh();
+            if (getBridgeHandler() != null) {
+                if (bridgeStatus == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
-
     }
 
     @Override
     public void dispose() {
-        refreshJob.cancel(true);
-    }
-
-    private void startAutomaticRefresh() {
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                NorthQBridgeHandler bridgeHandler = getBridgeHandler();
-                bridgeHandler.getAllBinarySwitches();
-                bridgeHandler.getAllBinarySensors();
-                BinarySwitch binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
-                BinarySensor binarySensor = bridgeHandler.getBinarySensorById(node_id);
-                if (binarySwitch != null) {
-                    updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_SWITCH_CHANNEL),
-                            binarySwitch.isTurnedOn() ? OnOffType.ON : OnOffType.OFF);
-                    updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_WATTAGE_CHANNEL),
-                            new DecimalType(binarySwitch.getWattage()));
-                    updateStatus(ThingStatus.ONLINE);
-
-                }
-                if (binarySensor != null) {
-                    updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_ARM_CHANNEL),
-                            binarySensor.isArmed() ? OnOffType.ON : OnOffType.OFF);
-
-                    updateStatus(ThingStatus.ONLINE);
-                }
-
-            } catch (Exception e) {
-                logger.debug("Exception occured during execution: " + e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        logger.debug("Disposing: Unregistering handler from bridgeHandler");
+        if (node_id != null) {
+            NorthQBridgeHandler bridgeHandler = getBridgeHandler();
+            if (bridgeHandler != null) {
+                bridgeHandler.removeHandler(this);
+                this.bridgeHandler = null;
             }
-        }, 0, REFRESH, TimeUnit.SECONDS);
+            node_id = null;
+        }
     }
 
     private synchronized NorthQBridgeHandler getBridgeHandler() {
@@ -184,10 +168,52 @@ public class NorthQBindingHandler extends BaseThingHandler {
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof NorthQBridgeHandler) {
                 this.bridgeHandler = (NorthQBridgeHandler) handler;
+                this.bridgeHandler.addHandler(this);
             } else {
                 return null;
             }
         }
         return this.bridgeHandler;
+    }
+
+    @Override
+    public void onThingStateChanged(NorthQThing thing) {
+        if (thing != null && String.valueOf(thing.getNode_id()).equals(node_id)) {
+            if (thing instanceof BinarySwitch) {
+                BinarySwitch binarySwitch = (BinarySwitch) thing;
+                updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_SWITCH_CHANNEL),
+                        binarySwitch.isTurnedOn() ? OnOffType.ON : OnOffType.OFF);
+                updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_WATTAGE_CHANNEL),
+                        new DecimalType(binarySwitch.getWattage()));
+                updateStatus(ThingStatus.ONLINE);
+            } else if (thing instanceof BinarySensor) {
+                BinarySensor binarySensor = (BinarySensor) thing;
+                updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_ARM_CHANNEL),
+                        binarySensor.isArmed() ? OnOffType.ON : OnOffType.OFF);
+                for (Sensor s : binarySensor.getSensorList()) {
+                    switch (s.getType()) {
+                        case TEMPERATURE:
+                            updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TEMP_CHANNEL),
+                                    new DecimalType(s.getValue()));
+                            break;
+                        case lUMINANCE:
+                            updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_LUMINANCE_CHANNEL),
+                                    new DecimalType(s.getValue()));
+                            break;
+                        case HUMIDITY:
+                            updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_HUMIDITY_CHANNEL),
+                                    new DecimalType(s.getValue()));
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onThingRemoved(NorthQThing thing) {
+        if (thing != null && String.valueOf(thing.getNode_id()).equals(node_id)) {
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 }

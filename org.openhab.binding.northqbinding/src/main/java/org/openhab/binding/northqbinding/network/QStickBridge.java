@@ -16,6 +16,7 @@ import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.ErrorResponse;
 import org.openhab.binding.northqbinding.models.Gateway;
 import org.openhab.binding.northqbinding.models.House;
+import org.openhab.binding.northqbinding.models.NorthQThing;
 import org.openhab.binding.northqbinding.models.Room;
 import org.openhab.binding.northqbinding.models.Token;
 import org.openhab.binding.northqbinding.network.HttpClient.Result;
@@ -27,6 +28,7 @@ import com.google.gson.JsonParser;
 
 public class QStickBridge {
     private static final String BASE_URL = "https://homemanager.tv";
+
     private HttpClient httpClient;
     private Token token;
     private Gson gson;
@@ -103,6 +105,14 @@ public class QStickBridge {
         return rooms;
     }
 
+    public List<String> getAllGatewayStatuses() throws APIException, IOException {
+        List<String> gatewayStatuses = new ArrayList<>();
+        for (Gateway gateway : gateways) {
+            gatewayStatuses.add(getGatewayStatus(gateway.getSerial_nr()));
+        }
+        return gatewayStatuses;
+    }
+
     public String getGatewayStatus(String gatewaySerial) throws APIException, IOException {
         String url = BASE_URL + "/main/getGatewayStatus?token=" + token.getToken() + "&user=" + token.getUser()
                 + "&gateway=" + gatewaySerial;
@@ -111,18 +121,29 @@ public class QStickBridge {
         return result.getBody();
     }
 
-    public List<BinarySwitch> getAllSwitches() throws APIException, IOException {
+    public List<NorthQThing> getAllThings(List<String> gatewayStatuses) {
+        List<NorthQThing> things = new ArrayList<>();
+
+        things.addAll(getAllBinarySensors(gatewayStatuses));
+        things.addAll(getAllSwitches(gatewayStatuses));
+
+        return things;
+    }
+
+    public List<BinarySwitch> getAllSwitches(List<String> gatewayStatuses) {
         List<BinarySwitch> binarySwitchs = new ArrayList<>();
-        for (Gateway gateway : gateways) {
-            binarySwitchs.addAll(getSwitches(gateway.getSerial_nr()));
+        for (String gatewayStatus : gatewayStatuses) {
+            binarySwitchs.addAll(getSwitches(gatewayStatus));
         }
         return binarySwitchs;
     }
 
-    public List<BinarySwitch> getSwitches(String gatewaySerial) throws APIException, IOException {
-        JsonObject jsonObject = (JsonObject) new JsonParser().parse(getGatewayStatus(gatewaySerial));
+    public List<BinarySwitch> getSwitches(String gatewayStatus) {
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(gatewayStatus);
         List<BinarySwitch> binarySwitchs = gson.fromJson(jsonObject.getAsJsonArray("BinarySwitches"),
                 BinarySwitch.gsonType);
+        JsonObject dongle = jsonObject.getAsJsonObject("dongle");
+        String gatewaySerial = dongle.get("serial").isJsonNull() ? "" : dongle.get("serial").getAsString();
         for (BinarySwitch binarySwitch : binarySwitchs) {
             binarySwitch.setGateway(gatewaySerial);
         }
@@ -145,18 +166,20 @@ public class QStickBridge {
         handleErrors(result);
     }
 
-    public List<BinarySensor> getAllBinarySensors() throws APIException, IOException {
+    public List<BinarySensor> getAllBinarySensors(List<String> gatewayStatuses) {
         List<BinarySensor> binarySensors = new ArrayList<>();
-        for (Gateway gateway : gateways) {
-            binarySensors.addAll(getBinarySensors(gateway.getSerial_nr()));
+        for (String gatewayStatus : gatewayStatuses) {
+            binarySensors.addAll(getBinarySensors(gatewayStatus));
         }
         return binarySensors;
     }
 
-    public List<BinarySensor> getBinarySensors(String gatewaySerial) throws APIException, IOException {
-        JsonObject jsonObject = (JsonObject) new JsonParser().parse(getGatewayStatus(gatewaySerial));
+    public List<BinarySensor> getBinarySensors(String gatewayStatus) {
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(gatewayStatus);
         List<BinarySensor> binarySensors = gson.fromJson(jsonObject.getAsJsonArray("BinarySensors"),
                 BinarySensor.gsonType);
+        JsonObject dongle = jsonObject.getAsJsonObject("dongle");
+        String gatewaySerial = dongle.get("serial").isJsonNull() ? "" : dongle.get("serial").getAsString();
         for (BinarySensor binarySensor : binarySensors) {
             binarySensor.setGateway(gatewaySerial);
         }

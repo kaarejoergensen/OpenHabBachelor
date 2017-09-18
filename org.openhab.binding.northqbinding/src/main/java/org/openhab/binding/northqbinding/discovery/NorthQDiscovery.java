@@ -15,6 +15,7 @@ import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
 import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
+import org.openhab.binding.northqbinding.models.NorthQThing;
 
 public class NorthQDiscovery extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
@@ -38,15 +39,14 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        List<BinarySwitch> binaryswitches = bridgeHandler.getAllBinarySwitches();
-        for (BinarySwitch binarySwitch : binaryswitches) {
-            addBinarySwitch(binarySwitch);
+        List<NorthQThing> things = bridgeHandler.getAllNorthQThings();
+        for (NorthQThing thing : things) {
+            if (thing instanceof BinarySwitch) {
+                addBinarySwitch((BinarySwitch) thing);
+            } else if (thing instanceof BinarySensor) {
+                addBinarySensor((BinarySensor) thing);
+            }
         }
-        List<BinarySensor> binarysensors = bridgeHandler.getAllBinarySensors();
-        for (BinarySensor binarySensor : binarysensors) {
-            addBinarySensor(binarySensor);
-        }
-
     }
 
     @Override
