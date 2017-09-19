@@ -44,9 +44,6 @@ import com.google.common.collect.Sets;
  * @author Kaare Joergensen - Initial contribution
  */
 public class NorthQBindingHandler extends BaseThingHandler implements BindingHandlerInterface {
-    // public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BINARY_SWITCH);
-    public final static int REFRESH = 15;
-
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(BINARY_SWITCH, BINARY_SENSOR,
             THERMOSTAT);
 
