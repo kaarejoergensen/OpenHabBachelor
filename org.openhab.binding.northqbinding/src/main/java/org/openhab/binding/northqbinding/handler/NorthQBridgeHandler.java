@@ -28,6 +28,7 @@ import org.openhab.binding.northqbinding.exceptions.GatewayOfflineException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
+import org.openhab.binding.northqbinding.models.Room;
 import org.openhab.binding.northqbinding.models.Thermostat;
 import org.openhab.binding.northqbinding.network.QStickBridge;
 import org.slf4j.Logger;
@@ -157,6 +158,26 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         for (NorthQThing thing : things) {
             if (thing instanceof BinarySensor) {
                 return (BinarySensor) thing;
+            }
+        }
+        return null;
+    }
+
+    public Room getRoomById(String roomId) {
+        int roomIdInt = Integer.valueOf(roomId);
+        try {
+            List<Room> rooms = qStickBridge.getAllRooms();
+            for (Room room : rooms) {
+                if (room.getId() == roomIdInt) {
+                    return room;
+                }
+            }
+        } catch (APIException | IOException e) {
+            logger.debug(e.getMessage());
+            if (e instanceof GatewayOfflineException) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
         return null;

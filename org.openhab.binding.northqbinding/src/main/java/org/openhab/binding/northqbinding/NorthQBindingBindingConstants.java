@@ -43,5 +43,6 @@ public class NorthQBindingBindingConstants {
     public static final String USER_NAME = "username";
     public static final String PASSWORD = "password";
     public static final String NODE_ID = "nodeId";
+    public static final String ROOM_ID = "roomId";
 
 }

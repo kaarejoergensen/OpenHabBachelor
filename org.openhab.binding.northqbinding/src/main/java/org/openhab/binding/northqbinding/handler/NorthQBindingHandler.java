@@ -31,6 +31,7 @@ import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
+import org.openhab.binding.northqbinding.models.Room;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,10 +117,17 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
     private void initializeThing(ThingStatus bridgeStatus) {
         logger.debug("Initialize thing " + getThing().getUID() + " bridge status " + bridgeStatus);
         String configNode_id = (String) getConfig().get(NODE_ID);
+        String roomId = (String) getConfig().get(ROOM_ID);
         if (configNode_id != null) {
             node_id = configNode_id;
             if (getBridgeHandler() != null) {
                 if (bridgeStatus == ThingStatus.ONLINE) {
+                    if (roomId != null) {
+                        Room room = bridgeHandler.getRoomById(roomId);
+                        if (room != null) {
+                            getThing().setLocation(room.getName());
+                        }
+                    }
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);

@@ -68,6 +68,7 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>(1);
         properties.put(NorthQBindingBindingConstants.NODE_ID, String.valueOf(thing.getNode_id()));
+        properties.put(NorthQBindingBindingConstants.ROOM_ID, String.valueOf(thing.getRoom()));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperties(properties).withBridge(bridgeUID).withLabel(thing.getName()).build();
         thingDiscovered(discoveryResult);

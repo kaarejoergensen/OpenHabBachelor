@@ -23,6 +23,12 @@
                 <description>The node identifier identifies one certain thermostat.</description>
                 <required>true</required>
             </parameter>
+            
+            <parameter name="roomId" type="text">
+                <label>Room ID</label>
+                <description>The room identified identifies the room where the sensor is placed</description>
+                <required>false</required>
+            </parameter>
         </config-description>
         
     </thing-type>
