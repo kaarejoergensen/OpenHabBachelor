@@ -63,7 +63,6 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
             logger.debug("No bridge found. Cannot handle command without bridge.");
             return;
         }
-        bridgeHandler.getAllNorthQThings();
         BinarySwitch binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
         BinarySensor binarySensor = bridgeHandler.getBinarySensorById(node_id);
         Thermostat thermostat = bridgeHandler.getThermostatById(node_id);

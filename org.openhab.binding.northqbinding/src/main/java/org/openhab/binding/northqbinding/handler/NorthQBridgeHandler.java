@@ -54,15 +54,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
             try {
                 if (qStickBridge != null) {
                     List<String> gatewayStatuses = qStickBridge.getAllGatewayStatuses();
-                    things = qStickBridge.getAllThings(gatewayStatuses);
-                    thingMap = new ConcurrentHashMap<>();
-                    for (NorthQThing thing : things) {
-                        if (thingMap.containsKey(String.valueOf(thing.getNode_id()))) {
-                            thingMap.get(String.valueOf(thing.getNode_id())).add(thing);
-                        } else {
-                            thingMap.put(String.valueOf(thing.getNode_id()), new ArrayList<>(Arrays.asList(thing)));
-                        }
-                    }
+                    updateLocalCache(qStickBridge.getAllThings(gatewayStatuses));
                     logger.debug("Notifying {} handlers of {} things", handlers.size(), things.size());
                     things.stream().forEach(t -> notifyHandlers(t));
                 }
@@ -113,9 +105,11 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    private void startAutomaticRefresh() {
+    private synchronized void startAutomaticRefresh() {
         if (qStickBridge != null) {
-            refreshJob = scheduler.scheduleWithFixedDelay(networkRunable, 0, REFRESH, TimeUnit.SECONDS);
+            if (refreshJob == null || refreshJob.isCancelled()) {
+                refreshJob = scheduler.scheduleWithFixedDelay(networkRunable, 0, REFRESH, TimeUnit.SECONDS);
+            }
         }
     }
 
@@ -168,18 +162,29 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public List<NorthQThing> getAllNorthQThings() {
-        if (running) {
-            do {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while (running);
-            return things;
+        try {
+            if (qStickBridge != null) {
+                List<String> gatewayStatuses = qStickBridge.getAllGatewayStatuses();
+                updateLocalCache(qStickBridge.getAllThings(gatewayStatuses));
+            }
+        } catch (APIException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        networkRunable.run();
         return things;
+    }
+
+    private void updateLocalCache(List<NorthQThing> newThings) {
+        things = newThings;
+        thingMap = new ConcurrentHashMap<>();
+        for (NorthQThing thing : things) {
+            if (thingMap.containsKey(String.valueOf(thing.getNode_id()))) {
+                thingMap.get(String.valueOf(thing.getNode_id())).add(thing);
+            } else {
+                thingMap.put(String.valueOf(thing.getNode_id()), new ArrayList<>(Arrays.asList(thing)));
+            }
+        }
     }
 
     public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {
@@ -203,8 +208,8 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
             throw new IllegalArgumentException("Null handler not allowed");
         }
         boolean result = handlers.add(handler);
+        startAutomaticRefresh();
         if (result) {
-            getAllNorthQThings();
             for (NorthQThing thing : things) {
                 handler.onThingStateChanged(thing);
             }
