@@ -45,20 +45,20 @@
        <item-type>Number</item-type>
        <label>Temperature</label>
        <description>Current temperature</description>
-       <state readOnly="true"/>
+       <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
     
     <channel-type id="binarysensor-luminance-channel">
        <item-type>Number</item-type>
        <label>Luminance</label>
        <description>Current luminance</description>
-       <state readOnly="true"/>
+       <state readOnly="true" pattern="%d %%"/>
     </channel-type>
     
     <channel-type id="binarysensor-humidity-channel">
        <item-type>Number</item-type>
        <label>Humidity</label>
        <description>Current humidity</description>
-       <state readOnly="true"/>
+       <state readOnly="true" pattern="%d %%"/>
     </channel-type>
 </thing:thing-descriptions>

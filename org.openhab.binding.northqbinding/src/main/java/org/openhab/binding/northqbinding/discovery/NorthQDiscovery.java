@@ -16,6 +16,7 @@ import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
 import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
 import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
 import org.openhab.binding.northqbinding.models.NorthQThing;
+import org.openhab.binding.northqbinding.models.Thermostat;
 
 public class NorthQDiscovery extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
@@ -69,8 +70,9 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>(1);
         properties.put(NorthQBindingBindingConstants.NODE_ID, String.valueOf(thing.getNode_id()));
         properties.put(NorthQBindingBindingConstants.ROOM_ID, String.valueOf(thing.getRoom()));
+        String name = thing instanceof Thermostat ? "Thermostat" : thing.getName();
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties).withBridge(bridgeUID).withLabel(thing.getName()).build();
+                .withProperties(properties).withBridge(bridgeUID).withLabel(name).build();
         thingDiscovered(discoveryResult);
     }
 

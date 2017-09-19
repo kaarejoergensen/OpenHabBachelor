@@ -36,9 +36,10 @@
     
      <!-- Sample Channel Type -->
     <channel-type id="thermostat-temperature-channel">
-        <item-type>Dimmer</item-type>
-        <label>get/set temperature</label>
+        <item-type>Number</item-type>
+        <label>Set temperature</label>
         <description>Get or set current temperature on thermostat</description>
+        <state min="5" max="28" step="0.5" pattern="%.1f °C" readOnly="false"/>
     </channel-type>
     
     
