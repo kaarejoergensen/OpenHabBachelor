@@ -15,10 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
 import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
 import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
-import org.openhab.binding.northqbinding.models.BinarySensor;
-import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
-import org.openhab.binding.northqbinding.models.Thermostat;
 
 public class NorthQDiscovery extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
@@ -45,13 +42,7 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
         List<NorthQThing> things = bridgeHandler.getAllNorthQThings();
         for (NorthQThing thing : things) {
             if (thingActive(thing)) {
-                if (thing instanceof BinarySwitch) {
-                    addBinarySwitch((BinarySwitch) thing);
-                } else if (thing instanceof BinarySensor) {
-                    addBinarySensor((BinarySensor) thing);
-                } else if (thing instanceof Thermostat) {
-                    addThermostat((Thermostat) thing);
-                }
+                addNorthQThing(thing);
             }
         }
     }
@@ -71,55 +62,20 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
         }, 1, TimeUnit.SECONDS);
     }
 
-    private void addBinarySwitch(BinarySwitch binarySwitch) {
-        ThingUID thingUID = getThingUID(binarySwitch);
-        ThingTypeUID thingTypeUID = NorthQBindingBindingConstants.BINARY_SWITCH;
+    private void addNorthQThing(NorthQThing thing) {
+        ThingUID thingUID = getThingUID(thing);
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>(1);
-        properties.put(NorthQBindingBindingConstants.NODE_ID, String.valueOf(binarySwitch.getNode_id()));
+        properties.put(NorthQBindingBindingConstants.NODE_ID, String.valueOf(thing.getNode_id()));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties).withBridge(bridgeUID).withLabel(binarySwitch.getName()).build();
-        thingDiscovered(discoveryResult);
-
-    }
-
-    private void addBinarySensor(BinarySensor binarySensor) {
-        ThingUID thingUID = getBinarySensorUID(binarySensor);
-        ThingTypeUID thingTypeUID = NorthQBindingBindingConstants.BINARY_SENSOR;
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put(NorthQBindingBindingConstants.NODE_ID, String.valueOf(binarySensor.getNode_id()));
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties).withBridge(bridgeUID).withLabel(binarySensor.getName()).build();
+                .withProperties(properties).withBridge(bridgeUID).withLabel(thing.getName()).build();
         thingDiscovered(discoveryResult);
     }
 
-    private void addThermostat(Thermostat thermostat) {
-        ThingUID thingUID = getThermostatUID(thermostat);
-        ThingTypeUID thingTypeUID = NorthQBindingBindingConstants.THERMOSTAT;
+    private ThingUID getThingUID(NorthQThing thing) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put(NorthQBindingBindingConstants.NODE_ID, String.valueOf(thermostat.getNode_id()));
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties).withBridge(bridgeUID).withLabel(thermostat.getName()).build();
-        thingDiscovered(discoveryResult);
-    }
-
-    private ThingUID getThermostatUID(Thermostat thermostat) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        ThingTypeUID thingTypeUID = NorthQBindingBindingConstants.THERMOSTAT;
-        return new ThingUID(thingTypeUID, bridgeUID, String.valueOf(thermostat.getNode_id()));
-    }
-
-    private ThingUID getThingUID(BinarySwitch binarySwitch) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        ThingTypeUID thingTypeUID = NorthQBindingBindingConstants.BINARY_SWITCH;
-        return new ThingUID(thingTypeUID, bridgeUID, String.valueOf(binarySwitch.getNode_id()));
-    }
-
-    private ThingUID getBinarySensorUID(BinarySensor binarySensor) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        ThingTypeUID thingTypeUID = NorthQBindingBindingConstants.BINARY_SENSOR;
-        return new ThingUID(thingTypeUID, bridgeUID, String.valueOf(binarySensor.getNode_id()));
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        return new ThingUID(thingTypeUID, bridgeUID, String.valueOf(thing.getNode_id()));
     }
 }

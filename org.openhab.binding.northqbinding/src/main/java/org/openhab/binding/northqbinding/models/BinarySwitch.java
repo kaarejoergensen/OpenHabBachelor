@@ -3,6 +3,9 @@ package org.openhab.binding.northqbinding.models;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
+
 import com.google.gson.reflect.TypeToken;
 
 public class BinarySwitch extends NorthQThing {
@@ -25,5 +28,10 @@ public class BinarySwitch extends NorthQThing {
 
     public void setWattage(double wattage) {
         this.wattage = wattage;
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return NorthQBindingBindingConstants.BINARY_SWITCH;
     }
 }

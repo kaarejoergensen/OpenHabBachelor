@@ -3,6 +3,9 @@ package org.openhab.binding.northqbinding.models;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
+
 import com.google.gson.reflect.TypeToken;
 
 public class BinarySensor extends NorthQThing {
@@ -100,5 +103,10 @@ public class BinarySensor extends NorthQThing {
         public String toString() {
             return "Sensor{" + "scale=" + scale + ", type=" + type + ", value=" + value + '}';
         }
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return NorthQBindingBindingConstants.BINARY_SENSOR;
     }
 }

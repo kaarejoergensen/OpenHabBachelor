@@ -3,6 +3,9 @@ package org.openhab.binding.northqbinding.models;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
+
 import com.google.gson.reflect.TypeToken;
 
 public class Thermostat extends NorthQThing {
@@ -26,5 +29,10 @@ public class Thermostat extends NorthQThing {
 
     public void setTemperature(int temperature) {
         this.temperature = temperature;
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return NorthQBindingBindingConstants.THERMOSTAT;
     }
 }

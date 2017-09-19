@@ -1,6 +1,8 @@
 package org.openhab.binding.northqbinding.models;
 
-public class NorthQThing {
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+public abstract class NorthQThing {
     protected int node_id;
     protected int room;
     protected String name;
@@ -55,4 +57,6 @@ public class NorthQThing {
     public void setGateway(String gateway) {
         this.gateway = gateway;
     }
+
+    public abstract ThingTypeUID getThingTypeUID();
 }
