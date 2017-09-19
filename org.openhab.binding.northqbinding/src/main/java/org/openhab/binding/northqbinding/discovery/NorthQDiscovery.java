@@ -1,5 +1,7 @@
 package org.openhab.binding.northqbinding.discovery;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,14 +44,24 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
     protected void startScan() {
         List<NorthQThing> things = bridgeHandler.getAllNorthQThings();
         for (NorthQThing thing : things) {
-            if (thing instanceof BinarySwitch) {
-                addBinarySwitch((BinarySwitch) thing);
-            } else if (thing instanceof BinarySensor) {
-                addBinarySensor((BinarySensor) thing);
-            } else if (thing instanceof Thermostat) {
-                addThermostat((Thermostat) thing);
+            if (thingActive(thing)) {
+                if (thing instanceof BinarySwitch) {
+                    addBinarySwitch((BinarySwitch) thing);
+                } else if (thing instanceof BinarySensor) {
+                    addBinarySensor((BinarySensor) thing);
+                } else if (thing instanceof Thermostat) {
+                    addThermostat((Thermostat) thing);
+                }
             }
         }
+    }
+
+    private boolean thingActive(NorthQThing thing) {
+        Date lastRead = new Date(thing.getRead() * 1000L);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR, -24);
+        Date yesterday = calendar.getTime();
+        return yesterday.before(lastRead);
     }
 
     @Override
