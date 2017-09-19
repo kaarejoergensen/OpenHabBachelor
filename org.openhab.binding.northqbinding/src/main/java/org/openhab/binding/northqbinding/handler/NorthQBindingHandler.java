@@ -31,7 +31,6 @@ import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
-import org.openhab.binding.northqbinding.models.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,61 +62,45 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
             logger.debug("No bridge found. Cannot handle command without bridge.");
             return;
         }
-        BinarySwitch binarySwitch = bridgeHandler.getBinarySwitchById(node_id);
-        BinarySensor binarySensor = bridgeHandler.getBinarySensorById(node_id);
-        Thermostat thermostat = bridgeHandler.getThermostatById(node_id);
+        ThingTypeUID thingTypeUID = getThing().getThingTypeUID();
+        NorthQThing thing = null;
 
-        if (binarySwitch == null && binarySensor == null && thermostat == null) {
-            logger.debug("No BinarySwitch object found. Cannot handle command without object.");
+        if (thingTypeUID.equals(BINARY_SWITCH)) {
+            thing = bridgeHandler.getBinarySwitchById(node_id);
+        } else if (thingTypeUID.equals(BINARY_SENSOR)) {
+            thing = bridgeHandler.getBinarySensorById(node_id);
+        } else if (thingTypeUID.equals(THERMOSTAT)) {
+            thing = bridgeHandler.getThermostatById(node_id);
+        }
+
+        if (thing == null) {
+            logger.debug("No thing object found. Cannot handle command without object.");
+            return;
+        }
+        if (command instanceof RefreshType) {
+            logger.debug("Command is refreshtype, refresh the thing.");
+            onThingStateChanged(thing);
             return;
         }
         try {
-            if (command instanceof RefreshType) {
-                switch (channelUID.getId()) {
-                    case BINARY_SWITCH_WATTAGE_CHANNEL:
-                        updateState(channelUID, new DecimalType(binarySwitch.getWattage()));
-                        break;
-                    case BINARY_SWITCH_SWITCH_CHANNEL:
-                        if (binarySwitch.isTurnedOn()) {
-                            updateState(channelUID, OnOffType.ON);
-                        } else {
-                            updateState(channelUID, OnOffType.OFF);
-                        }
-                        break;
-                    case BINARY_SENSOR_ARM_CHANNEL:
-                        if (binarySensor.isArmed()) {
-                            updateState(channelUID, OnOffType.ON);
-                        } else {
-                            updateState(channelUID, OnOffType.OFF);
-                        }
-                        break;
-                    case THERMOSTAT_TEMP_CHANNEL:
-                        thermostat = bridgeHandler.getThermostatById(node_id);
-
-                        break;
-
-                }
-            } else {
-                switch (channelUID.getId()) {
-                    case BINARY_SWITCH_SWITCH_CHANNEL:
-                        bridgeHandler.changeSwitchState(binarySwitch);
-                        if (binarySwitch.isTurnedOn()) {
+            switch (channelUID.getId()) {
+                case BINARY_SWITCH_SWITCH_CHANNEL:
+                    if (command instanceof OnOffType) {
+                        bridgeHandler.changeSwitchState((BinarySwitch) thing);
+                        updateState(channelUID, ((BinarySwitch) thing).isTurnedOn() ? OnOffType.OFF : OnOffType.ON);
+                    }
+                    break;
+                case BINARY_SENSOR_ARM_CHANNEL:
+                    if (command instanceof OnOffType) {
+                        if (((BinarySensor) thing).isArmed()) {
+                            bridgeHandler.disArmSensor((BinarySensor) thing);
                             updateState(channelUID, OnOffType.OFF);
                         } else {
+                            bridgeHandler.armSensor((BinarySensor) thing);
                             updateState(channelUID, OnOffType.ON);
                         }
-                        break;
-                    case BINARY_SENSOR_ARM_CHANNEL:
-                        if (binarySensor.isArmed()) {
-                            bridgeHandler.disArmSensor(binarySensor);
-                            updateState(channelUID, OnOffType.OFF);
-                        } else {
-                            bridgeHandler.armSensor(binarySensor);
-                            updateState(channelUID, OnOffType.ON);
-                        }
-                        break;
-                }
-
+                    }
+                    break;
             }
         } catch (IOException | APIException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);

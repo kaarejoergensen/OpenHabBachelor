@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.northqbinding.exceptions.APIException;
+import org.openhab.binding.northqbinding.exceptions.GatewayOfflineException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
@@ -45,11 +46,9 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
 
     private List<BindingHandlerInterface> handlers = new ArrayList<>();
     private ScheduledFuture<?> refreshJob;
-    private volatile boolean running = false;
     private Runnable networkRunable = new Runnable() {
         @Override
         public void run() {
-            running = true;
             logger.debug("Running NorthQ refresh");
             try {
                 if (qStickBridge != null) {
@@ -57,13 +56,15 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
                     updateLocalCache(qStickBridge.getAllThings(gatewayStatuses));
                     logger.debug("Notifying {} handlers of {} things", handlers.size(), things.size());
                     things.stream().forEach(t -> notifyHandlers(t));
+                    updateStatus(ThingStatus.ONLINE);
                 }
-            } catch (APIException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                running = false;
+            } catch (APIException | IOException e) {
+                logger.debug(e.getMessage());
+                if (e instanceof GatewayOfflineException) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
             }
         }
     };
@@ -167,10 +168,13 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
                 List<String> gatewayStatuses = qStickBridge.getAllGatewayStatuses();
                 updateLocalCache(qStickBridge.getAllThings(gatewayStatuses));
             }
-        } catch (APIException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (APIException | IOException e) {
+            logger.debug(e.getMessage());
+            if (e instanceof GatewayOfflineException) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         }
         return things;
     }
