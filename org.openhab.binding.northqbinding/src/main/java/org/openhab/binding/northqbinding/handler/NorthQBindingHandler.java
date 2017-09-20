@@ -32,6 +32,7 @@ import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
 import org.openhab.binding.northqbinding.models.Room;
+import org.openhab.binding.northqbinding.models.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +102,15 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                             updateState(channelUID, OnOffType.ON);
                         }
                     }
+                    break;
+                case THERMOSTAT_TEMP_CHANNEL:
+                    if (command instanceof DecimalType) {
+                        if (((DecimalType) command).doubleValue() >= 4 && ((DecimalType) command).doubleValue() <= 28) {
+                            Room room = bridgeHandler.getRoomById(String.valueOf(thing.getRoom()));
+                            bridgeHandler.setRoomTemperature(room, ((DecimalType) command).doubleValue());
+                        }
+                    }
+
                     break;
             }
         } catch (IOException | APIException e) {
@@ -200,6 +210,10 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                             break;
                     }
                 }
+            } else if (thing instanceof Thermostat) {
+                Thermostat thermo = (Thermostat) thing;
+                updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
+                        new DecimalType(thermo.getTemperature()));
             }
         }
     }
