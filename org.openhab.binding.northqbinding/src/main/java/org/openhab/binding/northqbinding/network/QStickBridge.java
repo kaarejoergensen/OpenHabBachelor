@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.exceptions.GatewayOfflineException;
@@ -170,8 +169,6 @@ public class QStickBridge {
         JsonObject dongle = jsonObject.getAsJsonObject("dongle");
         String gatewaySerial = dongle.get("serial").isJsonNull() ? "" : dongle.get("serial").getAsString();
         thermostats.stream().forEach(th -> th.setGateway(gatewaySerial));
-        List<Thermostat> temp = thermostats.stream().sorted(Comparator.comparing(Thermostat::getRead).reversed())
-                .collect(Collectors.toList());
         // Remove all thermostats that exist in a room where a thermostat already exists
         return thermostats.stream().sorted(Comparator.comparing(Thermostat::getRead).reversed())
                 .collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingInt(Thermostat::getRoom))),

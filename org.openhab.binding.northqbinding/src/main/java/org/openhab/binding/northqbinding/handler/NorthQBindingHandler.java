@@ -193,11 +193,14 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
 
     @Override
     public void onThingStateChanged(NorthQThing thing) {
+        if (thing == null || !thingActive(thing)) {
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
+        if (thing != null && getThing().getThingTypeUID().equals(THERMOSTAT)) {
+
+        }
         if (thing != null && String.valueOf(thing.getNode_id()).equals(node_id)) {
-            if (!thingActive(thing)) {
-                updateStatus(ThingStatus.OFFLINE);
-                return;
-            }
             if (thing instanceof BinarySwitch) {
                 BinarySwitch binarySwitch = (BinarySwitch) thing;
                 updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_SWITCH_CHANNEL),
