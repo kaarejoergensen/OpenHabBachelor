@@ -11,6 +11,8 @@ package org.openhab.binding.northqbinding.handler;
 import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -52,6 +54,10 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
 
     private NorthQBridgeHandler bridgeHandler;
     private String node_id;
+    private String room;
+
+    private double lastThermostatTemperature = 0;
+    private long lastThermostatUpdateTime = 0L;
 
     public NorthQBindingHandler(@NonNull Thing thing) {
         super(thing);
@@ -106,15 +112,19 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                 case THERMOSTAT_TEMP_CHANNEL:
                     if (command instanceof DecimalType) {
                         if (((DecimalType) command).doubleValue() >= 4 && ((DecimalType) command).doubleValue() <= 28) {
-                            Room room = bridgeHandler.getRoomById(String.valueOf(thing.getRoom()));
-                            bridgeHandler.setRoomTemperature(room, ((DecimalType) command).doubleValue());
+                            bridgeHandler.setRoomTemperature(thing.getRoom(), thing.getGateway(),
+                                    ((DecimalType) command).doubleValue());
+                            lastThermostatTemperature = ((DecimalType) command).doubleValue();
+                            lastThermostatUpdateTime = System.currentTimeMillis();
+                            updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
+                                    new DecimalType(((DecimalType) command).doubleValue()));
                         }
                     }
 
                     break;
             }
         } catch (IOException | APIException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -133,6 +143,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
             if (getBridgeHandler() != null) {
                 if (bridgeStatus == ThingStatus.ONLINE) {
                     if (roomId != null) {
+                        room = roomId;
                         Room room = bridgeHandler.getRoomById(roomId);
                         if (room != null) {
                             getThing().setLocation(room.getName());
@@ -183,6 +194,10 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
     @Override
     public void onThingStateChanged(NorthQThing thing) {
         if (thing != null && String.valueOf(thing.getNode_id()).equals(node_id)) {
+            if (!thingActive(thing)) {
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            }
             if (thing instanceof BinarySwitch) {
                 BinarySwitch binarySwitch = (BinarySwitch) thing;
                 updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_SWITCH_CHANNEL),
@@ -212,10 +227,31 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                 }
             } else if (thing instanceof Thermostat) {
                 Thermostat thermo = (Thermostat) thing;
-                updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
-                        new DecimalType(thermo.getTemperature()));
+                if (lastThermostatTemperature == thermo.getTemperature()) {
+                    lastThermostatTemperature = -1;
+                }
+                if (!updateSentInLastTenMinutes() || lastThermostatTemperature == -1) {
+                    updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
+                            new DecimalType(thermo.getTemperature()));
+                }
             }
         }
+    }
+
+    private boolean updateSentInLastTenMinutes() {
+        Date lastUpdate = new Date(lastThermostatUpdateTime * 1000L);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, -10);
+        Date tenMinutesAgo = calendar.getTime();
+        return tenMinutesAgo.before(lastUpdate);
+    }
+
+    private boolean thingActive(NorthQThing thing) {
+        Date lastRead = new Date(thing.getRead() * 1000L);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR, -24);
+        Date yesterday = calendar.getTime();
+        return yesterday.before(lastRead);
     }
 
     @Override

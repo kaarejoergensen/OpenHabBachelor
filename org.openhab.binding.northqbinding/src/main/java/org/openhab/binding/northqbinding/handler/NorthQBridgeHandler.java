@@ -224,8 +224,9 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         qStickBridge.disArmSensor(binarySensor);
     }
 
-    public void setRoomTemperature(Room room, double newTemperature) throws IOException, APIException {
-        qStickBridge.setRoomTemperature(room, newTemperature);
+    public void setRoomTemperature(int roomId, String gatewaySerial, double newTemperature)
+            throws IOException, APIException {
+        qStickBridge.setRoomTemperature(roomId, gatewaySerial, newTemperature);
     }
 
     private void notifyHandlers(NorthQThing thing) {

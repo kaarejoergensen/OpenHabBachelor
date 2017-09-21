@@ -1,8 +1,14 @@
 package org.openhab.binding.northqbinding.network;
 
+import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.exceptions.GatewayOfflineException;
@@ -154,9 +160,7 @@ public class QStickBridge {
 
     public List<Thermostat> getAllThermostats(List<String> gatewayStatuses) {
         List<Thermostat> thermostats = new ArrayList<>();
-        for (String gatewayStatus : gatewayStatuses) {
-            thermostats.addAll(getThermostats(gatewayStatus));
-        }
+        gatewayStatuses.stream().forEach(gs -> thermostats.addAll(getThermostats(gs)));
         return thermostats;
     }
 
@@ -165,10 +169,13 @@ public class QStickBridge {
         List<Thermostat> thermostats = gson.fromJson(jsonObject.getAsJsonArray("Thermostats"), Thermostat.gsonType);
         JsonObject dongle = jsonObject.getAsJsonObject("dongle");
         String gatewaySerial = dongle.get("serial").isJsonNull() ? "" : dongle.get("serial").getAsString();
-        for (Thermostat thermoStat : thermostats) {
-            thermoStat.setGateway(gatewaySerial);
-        }
-        return thermostats;
+        thermostats.stream().forEach(th -> th.setGateway(gatewaySerial));
+        List<Thermostat> temp = thermostats.stream().sorted(Comparator.comparing(Thermostat::getRead).reversed())
+                .collect(Collectors.toList());
+        // Remove all thermostats that exist in a room where a thermostat already exists
+        return thermostats.stream().sorted(Comparator.comparing(Thermostat::getRead).reversed())
+                .collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingInt(Thermostat::getRoom))),
+                        ArrayList::new));
     }
 
     public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {
@@ -180,9 +187,10 @@ public class QStickBridge {
         handleErrors(result);
     }
 
-    public void setRoomTemperature(Room room, double newTemperature) throws IOException, APIException {
+    public void setRoomTemperature(int roomId, String gatewaySerial, double newTemperature)
+            throws IOException, APIException {
         String url = BASE_URL + "/main/setRoomTemperature?token=" + token.getToken() + "&user=" + token.getUser();
-        String post = "gateway=" + room.getGateway() + "&room_id=" + room.getId() + "&temperature=" + newTemperature;
+        String post = "gateway=" + gatewaySerial + "&room_id=" + roomId + "&temperature=" + newTemperature;
         Result result = httpClient.post(url, post);
         handleErrors(result);
     }
