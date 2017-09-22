@@ -1,5 +1,6 @@
 package org.openhab.binding.northqbinding.exceptions;
 
+@SuppressWarnings("serial")
 public class NoActiveGatewaysException extends APIException {
     public NoActiveGatewaysException(String message) {
         super(message);

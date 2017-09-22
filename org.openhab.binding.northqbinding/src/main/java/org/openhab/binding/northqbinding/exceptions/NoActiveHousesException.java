@@ -1,5 +1,6 @@
 package org.openhab.binding.northqbinding.exceptions;
 
+@SuppressWarnings("serial")
 public class NoActiveHousesException extends APIException {
     public NoActiveHousesException(String message) {
         super(message);

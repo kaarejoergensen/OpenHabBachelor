@@ -1,5 +1,6 @@
 package org.openhab.binding.northqbinding.exceptions;
 
+@SuppressWarnings("serial")
 public class InvalidRequestException extends APIException {
     public InvalidRequestException(String message) {
         super(message);

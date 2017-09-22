@@ -1,13 +1,10 @@
 package org.openhab.binding.northqbinding.network;
 
-import static java.util.Comparator.comparingInt;
-import static java.util.stream.Collectors.*;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.exceptions.GatewayOfflineException;
@@ -57,7 +54,7 @@ public class QStickBridge {
         String post = "username=" + user + "&password=" + pass;
         Result result = httpClient.post(url, post);
         handleErrors(result);
-        token = gson.fromJson(result.getBody(), Token.class);
+        token = gson.fromJson(result.getBody(), Token.gsonType);
     }
 
     public List<House> getHouses() throws APIException, IOException {
@@ -169,10 +166,9 @@ public class QStickBridge {
         JsonObject dongle = jsonObject.getAsJsonObject("dongle");
         String gatewaySerial = dongle.get("serial").isJsonNull() ? "" : dongle.get("serial").getAsString();
         thermostats.stream().forEach(th -> th.setGateway(gatewaySerial));
-        // Remove all thermostats that exist in a room where a thermostat already exists
+        // Sort the list with the most recently read thermostats first
         return thermostats.stream().sorted(Comparator.comparing(Thermostat::getRead).reversed())
-                .collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingInt(Thermostat::getRoom))),
-                        ArrayList::new));
+                .collect(Collectors.toList());
     }
 
     public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {

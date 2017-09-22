@@ -25,8 +25,8 @@
             </parameter>
             
             <parameter name="roomId" type="text">
-                <label>Room ID</label>
-                <description>The room identified identifies the room where the sensor is placed</description>
+                <label>Room</label>
+                <description>The room identifier identifies the room where the sensor is placed</description>
                 <required>false</required>
             </parameter>
         </config-description>

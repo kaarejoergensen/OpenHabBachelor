@@ -70,7 +70,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         }
     };
 
-    public NorthQBridgeHandler(Bridge bridge) {
+    public NorthQBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
     }
 
@@ -147,6 +147,16 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
+    public List<Thermostat> getThermostatsByRoomId(int roomId) {
+        List<Thermostat> thermostats = new ArrayList<>();
+        for (NorthQThing thing : things) {
+            if (thing instanceof Thermostat && thing.getRoom() == roomId) {
+                thermostats.add((Thermostat) thing);
+            }
+        }
+        return thermostats;
+    }
+
     public BinarySensor getBinarySensorById(String node_id) {
         if (node_id == null || node_id.isEmpty()) {
             return null;
@@ -163,21 +173,26 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
-    public Room getRoomById(String roomId) {
-        int roomIdInt = Integer.valueOf(roomId);
+    public List<Room> getAllRooms() {
         try {
-            List<Room> rooms = qStickBridge.getAllRooms();
-            for (Room room : rooms) {
-                if (room.getId() == roomIdInt) {
-                    return room;
-                }
-            }
+            return qStickBridge.getAllRooms();
         } catch (APIException | IOException e) {
             logger.debug(e.getMessage());
             if (e instanceof GatewayOfflineException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    public Room getRoomById(String roomId) {
+        int roomIdInt = Integer.valueOf(roomId);
+        List<Room> rooms = getAllRooms();
+        for (Room room : rooms) {
+            if (room.getId() == roomIdInt) {
+                return room;
             }
         }
         return null;

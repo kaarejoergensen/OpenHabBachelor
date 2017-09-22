@@ -7,6 +7,8 @@
  */
 package org.openhab.binding.northqbinding.network;
 
+import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,19 +31,19 @@ class HttpClient {
     }
 
     public Result get(String address) throws IOException {
-        return doNetwork(address, "GET", "");
+        return doNetwork(address, GET, "");
     }
 
     public Result post(String address, String body) throws IOException {
-        return doNetwork(address, "POST", body);
+        return doNetwork(address, POST, body);
     }
 
     public Result put(String address, String body) throws IOException {
-        return doNetwork(address, "PUT", body);
+        return doNetwork(address, PUT, body);
     }
 
     public Result delete(String address) throws IOException {
-        return doNetwork(address, "DELETE", "");
+        return doNetwork(address, DELETE, "");
     }
 
     protected Result doNetwork(String address, String requestMethod, String body) throws IOException {
@@ -68,10 +70,13 @@ class HttpClient {
     }
 
     private static String convertStreamToString(InputStream is) {
+        Scanner scan = new Scanner(is);
         try {
-            return new Scanner(is).useDelimiter("\\A").next();
+            return scan.useDelimiter("\\A").next();
         } catch (NoSuchElementException e) {
             return "";
+        } finally {
+            scan.close();
         }
     }
 

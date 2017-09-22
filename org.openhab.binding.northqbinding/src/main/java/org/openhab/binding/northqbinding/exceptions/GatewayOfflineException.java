@@ -1,5 +1,6 @@
 package org.openhab.binding.northqbinding.exceptions;
 
+@SuppressWarnings("serial")
 public class GatewayOfflineException extends APIException {
     public GatewayOfflineException(String message) {
         super(message);
