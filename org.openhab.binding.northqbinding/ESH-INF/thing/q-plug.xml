@@ -18,7 +18,7 @@
         </channels>
         
         <config-description>
-            <parameter name="nodeId" type="text">
+            <parameter name="uniqueId" type="text">
                 <label>Node ID</label>
                 <description>The node identifier identifies one certain switch.</description>
                 <required>true</required>

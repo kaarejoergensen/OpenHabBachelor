@@ -58,5 +58,9 @@ public abstract class NorthQThing {
         this.gateway = gateway;
     }
 
+    public String getUniqueId() {
+        return String.format("%s%d%s", this.gateway, this.node_id, this.getThingTypeUID().getAsString());
+    }
+
     public abstract ThingTypeUID getThingTypeUID();
 }

@@ -4,12 +4,12 @@ import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.exceptions.GatewayOfflineException;
+import org.openhab.binding.northqbinding.exceptions.UnauthorizedException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
@@ -40,33 +41,34 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final int REFRESH = 15;
+    private static final int CHANGED = 1, ADDED = 2;
 
     private QStickBridge qStickBridge;
     List<NorthQThing> things = new ArrayList<>();
-    private Map<String, List<NorthQThing>> thingMap = new ConcurrentHashMap<>();
+    private Map<String, NorthQThing> thingMap = new ConcurrentHashMap<>();
 
     private List<BindingHandlerInterface> handlers = new ArrayList<>();
     private ScheduledFuture<?> refreshJob;
-    private Runnable networkRunable = new Runnable() {
-        @Override
-        public void run() {
-            logger.debug("Running NorthQ refresh");
-            try {
-                if (qStickBridge != null) {
-                    List<String> gatewayStatuses = qStickBridge.getAllGatewayStatuses();
-                    updateLocalCache(qStickBridge.getAllThings(gatewayStatuses));
-                    logger.debug("Notifying {} handlers of {} things", handlers.size(), things.size());
-                    things.stream().forEach(t -> notifyHandlers(t));
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } catch (APIException | IOException e) {
-                logger.debug(e.getMessage());
-                if (e instanceof GatewayOfflineException) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+    private Runnable networkRunable = () -> {
+        logger.debug("Running NorthQ refresh");
+        List<String> gatewayStatuses = bridgeCallWithErrorHandling(() -> {
+            return qStickBridge.getAllGatewayStatuses();
+        });
+        if (gatewayStatuses != null) {
+            things = bridgeCallWithErrorHandling(() -> {
+                return qStickBridge.getAllThings(gatewayStatuses);
+            });
+            logger.debug("Notifying {} handlers of {} things", handlers.size(), things.size());
+            for (NorthQThing thing : things) {
+                if (thingMap.containsKey(thing.getUniqueId())) {
+                    notifyHandlers(thing, CHANGED);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    notifyHandlers(thing, ADDED);
                 }
+                thingMap.put(thing.getUniqueId(), thing);
             }
+            // thingMap.keySet().retainAll(things.stream().map(NorthQThing::getUniqueId).collect(Collectors.toList()));
+            updateStatus(ThingStatus.ONLINE);
         }
     };
 
@@ -76,14 +78,26 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
-        // TODO Auto-generated method stub
+        // Not needed
         return null;
     }
 
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
+        // Not needed
+    }
 
+    @Override
+    public void dispose() {
+        logger.debug("Disposing NorthQBridgeHandler");
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+            refreshJob = null;
+        }
+        if (qStickBridge != null) {
+            qStickBridge = null;
+        }
+        super.dispose();
     }
 
     @Override
@@ -115,36 +129,17 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    public BinarySwitch getBinarySwitchById(String node_id) {
-        if (node_id == null || node_id.isEmpty()) {
-            return null;
+    public void removeThing(NorthQThing thing) {
+        if (thing != null) {
+            thingMap.remove(thing);
         }
-        List<NorthQThing> things = thingMap.get(node_id);
-        if (things == null) {
-            return null;
-        }
-        for (NorthQThing thing : things) {
-            if (thing instanceof BinarySwitch) {
-                return (BinarySwitch) thing;
-            }
-        }
-        return null;
     }
 
-    public Thermostat getThermostatById(String node_id) {
-        if (node_id == null || node_id.isEmpty()) {
+    public NorthQThing getThingByUniqueId(String id) {
+        if (id == null || id.isEmpty() || thingMap == null) {
             return null;
         }
-        List<NorthQThing> things = thingMap.get(node_id);
-        if (things == null) {
-            return null;
-        }
-        for (NorthQThing thing : things) {
-            if (thing instanceof Thermostat) {
-                return (Thermostat) thing;
-            }
-        }
-        return null;
+        return thingMap.get(id);
     }
 
     public List<Thermostat> getThermostatsByRoomId(int roomId) {
@@ -157,34 +152,11 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         return thermostats;
     }
 
-    public BinarySensor getBinarySensorById(String node_id) {
-        if (node_id == null || node_id.isEmpty()) {
-            return null;
-        }
-        List<NorthQThing> things = thingMap.get(node_id);
-        if (things == null) {
-            return null;
-        }
-        for (NorthQThing thing : things) {
-            if (thing instanceof BinarySensor) {
-                return (BinarySensor) thing;
-            }
-        }
-        return null;
-    }
-
     public List<Room> getAllRooms() {
-        try {
+        List<Room> rooms = bridgeCallWithErrorHandling(() -> {
             return qStickBridge.getAllRooms();
-        } catch (APIException | IOException e) {
-            logger.debug(e.getMessage());
-            if (e instanceof GatewayOfflineException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-        }
-        return Collections.emptyList();
+        });
+        return rooms;
     }
 
     public Room getRoomById(String roomId) {
@@ -199,32 +171,66 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public List<NorthQThing> getAllNorthQThings() {
-        try {
-            if (qStickBridge != null) {
-                List<String> gatewayStatuses = qStickBridge.getAllGatewayStatuses();
+        List<String> gatewayStatuses = bridgeCallWithErrorHandling(() -> {
+            return qStickBridge.getAllGatewayStatuses();
+        });
+        if (gatewayStatuses != null) {
+            bridgeCallWithErrorHandling(() -> {
                 updateLocalCache(qStickBridge.getAllThings(gatewayStatuses));
-            }
-        } catch (APIException | IOException e) {
-            logger.debug(e.getMessage());
-            if (e instanceof GatewayOfflineException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
+                return null;
+            });
         }
         return things;
     }
 
     private void updateLocalCache(List<NorthQThing> newThings) {
         things = newThings;
-        thingMap = new ConcurrentHashMap<>();
-        for (NorthQThing thing : things) {
-            if (thingMap.containsKey(String.valueOf(thing.getNode_id()))) {
-                thingMap.get(String.valueOf(thing.getNode_id())).add(thing);
-            } else {
-                thingMap.put(String.valueOf(thing.getNode_id()), new ArrayList<>(Arrays.asList(thing)));
+        things.stream().forEach(t -> thingMap.put(t.getUniqueId(), t));
+    }
+
+    public void updateHousesAndGateways() {
+        bridgeCallWithErrorHandling(() -> {
+            qStickBridge.updateHousesAndGateways();
+            return null;
+        });
+    }
+
+    @SuppressWarnings("null")
+    public <T> T bridgeCallWithErrorHandling(Callable<T> methodCall) {
+        if (qStickBridge != null) {
+            try {
+                try {
+                    return methodCall.call();
+                } catch (APIException | IOException e) {
+                    logger.debug(e.getMessage());
+                    if (e instanceof GatewayOfflineException) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    } else if (e instanceof UnauthorizedException) {
+                        onAuthenticationError();
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    }
+                }
+            } catch (Exception e) {
+                logger.debug("Bridge failed {} call", methodCall.toString(), e);
             }
         }
+        return null;
+    }
+
+    private boolean onAuthenticationError() {
+        if (getConfig().get(USER_NAME) != null && getConfig().get(PASSWORD) != null) {
+            try {
+                qStickBridge = new QStickBridge((String) getConfig().get(USER_NAME),
+                        (String) getConfig().get(PASSWORD));
+                return true;
+            } catch (APIException | IOException e) {
+                logger.warn("User not authenticated");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            }
+        }
+
+        return false;
     }
 
     public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {
@@ -244,8 +250,13 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         qStickBridge.setRoomTemperature(roomId, gatewaySerial, newTemperature);
     }
 
-    private void notifyHandlers(NorthQThing thing) {
-        handlers.stream().forEach(h -> h.onThingStateChanged(thing));
+    private void notifyHandlers(NorthQThing thing, int type) {
+        if (type == CHANGED) {
+            handlers.stream().forEach(h -> h.onThingStateChanged(thing));
+        } else {
+            handlers.stream().forEach(h -> h.onThingAdded(thing));
+        }
+
     }
 
     public boolean addHandler(BindingHandlerInterface handler) {

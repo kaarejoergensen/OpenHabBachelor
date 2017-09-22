@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.northqbinding.internal;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -25,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.northqbinding.discovery.NorthQDiscovery;
 import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
 import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -40,6 +44,7 @@ public class NorthQBindingHandlerFactory extends BaseThingHandlerFactory {
             .concat(NorthQBridgeHandler.SUPPORTED_THING_TYPES.stream(),
                     NorthQBindingHandler.SUPPORTED_THING_TYPES.stream())
             .collect(Collectors.toSet());
+    private Map<ThingUID, ServiceRegistration<?>> serviceRegistrations = new HashMap<>();
 
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
@@ -75,7 +80,24 @@ public class NorthQBindingHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerDiscoveryService(NorthQBridgeHandler bridgeHandler) {
         NorthQDiscovery discoveryService = new NorthQDiscovery(bridgeHandler);
-        bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
+        discoveryService.activate();
+        serviceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    @Override
+    protected void removeHandler(@NonNull ThingHandler thingHandler) {
+        if (thingHandler instanceof NorthQBridgeHandler) {
+            ServiceRegistration<?> registration = serviceRegistrations.get(thingHandler.getThing().getUID());
+            if (registration != null) {
+                NorthQDiscovery discovery = (NorthQDiscovery) bundleContext.getService(registration.getReference());
+                if (discovery != null) {
+                    discovery.deactivate();
+                }
+                registration.unregister();
+                serviceRegistrations.remove(thingHandler.getThing().getUID());
+            }
+        }
+        super.removeHandler(thingHandler);
     }
 }

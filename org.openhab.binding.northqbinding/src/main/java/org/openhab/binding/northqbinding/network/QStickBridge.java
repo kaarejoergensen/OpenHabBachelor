@@ -13,6 +13,7 @@ import org.openhab.binding.northqbinding.exceptions.InvalidRequestException;
 import org.openhab.binding.northqbinding.exceptions.NoActiveGatewaysException;
 import org.openhab.binding.northqbinding.exceptions.NoActiveHousesException;
 import org.openhab.binding.northqbinding.exceptions.NoActiveRoomsException;
+import org.openhab.binding.northqbinding.exceptions.UnauthorizedException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.ErrorResponse;
@@ -42,11 +43,7 @@ public class QStickBridge {
         this.httpClient = new HttpClient();
         this.gson = new Gson();
         authenticate(user, pass);
-        houses = getHouses();
-        gateways = new ArrayList<>();
-        for (House house : houses) {
-            gateways.addAll(getGateways(house.getId()));
-        }
+        updateHousesAndGateways();
     }
 
     private void authenticate(String user, String pass) throws APIException, IOException {
@@ -55,6 +52,15 @@ public class QStickBridge {
         Result result = httpClient.post(url, post);
         handleErrors(result);
         token = gson.fromJson(result.getBody(), Token.gsonType);
+    }
+
+    public void updateHousesAndGateways() throws APIException, IOException {
+        houses = getHouses();
+        gateways = new ArrayList<>();
+        gateways.clear();
+        for (House house : houses) {
+            gateways.addAll(getGateways(house.getId()));
+        }
     }
 
     public List<House> getHouses() throws APIException, IOException {
@@ -224,7 +230,11 @@ public class QStickBridge {
 
     private void handleErrors(HttpClient.Result result) throws IOException, APIException {
         if (result.getResponseCode() != 200) {
-            throw new IOException();
+            if (result.getResponseCode() == 401 || result.getResponseCode() == 403) {
+                throw new UnauthorizedException(result.getBody());
+            } else {
+                throw new IOException();
+            }
         } else {
             try {
                 ErrorResponse errorResponse = gson.fromJson(result.getBody(), ErrorResponse.gsonType);

@@ -16,27 +16,33 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
+import org.openhab.binding.northqbinding.handler.BindingHandlerInterface;
 import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
 import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
 import org.openhab.binding.northqbinding.models.NorthQThing;
 import org.openhab.binding.northqbinding.models.Room;
 import org.openhab.binding.northqbinding.models.Thermostat;
 
-public class NorthQDiscovery extends AbstractDiscoveryService {
+public class NorthQDiscovery extends AbstractDiscoveryService implements BindingHandlerInterface {
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
     private NorthQBridgeHandler bridgeHandler;
-    private List<Integer> thermostatRoomIds;
-    private Map<Integer, Room> roomMap;
+    private List<Integer> thermostatRoomIds = new ArrayList<>();
+    private Map<Integer, Room> roomMap = new HashMap<>();
 
     public NorthQDiscovery(NorthQBridgeHandler bridgeHandler) throws IllegalArgumentException {
         super(NorthQBindingHandler.SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS);
         this.bridgeHandler = bridgeHandler;
     }
 
+    public void activate() {
+        bridgeHandler.addHandler(this);
+    }
+
     @Override
-    protected void activate(Map<String, Object> configProperties) {
-        super.activate(configProperties);
+    public void deactivate() {
+        removeOlderResults(new Date().getTime());
+        bridgeHandler.removeHandler(this);
     }
 
     @Override
@@ -47,6 +53,7 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         thermostatRoomIds = new ArrayList<>();
+        bridgeHandler.updateHousesAndGateways();
         roomMap = bridgeHandler.getAllRooms().stream().collect(Collectors.toMap(Room::getId, Function.identity()));
         List<NorthQThing> things = bridgeHandler.getAllNorthQThings();
         for (NorthQThing thing : things) {
@@ -56,10 +63,16 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
         }
     }
 
+    @Override
+    protected synchronized void stopScan() {
+        super.stopScan();
+        removeOlderResults(getTimestampOfLastScan());
+    }
+
     private boolean thingActive(NorthQThing thing) {
         Date lastRead = new Date(thing.getRead() * 1000L);
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR, -24);
+        calendar.add(Calendar.HOUR, -8);
         Date yesterday = calendar.getTime();
         return yesterday.before(lastRead);
     }
@@ -84,6 +97,9 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
             }
         }
         String roomId;
+        if (roomMap.isEmpty()) {
+            roomMap = bridgeHandler.getAllRooms().stream().collect(Collectors.toMap(Room::getId, Function.identity()));
+        }
         if (roomMap.containsKey(thing.getRoom())) {
             roomId = String.format("%d%s%s", thing.getRoom(), NorthQBindingBindingConstants.ROOM_ID_SEPERATOR,
                     roomMap.get(thing.getRoom()).getName());
@@ -94,7 +110,7 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>(1);
-        properties.put(NorthQBindingBindingConstants.NODE_ID, String.valueOf(thing.getNode_id()));
+        properties.put(NorthQBindingBindingConstants.UNIQUE_ID, thing.getUniqueId());
         properties.put(NorthQBindingBindingConstants.ROOM_ID, roomId);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperties(properties).withBridge(bridgeUID).withLabel(name).build();
@@ -105,5 +121,26 @@ public class NorthQDiscovery extends AbstractDiscoveryService {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         return new ThingUID(thingTypeUID, bridgeUID, String.valueOf(thing.getNode_id()));
+    }
+
+    @Override
+    public void onThingStateChanged(NorthQThing thing) {
+        // Not used
+    }
+
+    @Override
+    public void onThingRemoved(NorthQThing thing) {
+        ThingUID thingUID = getThingUID(thing);
+
+        if (thingUID != null) {
+            thingRemoved(thingUID);
+        }
+    }
+
+    @Override
+    public void onThingAdded(NorthQThing thing) {
+        if (thingActive(thing)) {
+            addNorthQThing(thing);
+        }
     }
 }

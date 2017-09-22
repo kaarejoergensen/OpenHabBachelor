@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
 import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
@@ -55,7 +56,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
     private final Logger logger = LoggerFactory.getLogger(NorthQBindingHandler.class);
 
     private NorthQBridgeHandler bridgeHandler;
-    private String nodeId;
+    private String uniqueId;
     private String roomId;
 
     private double lastThermostatTemperature = 0;
@@ -72,16 +73,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
             logger.debug("No bridge found. Cannot handle command without bridge.");
             return;
         }
-        ThingTypeUID thingTypeUID = getThing().getThingTypeUID();
-        NorthQThing thing = null;
-
-        if (thingTypeUID.equals(BINARY_SWITCH)) {
-            thing = bridgeHandler.getBinarySwitchById(nodeId);
-        } else if (thingTypeUID.equals(BINARY_SENSOR)) {
-            thing = bridgeHandler.getBinarySensorById(nodeId);
-        } else if (thingTypeUID.equals(THERMOSTAT)) {
-            thing = bridgeHandler.getThermostatById(nodeId);
-        }
+        NorthQThing thing = bridgeHandler.getThingByUniqueId(uniqueId);
 
         if (thing == null) {
             logger.debug("No thing object found. Cannot handle command without object.");
@@ -143,10 +135,10 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
 
     private void initializeThing(ThingStatus bridgeStatus) {
         logger.debug("Initialize thing " + getThing().getUID() + " bridge status " + bridgeStatus);
-        String configNode_id = (String) getConfig().get(NODE_ID);
+        String configUnique_id = (String) getConfig().get(UNIQUE_ID);
         String roomId = (String) getConfig().get(ROOM_ID);
-        if (configNode_id != null) {
-            nodeId = configNode_id;
+        if (configUnique_id != null) {
+            uniqueId = configUnique_id;
             updateLocation(roomId, bridgeStatus);
             if (getBridgeHandler() != null) {
                 if (bridgeStatus == ThingStatus.ONLINE) {
@@ -184,13 +176,14 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
     @Override
     public void dispose() {
         logger.debug("Disposing: Unregistering handler from bridgeHandler");
-        if (nodeId != null) {
+        if (uniqueId != null) {
             NorthQBridgeHandler bridgeHandler = getBridgeHandler();
             if (bridgeHandler != null) {
+                bridgeHandler.removeThing(bridgeHandler.getThingByUniqueId(uniqueId));
                 bridgeHandler.removeHandler(this);
                 this.bridgeHandler = null;
             }
-            nodeId = null;
+            uniqueId = null;
         }
     }
 
@@ -217,7 +210,8 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
-        if (thing instanceof Thermostat && String.valueOf(thing.getRoom()).equals(roomId)) {
+        if (thing instanceof Thermostat && getThing().getThingTypeUID().equals(NorthQBindingBindingConstants.THERMOSTAT)
+                && String.valueOf(thing.getRoom()).equals(roomId)) {
             getBridgeHandler();
             if (bridgeHandler != null) {
                 List<Thermostat> thermostats = bridgeHandler.getThermostatsByRoomId(thing.getRoom()).stream()
@@ -231,11 +225,12 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                         updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
                                 new DecimalType(thermostat.getTemperature()));
                     }
+                    updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE);
                 }
             }
-        } else if (String.valueOf(thing.getNode_id()).equals(nodeId)) {
+        } else if (thing.getUniqueId().equals(uniqueId)) {
             if (thing instanceof BinarySwitch) {
                 BinarySwitch binarySwitch = (BinarySwitch) thing;
                 updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_SWITCH_CHANNEL),
@@ -263,6 +258,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                             break;
                     }
                 }
+                updateStatus(ThingStatus.ONLINE);
             }
         }
     }
@@ -278,15 +274,23 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
     private boolean thingActive(NorthQThing thing) {
         Date lastRead = new Date(thing.getRead() * 1000L);
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR, -24);
+        calendar.add(Calendar.HOUR, -8);
         Date yesterday = calendar.getTime();
         return yesterday.before(lastRead);
     }
 
     @Override
     public void onThingRemoved(NorthQThing thing) {
-        if (thing != null && String.valueOf(thing.getNode_id()).equals(nodeId)) {
+        if (thing != null && thing.getUniqueId().equals(uniqueId)) {
             updateStatus(ThingStatus.OFFLINE);
+        }
+    }
+
+    @Override
+    public void onThingAdded(NorthQThing thing) {
+        if (thing.getUniqueId().equals(uniqueId)) {
+            updateStatus(ThingStatus.ONLINE);
+            onThingStateChanged(thing);
         }
     }
 }
