@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.northqbinding.discovery;
 
 import java.util.ArrayList;
@@ -23,6 +31,10 @@ import org.openhab.binding.northqbinding.models.NorthQThing;
 import org.openhab.binding.northqbinding.models.Room;
 import org.openhab.binding.northqbinding.models.Thermostat;
 
+/**
+ *
+ * @author Kaare Joergensen - Initial contribution
+ */
 public class NorthQDiscovery extends AbstractDiscoveryService implements BindingHandlerInterface {
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
