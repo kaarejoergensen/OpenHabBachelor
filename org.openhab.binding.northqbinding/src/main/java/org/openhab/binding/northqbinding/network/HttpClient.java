@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.northqbinding.network;
 
-import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +23,11 @@ import java.util.Scanner;
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
 class HttpClient {
+    private static final String GET = "GET";
+    private static final String POST = "POST";
+    private static final String PUT = "PUT";
+    private static final String DELETE = "DELETE";
+
     private int timeout = 20000;
 
     public void setTimeout(int timeout) {

@@ -99,13 +99,16 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                     break;
                 case BINARY_SENSOR_ARM_CHANNEL:
                     if (command instanceof OnOffType) {
-                        if (((BinarySensor) thing).isArmed()) {
-                            bridgeHandler.disArmSensor((BinarySensor) thing);
+                        BinarySensor binarySensor = (BinarySensor) thing;
+                        if (binarySensor.isArmed()) {
+                            bridgeHandler.disArmSensor(binarySensor);
                             updateState(channelUID, OnOffType.OFF);
                             updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
                                     OnOffType.OFF);
                         } else {
-                            bridgeHandler.armSensor((BinarySensor) thing);
+                            bridgeHandler.armSensor(binarySensor);
+                            updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
+                                    binarySensor.isMotionDetected() ? OnOffType.ON : OnOffType.OFF);
                             updateState(channelUID, OnOffType.ON);
                         }
                     }

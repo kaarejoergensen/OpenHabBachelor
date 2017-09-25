@@ -36,6 +36,7 @@ import org.openhab.binding.northqbinding.models.Thermostat;
  */
 public class NorthQDiscovery extends AbstractDiscoveryService implements BindingHandlerInterface {
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
+    private static final String THERMOSTAT_NAME = "Thermostat";
 
     private NorthQBridgeHandler bridgeHandler;
     private Map<Integer, Room> roomMap = new HashMap<>();
@@ -96,7 +97,7 @@ public class NorthQDiscovery extends AbstractDiscoveryService implements Binding
     private void addNorthQThing(NorthQThing thing) {
         String name = thing.getName();
         if (thing instanceof Thermostat) {
-            name = NorthQBindingBindingConstants.THERMOSTAT_NAME;
+            name = THERMOSTAT_NAME;
         }
         String roomId;
         if (roomMap.isEmpty()) {
