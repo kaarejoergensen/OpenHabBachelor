@@ -102,6 +102,8 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                         if (((BinarySensor) thing).isArmed()) {
                             bridgeHandler.disArmSensor((BinarySensor) thing);
                             updateState(channelUID, OnOffType.OFF);
+                            updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
+                                    OnOffType.OFF);
                         } else {
                             bridgeHandler.armSensor((BinarySensor) thing);
                             updateState(channelUID, OnOffType.ON);
@@ -257,6 +259,12 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                                     new DecimalType(s.getValue()));
                             break;
                     }
+                }
+                if (binarySensor.isArmed()) {
+                    updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
+                            binarySensor.isMotionDetected() ? OnOffType.ON : OnOffType.OFF);
+                } else {
+                    updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL), OnOffType.OFF);
                 }
                 updateStatus(ThingStatus.ONLINE);
             }

@@ -17,6 +17,7 @@
             <channel id="binarysensor_temperature_channel" typeId="binarysensor-temperature-channel"/>
             <channel id="binarysensor_luminance_channel" typeId="binarysensor-luminance-channel"/>
             <channel id="binarysensor_humidity_channel" typeId="binarysensor-humidity-channel"/>
+            <channel id="binarysensor_triggered_channel" typeId="binarysensor-triggered-channel"/>
         </channels>
         
         <config-description>
@@ -60,5 +61,12 @@
        <label>Humidity</label>
        <description>Current humidity</description>
        <state readOnly="true" pattern="%d %%"/>
+    </channel-type>
+    
+    <channel-type id="binarysensor-triggered-channel">
+        <item-type>Switch</item-type>
+        <label>Motion detected</label>
+        <description>Switch indicating whether or not motion has been detected</description>
+        <state readOnly="true"></state>
     </channel-type>
 </thing:thing-descriptions>

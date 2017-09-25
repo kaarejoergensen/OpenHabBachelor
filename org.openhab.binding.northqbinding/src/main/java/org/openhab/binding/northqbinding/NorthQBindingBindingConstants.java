@@ -36,6 +36,7 @@ public class NorthQBindingBindingConstants {
     public static final String BINARY_SENSOR_TEMP_CHANNEL = "binarysensor_temperature_channel";
     public static final String BINARY_SENSOR_LUMINANCE_CHANNEL = "binarysensor_luminance_channel";
     public static final String BINARY_SENSOR_HUMIDITY_CHANNEL = "binarysensor_humidity_channel";
+    public static final String BINARY_SENSOR_TRIGGERED_CHANNEL = "binarysensor_triggered_channel";
 
     public static final String THERMOSTAT_TEMP_CHANNEL = "thermostat_temperature_channel";
 
