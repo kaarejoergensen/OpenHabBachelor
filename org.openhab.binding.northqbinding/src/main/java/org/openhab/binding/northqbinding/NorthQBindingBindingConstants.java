@@ -41,7 +41,7 @@ public class NorthQBindingBindingConstants {
     public static final String THERMOSTAT_TEMP_CHANNEL = "thermostat_temperature_channel";
 
     // List of all config string
-    public static final String USER_NAME = "username";
+    public static final String EMAIL = "email";
     public static final String PASSWORD = "password";
     public static final String UNIQUE_ID = "uniqueId";
     public static final String ROOM_ID = "roomId";

@@ -44,6 +44,11 @@ public class Thermostat extends NorthQThing {
     }
 
     @Override
+    public String getUniqueId() {
+        return String.format("%s%d%s", this.gateway, this.room, this.getThingTypeUID().getId());
+    }
+
+    @Override
     public ThingTypeUID getThingTypeUID() {
         return NorthQBindingBindingConstants.THERMOSTAT;
     }

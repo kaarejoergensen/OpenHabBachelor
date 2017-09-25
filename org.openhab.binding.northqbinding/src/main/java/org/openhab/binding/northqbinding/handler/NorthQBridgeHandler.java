@@ -56,7 +56,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     private static final int CHANGED = 1, ADDED = 2;
 
     private QStickBridge qStickBridge;
-    List<NorthQThing> things = new ArrayList<>();
+    private List<NorthQThing> things = new ArrayList<>();
     private Map<String, NorthQThing> thingMap = new ConcurrentHashMap<>();
 
     private List<BindingHandlerInterface> handlers = new ArrayList<>();
@@ -115,10 +115,9 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Q-Stick bridge");
-        if (getConfig().get(USER_NAME) != null && getConfig().get(PASSWORD) != null) {
+        if (getConfig().get(EMAIL) != null && getConfig().get(PASSWORD) != null) {
             try {
-                qStickBridge = new QStickBridge((String) getConfig().get(USER_NAME),
-                        (String) getConfig().get(PASSWORD));
+                qStickBridge = new QStickBridge((String) getConfig().get(EMAIL), (String) getConfig().get(PASSWORD));
                 logger.debug("Logged in to NorthQ");
                 updateStatus(ThingStatus.ONLINE);
                 startAutomaticRefresh();
@@ -214,10 +213,10 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
                 try {
                     return methodCall.call();
                 } catch (GatewayOfflineException e) {
-                    logger.debug("{}", e.getMessage());
+                    logger.debug("Bridge offline");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 } catch (UnauthorizedException e) {
-                    logger.debug("{}", e.getMessage());
+                    logger.debug("Authorization error");
                     onAuthenticationError();
                 } catch (APIException | IOException e) {
                     logger.debug("{}", e.getMessage());
@@ -231,17 +230,16 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private boolean onAuthenticationError() {
-        if (getConfig().get(USER_NAME) != null && getConfig().get(PASSWORD) != null) {
+        logger.debug("Try to log user in again (token might be too old");
+        if (getConfig().get(EMAIL) != null && getConfig().get(PASSWORD) != null) {
             try {
-                qStickBridge = new QStickBridge((String) getConfig().get(USER_NAME),
-                        (String) getConfig().get(PASSWORD));
+                qStickBridge = new QStickBridge((String) getConfig().get(EMAIL), (String) getConfig().get(PASSWORD));
                 return true;
             } catch (APIException | IOException e) {
                 logger.warn("User not authenticated");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
-
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         return false;
     }
 

@@ -12,12 +12,14 @@
             <property name="vendor">NorthQ</property>
         </properties>
         <config-description>
-            <parameter name="username" type="text">
-                <label>Username</label>
-                <description>Username for the registered user, accessing the API</description>
+            <parameter name="email" type="text">
+                <context>email</context>
+                <label>E-mail</label>
+                <description>E-mail for the registered user, accessing the API</description>
                 <required>true</required>
             </parameter>
             <parameter name="password" type="text">
+                <context>password</context>
                 <label>Password</label>
                 <description>Password for the registered user, accessing the API</description>
                 <required>true</required>

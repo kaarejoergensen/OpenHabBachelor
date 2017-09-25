@@ -18,16 +18,18 @@
         </channels>
         
         <config-description>
-            <parameter name="uniqueId" type="text">
+            <parameter name="uniqueId" type="text" readOnly="true">
                 <label>Node ID</label>
                 <description>The node identifier identifies one certain thermostat.</description>
                 <required>true</required>
+                <advanced>true</advanced>
             </parameter>
             
-            <parameter name="roomId" type="text">
+            <parameter name="roomId" type="text" readOnly="true">
                 <label>Room</label>
                 <description>The room identifier identifies the room where the sensor is placed</description>
-                <required>false</required>
+                <required>true</required>
+                <advanced>true</advanced>
             </parameter>
         </config-description>
         

@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.northqbinding.discovery;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,7 +38,6 @@ public class NorthQDiscovery extends AbstractDiscoveryService implements Binding
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
     private NorthQBridgeHandler bridgeHandler;
-    private List<Integer> thermostatRoomIds = new ArrayList<>();
     private Map<Integer, Room> roomMap = new HashMap<>();
 
     public NorthQDiscovery(NorthQBridgeHandler bridgeHandler) throws IllegalArgumentException {
@@ -64,7 +62,6 @@ public class NorthQDiscovery extends AbstractDiscoveryService implements Binding
 
     @Override
     protected void startScan() {
-        thermostatRoomIds = new ArrayList<>();
         bridgeHandler.updateHousesAndGateways();
         roomMap = bridgeHandler.getAllRooms().stream().collect(Collectors.toMap(Room::getId, Function.identity()));
         List<NorthQThing> things = bridgeHandler.getAllNorthQThings();
@@ -100,13 +97,6 @@ public class NorthQDiscovery extends AbstractDiscoveryService implements Binding
         String name = thing.getName();
         if (thing instanceof Thermostat) {
             name = NorthQBindingBindingConstants.THERMOSTAT_NAME;
-            // If room already contains a thermostat, don't add it
-            // Mimics Homemanager.tv behavior
-            if (thermostatRoomIds.contains(thing.getRoom())) {
-                return;
-            } else {
-                thermostatRoomIds.add(thing.getRoom());
-            }
         }
         String roomId;
         if (roomMap.isEmpty()) {
@@ -132,7 +122,7 @@ public class NorthQDiscovery extends AbstractDiscoveryService implements Binding
     private ThingUID getThingUID(NorthQThing thing) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        return new ThingUID(thingTypeUID, bridgeUID, String.valueOf(thing.getNode_id()));
+        return new ThingUID(thingTypeUID, bridgeUID, thing.getUniqueId());
     }
 
     @Override
