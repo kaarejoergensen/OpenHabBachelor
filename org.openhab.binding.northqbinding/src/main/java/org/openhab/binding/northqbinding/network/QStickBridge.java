@@ -51,7 +51,7 @@ public class QStickBridge {
         String post = "username=" + user + "&password=" + pass;
         Result result = httpClient.post(url, post);
         handleErrors(result);
-        token = gson.fromJson(result.getBody(), Token.gsonType);
+        token = gson.fromJson(result.getBody(), Token.class);
     }
 
     public void updateHousesAndGateways() throws APIException, IOException {

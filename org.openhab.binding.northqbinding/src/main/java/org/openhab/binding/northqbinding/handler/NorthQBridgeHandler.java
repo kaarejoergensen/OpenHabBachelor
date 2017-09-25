@@ -112,7 +112,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
                 startAutomaticRefresh();
             } catch (APIException | IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
-                logger.warn("Authentication error: " + e.getMessage());
+                logger.warn("Authentication error: {}", e.getMessage());
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -201,15 +201,15 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
             try {
                 try {
                     return methodCall.call();
+                } catch (GatewayOfflineException e) {
+                    logger.debug("{}", e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                } catch (UnauthorizedException e) {
+                    logger.debug("{}", e.getMessage());
+                    onAuthenticationError();
                 } catch (APIException | IOException e) {
-                    logger.debug(e.getMessage());
-                    if (e instanceof GatewayOfflineException) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    } else if (e instanceof UnauthorizedException) {
-                        onAuthenticationError();
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    }
+                    logger.debug("{}", e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             } catch (Exception e) {
                 logger.debug("Bridge failed {} call", methodCall.toString(), e);

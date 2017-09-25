@@ -134,7 +134,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {
-        logger.debug("Initialize thing " + getThing().getUID() + " bridge status " + bridgeStatus);
+        logger.debug("Initialize thing {} bridge status {}", getThing().getUID(), bridgeStatus);
         String configUnique_id = (String) getConfig().get(UNIQUE_ID);
         String roomId = (String) getConfig().get(ROOM_ID);
         if (configUnique_id != null) {

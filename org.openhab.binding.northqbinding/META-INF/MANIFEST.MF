@@ -6,10 +6,9 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
-Import-Package: com.google.common.collect;version="15.0.0",
- com.google.common.reflect;version="15.0.0",
- com.google.gson.reflect;version="2.7.0",
- org.eclipse.jdt.annotation;resolution:=optional,
+Import-Package: com.google.common.collect,
+ com.google.gson.reflect,
+ org.eclipse.jdt.annotation,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.status,
  org.eclipse.smarthome.config.discovery,
@@ -22,10 +21,10 @@ Import-Package: com.google.common.collect;version="15.0.0",
  org.openhab.binding.northqbinding,
  org.openhab.binding.northqbinding.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
- org.slf4j
+ org.osgi.service.component.annotations,
+ org.slf4j,
+ com.google.gson
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.northqbinding,
  org.openhab.binding.northqbinding.handler
 Bundle-ActivationPolicy: lazy
-Require-Bundle: com.google.gson
