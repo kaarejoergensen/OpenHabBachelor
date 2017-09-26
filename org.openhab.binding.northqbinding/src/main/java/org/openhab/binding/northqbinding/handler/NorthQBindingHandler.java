@@ -10,7 +10,6 @@ package org.openhab.binding.northqbinding.handler;
 
 import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +30,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
-import org.openhab.binding.northqbinding.exceptions.APIException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
@@ -89,46 +87,42 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
             onThingStateChanged(thing);
             return;
         }
-        try {
-            switch (channelUID.getId()) {
-                case BINARY_SWITCH_SWITCH_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        bridgeHandler.changeSwitchState((BinarySwitch) thing);
-                        updateState(channelUID, ((BinarySwitch) thing).isTurnedOn() ? OnOffType.OFF : OnOffType.ON);
+        switch (channelUID.getId()) {
+            case BINARY_SWITCH_SWITCH_CHANNEL:
+                if (command instanceof OnOffType) {
+                    bridgeHandler.changeSwitchState((BinarySwitch) thing);
+                    updateState(channelUID, ((BinarySwitch) thing).isTurnedOn() ? OnOffType.OFF : OnOffType.ON);
+                }
+                break;
+            case BINARY_SENSOR_ARM_CHANNEL:
+                if (command instanceof OnOffType) {
+                    BinarySensor binarySensor = (BinarySensor) thing;
+                    if (binarySensor.isArmed()) {
+                        bridgeHandler.disArmSensor(binarySensor);
+                        updateState(channelUID, OnOffType.OFF);
+                        updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
+                                OnOffType.OFF);
+                    } else {
+                        bridgeHandler.armSensor(binarySensor);
+                        updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
+                                binarySensor.isMotionDetected() ? OnOffType.ON : OnOffType.OFF);
+                        updateState(channelUID, OnOffType.ON);
                     }
-                    break;
-                case BINARY_SENSOR_ARM_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        BinarySensor binarySensor = (BinarySensor) thing;
-                        if (binarySensor.isArmed()) {
-                            bridgeHandler.disArmSensor(binarySensor);
-                            updateState(channelUID, OnOffType.OFF);
-                            updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
-                                    OnOffType.OFF);
-                        } else {
-                            bridgeHandler.armSensor(binarySensor);
-                            updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
-                                    binarySensor.isMotionDetected() ? OnOffType.ON : OnOffType.OFF);
-                            updateState(channelUID, OnOffType.ON);
-                        }
+                }
+                break;
+            case THERMOSTAT_TEMP_CHANNEL:
+                if (command instanceof DecimalType) {
+                    if (((DecimalType) command).doubleValue() >= 4 && ((DecimalType) command).doubleValue() <= 28) {
+                        bridgeHandler.setRoomTemperature(thing.getRoom(), thing.getGateway(),
+                                ((DecimalType) command).doubleValue());
+                        lastThermostatTemperature = ((DecimalType) command).doubleValue();
+                        lastThermostatUpdateTime = System.currentTimeMillis();
+                        updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
+                                new DecimalType(((DecimalType) command).doubleValue()));
                     }
-                    break;
-                case THERMOSTAT_TEMP_CHANNEL:
-                    if (command instanceof DecimalType) {
-                        if (((DecimalType) command).doubleValue() >= 4 && ((DecimalType) command).doubleValue() <= 28) {
-                            bridgeHandler.setRoomTemperature(thing.getRoom(), thing.getGateway(),
-                                    ((DecimalType) command).doubleValue());
-                            lastThermostatTemperature = ((DecimalType) command).doubleValue();
-                            lastThermostatUpdateTime = System.currentTimeMillis();
-                            updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
-                                    new DecimalType(((DecimalType) command).doubleValue()));
-                        }
-                    }
+                }
 
-                    break;
-            }
-        } catch (IOException | APIException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                break;
         }
     }
 

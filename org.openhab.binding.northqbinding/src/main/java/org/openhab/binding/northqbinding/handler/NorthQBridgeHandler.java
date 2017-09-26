@@ -207,7 +207,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     @SuppressWarnings("null")
-    public <T> T bridgeCallWithErrorHandling(Callable<T> methodCall) {
+    private synchronized <T> T bridgeCallWithErrorHandling(Callable<T> methodCall) {
         if (qStickBridge != null) {
             try {
                 try {
@@ -243,21 +243,35 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         return false;
     }
 
-    public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {
-        qStickBridge.changeSwitchState(binarySwitch);
+    public void changeSwitchState(BinarySwitch binarySwitch) {
+        bridgeCallWithErrorHandling(() -> {
+            qStickBridge.changeSwitchState(binarySwitch);
+            return null;
+        });
+        ((BinarySwitch) thingMap.get(binarySwitch.getUniqueId())).setTurnedOn(!binarySwitch.isTurnedOn());
     }
 
-    public void armSensor(BinarySensor binarySensor) throws IOException, APIException {
-        qStickBridge.armSensor(binarySensor);
+    public void armSensor(BinarySensor binarySensor) {
+        bridgeCallWithErrorHandling(() -> {
+            qStickBridge.armSensor(binarySensor);
+            return null;
+        });
+        ((BinarySensor) thingMap.get(binarySensor.getUniqueId())).setArmed(!binarySensor.isArmed());
     }
 
-    public void disArmSensor(BinarySensor binarySensor) throws IOException, APIException {
-        qStickBridge.disArmSensor(binarySensor);
+    public void disArmSensor(BinarySensor binarySensor) {
+        bridgeCallWithErrorHandling(() -> {
+            qStickBridge.disArmSensor(binarySensor);
+            return null;
+        });
+        ((BinarySensor) thingMap.get(binarySensor.getUniqueId())).setArmed(!binarySensor.isArmed());
     }
 
-    public void setRoomTemperature(int roomId, String gatewaySerial, double newTemperature)
-            throws IOException, APIException {
-        qStickBridge.setRoomTemperature(roomId, gatewaySerial, newTemperature);
+    public void setRoomTemperature(int roomId, String gatewaySerial, double newTemperature) {
+        bridgeCallWithErrorHandling(() -> {
+            qStickBridge.setRoomTemperature(roomId, gatewaySerial, newTemperature);
+            return null;
+        });
     }
 
     @Override
