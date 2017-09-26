@@ -11,6 +11,7 @@ package org.openhab.binding.northqbinding.models;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
+ * Overall class for NorthQ Things
  *
  * @author Kaare Joergensen - Initial contribution
  */

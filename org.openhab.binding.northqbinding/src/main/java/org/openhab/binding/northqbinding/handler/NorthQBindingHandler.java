@@ -286,14 +286,17 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
         Date lastRead = new Date(thing.getRead() * 1000L);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, -8);
-        Date yesterday = calendar.getTime();
-        return yesterday.before(lastRead);
+        Date eightHoursAgo = calendar.getTime();
+        return eightHoursAgo.before(lastRead);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void onThingRemoved(NorthQThing thing) {
         if (thing != null && thing.getUniqueId().equals(uniqueId)) {
-            updateStatus(ThingStatus.OFFLINE);
+            if (getThing() != null && getThing().getUID() != null) {
+                thingRegistry.remove(getThing().getUID());
+            }
         }
     }
 

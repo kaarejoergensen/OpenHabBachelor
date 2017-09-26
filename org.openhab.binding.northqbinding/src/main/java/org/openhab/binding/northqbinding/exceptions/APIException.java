@@ -9,6 +9,7 @@
 package org.openhab.binding.northqbinding.exceptions;
 
 /**
+ * Is thrown if the api returns an error
  *
  * @author Kaare Joergensen - Initial contribution
  */

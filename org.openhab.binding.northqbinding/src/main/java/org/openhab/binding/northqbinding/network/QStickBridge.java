@@ -39,6 +39,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
+ * Handlse all communication with NorthQ Servers
  *
  * @author Kaare Joergensen - Initial contribution
  */
@@ -76,6 +77,7 @@ public class QStickBridge {
         updateHousesAndGateways();
     }
 
+    @SuppressWarnings("null")
     private void authenticate(String user, String pass) throws APIException, IOException {
         String url = BASE_URL + AUTHENTICATE_URL;
         String post = "username=" + user + "&password=" + pass;

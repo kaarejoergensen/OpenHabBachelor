@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,13 +54,13 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final int REFRESH = 15;
-    private static final int CHANGED = 1, ADDED = 2;
+    private static final int CHANGED = 1, ADDED = 2, REMOVED = 3;
 
     private QStickBridge qStickBridge;
     private List<NorthQThing> things = new ArrayList<>();
     private Map<String, NorthQThing> thingMap = new ConcurrentHashMap<>();
 
-    private List<BindingHandlerInterface> handlers = new ArrayList<>();
+    private Set<BindingHandlerInterface> handlers = new HashSet<>();
     private ScheduledFuture<?> refreshJob;
     private Runnable networkRunable = () -> {
         logger.debug("Running NorthQ refresh");
@@ -79,7 +80,6 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
                 }
                 thingMap.put(thing.getUniqueId(), thing);
             }
-            // thingMap.keySet().retainAll(things.stream().map(NorthQThing::getUniqueId).collect(Collectors.toList()));
             updateStatus(ThingStatus.ONLINE);
         }
     };
@@ -142,7 +142,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
 
     public void removeThing(NorthQThing thing) {
         if (thing != null) {
-            thingMap.remove(thing);
+            thingMap.remove(thing.getUniqueId());
         }
     }
 
@@ -260,11 +260,19 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         qStickBridge.setRoomTemperature(roomId, gatewaySerial, newTemperature);
     }
 
+    @Override
+    public void handleRemoval() {
+        things.stream().forEach(t -> notifyHandlers(t, REMOVED));
+        updateStatus(ThingStatus.REMOVED);
+    }
+
     private void notifyHandlers(NorthQThing thing, int type) {
         if (type == CHANGED) {
             handlers.stream().forEach(h -> h.onThingStateChanged(thing));
-        } else {
+        } else if (type == ADDED) {
             handlers.stream().forEach(h -> h.onThingAdded(thing));
+        } else {
+            handlers.stream().forEach(h -> h.onThingRemoved(thing));
         }
 
     }
