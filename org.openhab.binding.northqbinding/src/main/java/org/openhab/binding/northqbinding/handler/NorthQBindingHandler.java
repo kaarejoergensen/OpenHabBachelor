@@ -206,7 +206,9 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
     @Override
     public void onThingStateChanged(NorthQThing thing) {
         if (thing == null || (!thingActive(thing) && !(thing instanceof Thermostat))) {
-            updateStatus(ThingStatus.OFFLINE);
+            if (!getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+                updateStatus(ThingStatus.OFFLINE);
+            }
             return;
         }
         if (thing instanceof Thermostat && getThing().getThingTypeUID().equals(NorthQBindingBindingConstants.THERMOSTAT)
@@ -224,9 +226,13 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                         updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
                                 new DecimalType(thermostat.getTemperature()));
                     }
-                    updateStatus(ThingStatus.ONLINE);
+                    if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE);
+                    if (!getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+                        updateStatus(ThingStatus.OFFLINE);
+                    }
                 }
             }
         } else if (thing.getUniqueId().equals(uniqueId)) {
@@ -236,7 +242,10 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                         binarySwitch.isTurnedOn() ? OnOffType.ON : OnOffType.OFF);
                 updateState(new ChannelUID(getThing().getUID(), BINARY_SWITCH_WATTAGE_CHANNEL),
                         new DecimalType(binarySwitch.getWattage()));
-                updateStatus(ThingStatus.ONLINE);
+                if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+
             } else if (thing instanceof BinarySensor) {
                 BinarySensor binarySensor = (BinarySensor) thing;
                 updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_ARM_CHANNEL),
@@ -263,7 +272,9 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                 } else {
                     updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL), OnOffType.OFF);
                 }
-                updateStatus(ThingStatus.ONLINE);
+                if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             }
         }
     }

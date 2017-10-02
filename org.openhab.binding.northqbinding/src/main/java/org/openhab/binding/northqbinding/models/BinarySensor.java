@@ -115,10 +115,74 @@ public class BinarySensor extends NorthQThing {
         public String toString() {
             return "Sensor{" + "scale=" + scale + ", type=" + type + ", value=" + value + '}';
         }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + scale;
+            result = prime * result + type;
+            long temp;
+            temp = Double.doubleToLongBits(value);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Sensor other = (Sensor) obj;
+            if (scale != other.scale) {
+                return false;
+            }
+            if (type != other.type) {
+                return false;
+            }
+            if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value)) {
+                return false;
+            }
+            return true;
+        }
     }
 
     @Override
     public ThingTypeUID getThingTypeUID() {
         return NorthQBindingBindingConstants.BINARY_SENSOR;
+    }
+
+    @Override
+    public boolean isEqual(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        BinarySensor other = (BinarySensor) obj;
+        if (armed != other.armed) {
+            return false;
+        }
+        if (pos != other.pos) {
+            return false;
+        }
+        if (sensors == null) {
+            if (other.sensors != null) {
+                return false;
+            }
+        } else if (!sensors.equals(other.sensors)) {
+            return false;
+        }
+        return true;
     }
 }

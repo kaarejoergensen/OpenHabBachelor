@@ -74,13 +74,17 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
             logger.debug("Notifying {} handlers of {} things", handlers.size(), things.size());
             for (NorthQThing thing : things) {
                 if (thingMap.containsKey(thing.getUniqueId())) {
-                    notifyHandlers(thing, CHANGED);
+                    if (!thingMap.get(thing.getUniqueId()).isEqual(thing)) {
+                        notifyHandlers(thing, CHANGED);
+                    }
                 } else {
                     notifyHandlers(thing, ADDED);
                 }
                 thingMap.put(thing.getUniqueId(), thing);
             }
-            updateStatus(ThingStatus.ONLINE);
+            if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
     };
 

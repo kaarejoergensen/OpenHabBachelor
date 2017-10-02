@@ -52,4 +52,23 @@ public class Thermostat extends NorthQThing {
     public ThingTypeUID getThingTypeUID() {
         return NorthQBindingBindingConstants.THERMOSTAT;
     }
+
+    @Override
+    public boolean isEqual(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Thermostat other = (Thermostat) obj;
+        if (temperature != other.temperature) {
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -76,4 +76,6 @@ public abstract class NorthQThing {
     }
 
     public abstract ThingTypeUID getThingTypeUID();
+
+    public abstract boolean isEqual(Object obj);
 }
