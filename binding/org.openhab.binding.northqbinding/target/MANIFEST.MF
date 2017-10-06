@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.openhab.binding.northqbinding;singleton:=true
+Export-Package: org.openhab.binding.northqbinding,org.openhab.binding.
+ northqbinding.handler
+Bundle-Name: NorthQBinding Binding
+Bundle-Version: 2.2.0.201710021102
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: openHAB
+Import-Package: com.google.common.collect,com.google.gson,com.google.g
+ son.annotations,com.google.gson.reflect,org.eclipse.jdt.annotation;re
+ solution:=optional,org.eclipse.smarthome.config.core,org.eclipse.smar
+ thome.config.core.status,org.eclipse.smarthome.config.discovery,org.e
+ clipse.smarthome.core.library.types,org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,org.eclipse.smarthome.core.t
+ hing.binding.builder,org.eclipse.smarthome.core.thing.type,org.eclips
+ e.smarthome.core.types,org.openhab.binding.northqbinding,org.openhab.
+ binding.northqbinding.handler,org.osgi.framework,org.osgi.service.com
+ ponent.annotations;resolution:=optional,org.slf4j
+Service-Component: OSGI-INF/*.xml
+
