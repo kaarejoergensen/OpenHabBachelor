@@ -12,10 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomRuleDTO {
+    private String uid;
     private String name;
     private String description;
     private List<CustomConditionDTO> conditions;
     private List<CustomActionDTO> actions;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getName() {
         return name;
