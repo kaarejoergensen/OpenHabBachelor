@@ -8,32 +8,38 @@
  */
 package org.openhab.misc.automation.rest.internal.models;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CustomConditionDTO {
-    private String itemName;
-    private String state;
-    private String operator;
+    private String id;
+    private Map<String, Object> properties;
+    private String type;
 
-    public String getItemName() {
-        return itemName;
+    public String getId() {
+        return id;
     }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getState() {
-        return state;
+    public Map<String, Object> getProperties() {
+        if (properties == null) {
+            properties = new HashMap<>();
+        }
+        return properties;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
-    public String getOperator() {
-        return operator;
+    public String getType() {
+        return type;
     }
 
-    public void setOperator(String operator) {
-        this.operator = operator;
+    public void setType(String type) {
+        this.type = type;
     }
 }

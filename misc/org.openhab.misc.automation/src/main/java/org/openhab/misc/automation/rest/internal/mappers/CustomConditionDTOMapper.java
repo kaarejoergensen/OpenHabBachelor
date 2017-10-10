@@ -27,23 +27,44 @@ public class CustomConditionDTOMapper {
         }
         List<Condition> conditions = new ArrayList<>(list.size());
         for (CustomConditionDTO customConditionDTO : list) {
-            conditions.add(mapCondition(customConditionDTO));
+            conditions.add(mapConditionDTO(customConditionDTO));
         }
         return conditions;
     }
 
-    private static Condition mapCondition(CustomConditionDTO customConditionDTO) {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("itemName", customConditionDTO.getItemName());
-        properties.put("operator", customConditionDTO.getOperator());
-        properties.put("state", customConditionDTO.getState());
-        IdContainerSingleton idContainerSingleton = IdContainerSingleton.getInstance();
-        Condition condition = new Condition(idContainerSingleton.getModuleId(), "core.ItemStateCondition",
-                new Configuration(properties), null);
+    private static Condition mapConditionDTO(CustomConditionDTO customConditionDTO) {
+        String id = customConditionDTO.getId();
+        if (id == null) {
+            IdContainerSingleton idContainerSingleton = IdContainerSingleton.getInstance();
+            id = idContainerSingleton.getModuleId();
+        }
+        Condition condition = new Condition(id, customConditionDTO.getType(),
+                new Configuration(customConditionDTO.getProperties()), null);
         condition.setLabel("label");
         condition.setDescription("description");
         // TODO: Finish method
         return condition;
+    }
+
+    public static List<CustomConditionDTO> mapCondition(List<Condition> conditionList) {
+        if (conditionList == null) {
+            return null;
+        }
+        List<CustomConditionDTO> customConditionDTOs = new ArrayList<>(conditionList.size());
+        for (Condition condition : conditionList) {
+            customConditionDTOs.add(mapCondition(condition));
+        }
+        return customConditionDTOs;
+    }
+
+    private static CustomConditionDTO mapCondition(Condition condition) {
+        CustomConditionDTO customConditionDTO = new CustomConditionDTO();
+
+        customConditionDTO.setId(condition.getId());
+        customConditionDTO.setProperties(condition.getConfiguration().getProperties());
+        customConditionDTO.setType(condition.getTypeUID());
+
+        return customConditionDTO;
     }
 
     public static List<Trigger> inferTriggers(List<CustomConditionDTO> list) {
@@ -59,7 +80,7 @@ public class CustomConditionDTOMapper {
 
     private static Trigger mapTrigger(CustomConditionDTO customConditionDTO) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("itemName", customConditionDTO.getItemName());
+        properties.put("itemName", customConditionDTO.getProperties().get("itemName"));
         IdContainerSingleton idContainerSingleton = IdContainerSingleton.getInstance();
         Trigger trigger = new Trigger(idContainerSingleton.getModuleId(), inferType(customConditionDTO),
                 new Configuration(properties));
@@ -71,7 +92,7 @@ public class CustomConditionDTOMapper {
 
     private static String inferType(CustomConditionDTO customConditionDTO) {
         // TODO: Create method
-        switch ("core.ItemStateCondition") {
+        switch (customConditionDTO.getType()) {
             case "core.ItemStateCondition":
                 return "core.ItemStateUpdateTrigger";
             default:

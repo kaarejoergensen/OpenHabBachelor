@@ -18,6 +18,18 @@ public class CustomRuleDTO {
     private List<CustomConditionDTO> conditions;
     private List<CustomActionDTO> actions;
 
+    public CustomRuleDTO() {
+    }
+
+    public CustomRuleDTO(String uid, String name, String description, List<CustomConditionDTO> conditions,
+            List<CustomActionDTO> actions) {
+        this.uid = uid;
+        this.name = name;
+        this.description = description;
+        this.conditions = conditions;
+        this.actions = actions;
+    }
+
     public String getUid() {
         return uid;
     }

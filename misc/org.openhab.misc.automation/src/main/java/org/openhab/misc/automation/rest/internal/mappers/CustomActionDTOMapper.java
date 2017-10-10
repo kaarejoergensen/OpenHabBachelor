@@ -9,9 +9,7 @@
 package org.openhab.misc.automation.rest.internal.mappers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.smarthome.automation.Action;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -31,15 +29,37 @@ public class CustomActionDTOMapper {
     }
 
     private static Action map(CustomActionDTO customActionDTO) {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("command", customActionDTO.getCommand());
-        properties.put("itemName", customActionDTO.getItemName());
-        IdContainerSingleton idContainerSingleton = IdContainerSingleton.getInstance();
-        Action action = new Action(idContainerSingleton.getModuleId(), "core.ItemCommandAction",
-                new Configuration(properties), null);
+        String id = customActionDTO.getId();
+        if (id == null) {
+            IdContainerSingleton idContainerSingleton = IdContainerSingleton.getInstance();
+            id = idContainerSingleton.getModuleId();
+        }
+        Action action = new Action(id, "core.ItemCommandAction", new Configuration(customActionDTO.getProperties()),
+                null);
         action.setLabel("label");
         action.setDescription("description");
         // TODO: Finish method
         return action;
+    }
+
+    public static List<CustomActionDTO> mapAction(List<Action> actions) {
+        if (actions == null) {
+            return null;
+        }
+        List<CustomActionDTO> customActionDTOs = new ArrayList<>(actions.size());
+        for (Action action : actions) {
+            customActionDTOs.add(map(action));
+        }
+        return customActionDTOs;
+    }
+
+    private static CustomActionDTO map(Action action) {
+        CustomActionDTO customActionDTO = new CustomActionDTO();
+
+        customActionDTO.setId(action.getId());
+        customActionDTO.setProperties(action.getConfiguration().getProperties());
+        customActionDTO.setType(customActionDTO.getType());
+
+        return customActionDTO;
     }
 }

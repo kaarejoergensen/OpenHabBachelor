@@ -21,6 +21,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -96,13 +97,14 @@ public class RulesResource implements RESTResource {
             p = p.and(hasPrefix(prefix));
         }
 
-        // if tags is null or emty list returns all rules
+        // if tags is null or empty list returns all rules
         p = p.and(hasAllTags(tags));
+        Collection<ActionType> actionTypes = moduleTypeRegistry.getActions(null);
+        Collection<ConditionType> conditionTypes = moduleTypeRegistry.getConditions(null);
+        Collection<TriggerType> triggerTypes = moduleTypeRegistry.getTriggers(null);
 
-        Collection<Rule> rules = ruleRegistry.stream().filter(p).collect(Collectors.toList());
-        Rule rule = new Rule();
-        rule.setName("HEJHEJ");
-        rules.add(rule);
+        Collection<CustomRuleDTO> rules = ruleRegistry.stream().filter(p).map(rule -> CustomRuleDTOMapper.map(rule))
+                .collect(Collectors.toList());
 
         return Response.ok(rules).build();
     }
@@ -116,10 +118,6 @@ public class RulesResource implements RESTResource {
             @ApiResponse(code = 400, message = "Creation of the rule is refused. Missing required parameter.") })
     public Response create(@ApiParam(value = "rule data", required = true) CustomRuleDTO rule) throws IOException {
         try {
-            Collection<TriggerType> triggers = moduleTypeRegistry.getTriggers(null);
-            System.out.println(triggers.toString());
-            Collection<ConditionType> conditions = moduleTypeRegistry.getConditions(null);
-            Collection<ActionType> actions = moduleTypeRegistry.getActions(null);
             final Rule newRule = ruleRegistry.add(CustomRuleDTOMapper.map(rule));
             return Response.status(Status.CREATED)
                     .header("Location", "rules2/" + URLEncoder.encode(newRule.getUID(), "UTF-8")).build();
@@ -136,8 +134,23 @@ public class RulesResource implements RESTResource {
         }
     }
 
+    @GET
+    @Path("/{ruleUID}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Gets the rule corresponding to the given UID.", response = CustomRuleDTO.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = CustomRuleDTO.class),
+            @ApiResponse(code = 404, message = "Rule not found") })
+    public Response getByUID(@PathParam("ruleUID") @ApiParam(value = "ruleUID", required = true) String ruleUID) {
+        Rule rule = ruleRegistry.get(ruleUID);
+        if (rule != null) {
+            return Response.ok(CustomRuleDTOMapper.map(rule)).build();
+        } else {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+    }
+
     @Override
     public boolean isSatisfied() {
-        return ruleRegistry != null;
+        return ruleRegistry != null && moduleTypeRegistry != null;
     }
 }

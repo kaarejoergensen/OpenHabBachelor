@@ -8,24 +8,38 @@
  */
 package org.openhab.misc.automation.rest.internal.models;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CustomActionDTO {
-    private String command;
-    private String itemName;
+    private String id;
+    private Map<String, Object> properties;
+    private String type;
 
-    public String getCommand() {
-        return command;
+    public String getId() {
+        return id;
     }
 
-    public void setCommand(String command) {
-        this.command = command;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getItemName() {
-        return itemName;
+    public Map<String, Object> getProperties() {
+        if (properties == null) {
+            properties = new HashMap<>();
+        }
+        return properties;
     }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

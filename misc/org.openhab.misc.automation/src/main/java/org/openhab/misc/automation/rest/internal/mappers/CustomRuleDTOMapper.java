@@ -29,4 +29,10 @@ public class CustomRuleDTOMapper {
         // TODO: Finish method
         return rule;
     }
+
+    public static CustomRuleDTO map(Rule rule) {
+        return new CustomRuleDTO(rule.getUID(), rule.getName(), rule.getDescription(),
+                CustomConditionDTOMapper.mapCondition(rule.getConditions()),
+                CustomActionDTOMapper.mapAction(rule.getActions()));
+    }
 }
