@@ -10,6 +10,11 @@ package org.openhab.ui.automation.internal;
 
 import org.openhab.ui.dashboard.DashboardTile;
 
+/**
+ *
+ *
+ * @author Kaare Joergensen - Initial contribution
+ */
 public class AutomationUIDashboardTile implements DashboardTile {
 
     @Override
