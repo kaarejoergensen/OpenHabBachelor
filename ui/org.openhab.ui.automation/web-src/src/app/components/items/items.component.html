@@ -1,0 +1,10 @@
+<div align="center">
+    <ul class="heroes">
+        <li *ngFor="let item of items"
+        (click)="onSelect(item)"
+        [class.selected]="item===selectedItem">
+            {{item.label}}
+        </li>
+    </ul>
+</div>
+<app-item-detail [item]="selectedItem"></app-item-detail>

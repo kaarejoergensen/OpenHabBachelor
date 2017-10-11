@@ -9,7 +9,7 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.ui.paperui.dashboardtile">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.ui.automation.internal.AutomationUIDashboardTile">
    <implementation class="org.openhab.ui.automation.internal.AutomationUIDashboardTile"/>
    <service>
       <provide interface="org.openhab.ui.dashboard.DashboardTile"/>
