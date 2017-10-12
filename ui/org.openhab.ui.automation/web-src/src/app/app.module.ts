@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { ItemDetailComponent } from './components/item-detail/item-detail.component';
 import { SharedPropertiesService } from './services/shared-properties.service';
 import { ItemsComponent } from './components/items/items.component';
+import { ConditionComponent } from './components/condition/condition.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ItemDetailComponent,
-    ItemsComponent
+    ItemsComponent,
+    ConditionComponent
   ],
   imports: [
     BrowserModule,
