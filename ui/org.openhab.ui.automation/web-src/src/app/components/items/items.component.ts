@@ -1,7 +1,9 @@
 import { Module } from '../../models/module';
 import { Item } from '../../models/item';
+import { Thing } from '../../models/thing';
 import { ItemService } from '../../services/item.service';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
+import { ThingService } from '../../services/thing.service';
 import { Component, OnInit } from '@angular/core';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -13,7 +15,7 @@ import 'rxjs/add/operator/concat';
   selector: 'app-items',
   templateUrl: './items.component.html',
   styleUrls: ['./items.component.css'],
-  providers: [ItemService]
+  providers: [ItemService, ThingService]
 })
 export class ItemsComponent implements OnInit {
 titleText = 'Welcome to the Automation UI for openHAB project!';
@@ -24,12 +26,13 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
   things = [];
 
   getItems(): void {
-    this.itemService.getThings().map(res => {
-      this.things = res;
-    }).concat(this.itemService.getItems())
-    .subscribe(res => { if (res !== undefined) {
-    this.setItemName(res);
-    } });
+    this.itemService.getItems()
+      .concat(this.thingService.getThings().map(res => this.things = res))
+      .subscribe(res => this.setItemName(res));
+//    this.thingService.getThings().map(res => {
+//      this.things = res;
+//    }).concat(this.itemService.getItems())
+//    .subscribe(res => this.setItemName(res));
   }
 
 
@@ -72,8 +75,24 @@ this.sortItems(itemsWithNames);
    // this.itemService.getItems().then(items => this.items = items);
     this.getItems();
   }
-  constructor(private itemService: ItemService, private sharedProperties: SharedPropertiesService) { }
+
+  constructor(private itemService: ItemService, private sharedProperties: SharedPropertiesService,
+  private thingService: ThingService) { }
+
   onSelect(item: Item): void {
     this.selectedItem = item;
+  }
+
+  getRuleJson(uid: string): any {
+    return {
+      tags: [],
+      conditions: this.sharedProperties.getModuleJSON('condition'),
+      description: 'Description',
+      name: 'Name',
+      triggers: this.sharedProperties.getModuleJSON('trigger'),
+      configDescriptions: [],
+      actions: this.sharedProperties.getModuleJSON('action'),
+      uid: uid
+    };
   }
 }

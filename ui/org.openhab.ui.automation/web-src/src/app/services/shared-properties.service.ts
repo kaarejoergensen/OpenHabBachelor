@@ -45,7 +45,7 @@ export class SharedPropertiesService implements OnInit {
   getModules(moduleType: string): Module[] {
     if (moduleType === 'condition') {
       return this.conditions;
-    } else if (moduleType === 'actions') {
+    } else if (moduleType === 'action') {
       return this.actions;
     } else {
       return this.triggers;
@@ -89,7 +89,7 @@ export class SharedPropertiesService implements OnInit {
     return -1;
   }
 
-  getJson(moduleType: string): any[] {
+  getModuleJSON(moduleType: string): any[] {
     const moduleJSON = [];
     const modules = this.getModules(moduleType);
     for (const condition of modules) {
