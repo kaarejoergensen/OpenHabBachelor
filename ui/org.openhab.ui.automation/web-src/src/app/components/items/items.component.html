@@ -5,6 +5,9 @@
         [class.selected]="item===selectedItem">
             {{item.label}}
         </li>
+        <li *ngFor="let thing of things">
+            {{thing.label}}
+        </li>
     </ul>
 </div>
 <app-item-detail [item]="selectedItem"></app-item-detail>
