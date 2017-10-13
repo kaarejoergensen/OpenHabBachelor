@@ -99,7 +99,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         // Not needed
     }
 
