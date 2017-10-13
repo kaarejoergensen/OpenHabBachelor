@@ -5,6 +5,7 @@ export class Item {
   type: string;
   name: string;
   label: string;
+  thingName: string;
 }
 
 export class StateDescription {
