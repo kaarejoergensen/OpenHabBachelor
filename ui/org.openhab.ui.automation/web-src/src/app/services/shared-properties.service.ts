@@ -1,14 +1,18 @@
 import { Configuration } from '../models/configuration';
 import { Module } from '../models/module';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 @Injectable()
-export class SharedPropertiesService implements OnInit {
+export class SharedPropertiesService {
   conditions: Module[];
   actions: Module[];
   triggers: Module[];
 
-  ngOnInit(): void {
+  constructor() {
+    this.init();
+  }
+
+  init(): void {
     this.conditions = [];
     this.actions = [];
     this.triggers = [];

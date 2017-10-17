@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Item } from '../../models/item';
+import { SharedPropertiesService } from '../../services/shared-properties.service';
+import { Component, OnInit, Input, HostListener} from '@angular/core';
 
 @Component({
   selector: 'app-condition',
@@ -6,10 +8,32 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./condition.component.css']
 })
 export class ConditionComponent implements OnInit {
-
-  constructor() { }
+  @Input() item: Item;
+  public visible = false;
+  public visibleAnimate = false;
+  constructor(private sharedProperties: SharedPropertiesService) { }
 
   ngOnInit() {
   }
+  @HostListener('document:keyup', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.keyCode === 27 && this.visible) {
+      this.hide();
+    }
+  }
+  public show(): void {
+    this.visible = true;
+    setTimeout(() => this.visibleAnimate = true, 100);
+  }
 
+  public hide(): void {
+    this.visibleAnimate = false;
+    setTimeout(() => this.visible = false, 300);
+  }
+
+  public onContainerClicked(event: MouseEvent): void {
+    if ((<HTMLElement>event.target).classList.contains('modal')) {
+      this.hide();
+    }
+  }
 }
