@@ -1,0 +1,14 @@
+<div *ngIf="isLoading" class="loader"></div>
+<div *ngIf="!isLoading">
+	<div *ngIf="rules" class="itemsdiv">
+	    <ul class="items">
+	        <li *ngFor="let rule of rules">
+	            <div class="inner-item">
+	               {{rule.name}} <br>
+	               {{rule.uid}}
+	            </div>        
+	         </li>
+	     </ul>
+	</div>
+<button type="button" class="btn btn-default" (click)="goBack()">Back</button>
+</div>

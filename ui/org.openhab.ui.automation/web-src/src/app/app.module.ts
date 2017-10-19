@@ -9,13 +9,15 @@ import { ItemsComponent } from './components/items/items.component';
 import { CreateComponent } from './components/create/create.component';
 import { ConditionComponent } from './components/condition/condition.component';
 import { RouterModule } from '@angular/router';
+import { OverviewComponent } from './components/overview/overview.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ItemsComponent,
     CreateComponent,
-    ConditionComponent
+    ConditionComponent,
+    OverviewComponent
   ],
   imports: [
     BrowserModule,
@@ -25,6 +27,13 @@ import { RouterModule } from '@angular/router';
       {
         path: 'create',
         component: CreateComponent
+      },
+      {
+        path: 'overview',
+        component: OverviewComponent
+      },
+      {
+        path: '', redirectTo: '/create', pathMatch: 'full'
       }
     ])
   ],
