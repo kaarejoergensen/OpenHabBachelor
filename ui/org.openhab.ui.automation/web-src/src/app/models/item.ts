@@ -13,5 +13,5 @@ export class StateDescription {
   maximum: number;
   step: number;
   pattern: string;
-  readonly: boolean;
+  readOnly: boolean;
 }

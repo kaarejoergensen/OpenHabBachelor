@@ -3,7 +3,6 @@
         <li *ngFor="let item of items">
             <div class="inner-item"
             (click)="onSelect(item)"
-            (click)="modal.show()"
             [class.selected]="selectedItems.indexOf(item) > -1">
                {{item.thingName}} <br>
                {{item.label}}
@@ -11,4 +10,11 @@
          </li>
      </ul>
 </div>
-<app-condition [item]="selectedItem" #modal></app-condition>
+<app-condition [item]="selectedItem" (onSelected)="addItemToSelected(selectedItem)" #modal>
+    <div class="app-modal-header">
+      Conditions modal
+    </div>
+    <div class="app-modal-body">
+      ...
+    </div>
+</app-condition>

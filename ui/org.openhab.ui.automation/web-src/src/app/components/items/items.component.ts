@@ -1,6 +1,6 @@
 import { Item } from '../../models/item';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-items',
@@ -9,6 +9,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ItemsComponent implements OnInit {
   @Input() items: Item[];
+  @ViewChild('modal') conditionModal;
   selectedItems: Item[];
   selectedItem: Item;
   constructor(private sharedProperteis: SharedPropertiesService) { }
@@ -22,8 +23,14 @@ export class ItemsComponent implements OnInit {
     if (index > -1) {
       this.selectedItems.splice(index, 1);
     } else {
+      this.selectedItem = item;
+      this.conditionModal.show();
+    }
+  }
+
+  addItemToSelected(item: Item): void {
+    if (this.selectedItems.indexOf(item) === -1) {
       this.selectedItems.push(item);
     }
-    this.selectedItem = item;
   }
 }

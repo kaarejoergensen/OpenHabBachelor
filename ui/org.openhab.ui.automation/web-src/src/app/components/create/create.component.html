@@ -1,13 +1,14 @@
-<div>
+<div *ngIf="isLoading" class="loader"></div>
+<div *ngIf="!isLoading" class="creatediv">
     <div class="itemsdiv">
         <div class="conditions">
            <app-items [items]="items"></app-items>
         </div>
         <div class="actions">
-            <app-items [items]="items"></app-items>
+            <app-items [items]="editableItems"></app-items>
         </div>
     </div>
     <div class="btn-div">
-       <button type="button" class="btn" (click)="createRule()">Create rule</button>
+       <button type="button" class="btn" (click)="createRule()">Create</button>
     </div>
 </div>

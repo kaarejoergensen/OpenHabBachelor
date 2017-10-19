@@ -21,6 +21,7 @@ export class CreateComponent implements OnInit {
 titleText = 'Welcome to the Automation UI for openHAB project!';
   items: Item[];
   editableItems: Item[];
+  isLoading = true;
 
   ngOnInit(): void {
     this.items = [];
@@ -32,19 +33,25 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
   private thingService: ThingService) { }
 
   getItemsAndThings(): void {
+    this.isLoading = true;
     let items = [];
     let things = [];
     this.itemService.getItems()
     .concat(this.thingService.getThings())
     .subscribe(res => {
       if (this.isThingArray(res)) {
+        console.log('Fetched ' + res.length + ' things');
         things = res;
       } else if (this.isItemArray(res)) {
+        console.log('Fetched ' + res.length + ' items');
         items = res;
       }
       if (things.length > 0 && items.length > 0) {
         this.items = this.setItemName(items, things);
         this.editableItems = this.sortItems(this.items);
+        this.isLoading = false;
+        console.log(this.items.length + ' items with names');
+        console.log(this.editableItems.length + ' editable items');
       }
     },
     error => this.handleError(error));
@@ -79,7 +86,7 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
     const editableItems = [];
     for (const item of items) {
       if (item.stateDescription) {
-        if (!item.stateDescription.readonly) {
+        if (!item.stateDescription.readOnly) {
           editableItems.push(item);
         }
       } else {
@@ -108,10 +115,10 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
   }
 
   isThingArray(arr: Thing[] | Item[]): arr is Thing[] {
-    return arr.length > 0 && (<Thing>arr[0]).channels !== undefined;
+    return arr.length > 0 && (<Thing>arr[0]).statusInfo !== undefined;
   }
 
   isItemArray(arr: Thing[] | Item[]): arr is Item[] {
-    return arr.length > 0 && (<Item>arr[0]).stateDescription !== undefined;
+    return arr.length > 0 && (<Item>arr[0]).link !== undefined;
   }
 }

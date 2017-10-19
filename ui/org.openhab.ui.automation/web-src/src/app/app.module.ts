@@ -8,6 +8,7 @@ import { SharedPropertiesService } from './services/shared-properties.service';
 import { ItemsComponent } from './components/items/items.component';
 import { CreateComponent } from './components/create/create.component';
 import { ConditionComponent } from './components/condition/condition.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,13 @@ import { ConditionComponent } from './components/condition/condition.component';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    RouterModule.forRoot([
+      {
+        path: 'create',
+        component: CreateComponent
+      }
+    ])
   ],
   providers: [SharedPropertiesService],
   bootstrap: [AppComponent]

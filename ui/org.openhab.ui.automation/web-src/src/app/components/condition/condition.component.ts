@@ -1,6 +1,6 @@
 import { Item } from '../../models/item';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
-import { Component, OnInit, Input, HostListener} from '@angular/core';
+import { Component, OnInit, Input, HostListener, Output, EventEmitter} from '@angular/core';
 
 @Component({
   selector: 'app-condition',
@@ -9,6 +9,7 @@ import { Component, OnInit, Input, HostListener} from '@angular/core';
 })
 export class ConditionComponent implements OnInit {
   @Input() item: Item;
+  @Output() onSelected: EventEmitter<any> = new EventEmitter();
   public visible = false;
   public visibleAnimate = false;
   constructor(private sharedProperties: SharedPropertiesService) { }
@@ -20,6 +21,16 @@ export class ConditionComponent implements OnInit {
     if (event.keyCode === 27 && this.visible) {
       this.hide();
     }
+  }
+  save(): void {
+    if (this.isConditionValid()) {
+      this.onSelected.emit();
+      this.hide();
+    }
+  }
+
+  isConditionValid(): boolean {
+    return true;
   }
   public show(): void {
     this.visible = true;
