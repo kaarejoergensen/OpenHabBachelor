@@ -1,2 +1,3 @@
 # Automation UI
-TODO
+The automation UI.
+TODO: Write documentation.
