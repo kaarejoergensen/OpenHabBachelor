@@ -5,6 +5,7 @@ import { ItemService } from '../../services/item.service';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
 import { ThingService } from '../../services/thing.service';
 import { Component, OnInit } from '@angular/core';
+
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/toPromise';
@@ -22,6 +23,7 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
   items: Item[];
   editableItems: Item[];
   isLoading = true;
+  isConditionsChosen = false;
 
   ngOnInit(): void {
     this.items = [];
@@ -96,6 +98,10 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
     return editableItems;
   }
 
+  next(): void {
+    this.isConditionsChosen = true;
+  }
+
   createRule(): void {
     const body = this.getRuleJson(null);
     console.log('Not implemented');
@@ -120,5 +126,9 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
 
   isItemArray(arr: Thing[] | Item[]): arr is Item[] {
     return arr.length > 0 && (<Item>arr[0]).link !== undefined;
+  }
+
+  goBack(): void {
+    this.isConditionsChosen = false;
   }
 }

@@ -9,6 +9,7 @@ import { Component, OnInit, Input, ViewChild } from '@angular/core';
 })
 export class ItemsComponent implements OnInit {
   @Input() items: Item[];
+  @Input() itemType: string;
   @ViewChild('modal') conditionModal;
   selectedItems: Item[];
   selectedItem: Item;
@@ -31,6 +32,14 @@ export class ItemsComponent implements OnInit {
   addItemToSelected(item: Item): void {
     if (this.selectedItems.indexOf(item) === -1) {
       this.selectedItems.push(item);
+    }
+  }
+
+  getModalHeader(): string {
+    if (this.itemType === 'condition') {
+      return 'Conditions modal';
+    } else {
+      return 'Actions modal';
     }
   }
 }

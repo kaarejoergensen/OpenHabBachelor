@@ -4,9 +4,9 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build --output-path=../web",
-    "prod": "ng build --output-path=../web -prod",
+    "start": "ng serve --base-href=",
+    "build": "ng build --output-path=../web --base-href=/automation/",
+    "prod": "ng build --output-path=../web -prod --base-href=/automation/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

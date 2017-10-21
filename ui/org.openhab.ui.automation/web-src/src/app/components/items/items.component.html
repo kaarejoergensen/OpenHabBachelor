@@ -10,11 +10,8 @@
          </li>
      </ul>
 </div>
-<app-condition [item]="selectedItem" (onSelected)="addItemToSelected(selectedItem)" #modal>
+<app-modal [item]="selectedItem" [itemType]="this.itemType" (onSelected)="addItemToSelected(selectedItem)" #modal>
     <div class="app-modal-header">
-      Conditions modal
+      {{getModalHeader()}}
     </div>
-    <div class="app-modal-body">
-      ...
-    </div>
-</app-condition>
+</app-modal>

@@ -1,4 +1,3 @@
-import { Configuration } from '../models/configuration';
 import { Module } from '../models/module';
 import { Injectable } from '@angular/core';
 

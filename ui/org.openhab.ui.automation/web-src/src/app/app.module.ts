@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { SharedPropertiesService } from './services/shared-properties.service';
 import { ItemsComponent } from './components/items/items.component';
 import { CreateComponent } from './components/create/create.component';
-import { ConditionComponent } from './components/condition/condition.component';
+import { ModalComponent } from './components/modal/modal.component';
 import { RouterModule } from '@angular/router';
 import { OverviewComponent } from './components/overview/overview.component';
 
@@ -16,7 +16,7 @@ import { OverviewComponent } from './components/overview/overview.component';
     AppComponent,
     ItemsComponent,
     CreateComponent,
-    ConditionComponent,
+    ModalComponent,
     OverviewComponent
   ],
   imports: [
@@ -33,7 +33,7 @@ import { OverviewComponent } from './components/overview/overview.component';
         component: OverviewComponent
       },
       {
-        path: '', redirectTo: '/create', pathMatch: 'full'
+        path: '', redirectTo: 'create', pathMatch: 'full'
       }
     ])
   ],

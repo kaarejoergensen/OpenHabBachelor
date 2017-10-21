@@ -7,11 +7,19 @@
         <h4 class="modal-title"><ng-content select=".app-modal-header"></ng-content></h4>
       </div>
       <div class="modal-body">
-        <ng-content select=".app-modal-body"></ng-content>
+        When
+        <select>
+            <option value={{item.name}}>{{item.label}}</option>
+        </select>
+        <select [(ngModel)]="selectedOperator" (ngModelChange)="onOperatorChange($event)">
+            <option *ngFor="let o of operators" [ngValue]="o">{{o}}</option>
+        </select>
+        <input #stateInput type="number" 
+            name="value" min={{item.stateDescription.minimum}} max={{item.stateDescription.maximum}}>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" (click)="hide()">Close</button>
-        <button type="button" class="btn btn-primary" (click)="save()">Save changes</button>
+        <button type="button" class="btn btn-primary" (click)="save(stateInput.value)">Save changes</button>
       </div>
 	</div>
 </div>

@@ -1,15 +1,25 @@
 <a routerLink="/overview">Overview</a>
 <div *ngIf="isLoading" class="loader"></div>
-<div *ngIf="!isLoading" class="creatediv">
+<div *ngIf="!isLoading && !isConditionsChosen" class="creatediv">
     <div class="itemsdiv">
+        <h2>Choose conditions</h2>
         <div class="conditions">
-           <app-items [items]="items"></app-items>
-        </div>
-        <div class="actions">
-            <app-items [items]="editableItems"></app-items>
+           <app-items [items]="items" [itemType]="'condition'"></app-items>
         </div>
     </div>
     <div class="btn-div">
-       <button type="button" class="btn" (click)="createRule()">Create</button>
+       <button type="button" class="btn btn-primary" (click)="next()">Next</button>
+    </div>
+</div>
+<div *ngIf="!isLoading && isConditionsChosen" class="creatediv">
+    <div class="itemsdiv">
+        <h2>Choose actions</h2>
+        <div class="actions">
+           <app-items [items]="editableItems" [itemType]="'action'"></app-items>
+        </div>
+    </div>
+    <div class="btn-div">
+       <button type="button" class="btn btn-default" (click)="goBack()">Back</button>
+       <button type="button" class="btn btn-primary" (click)="createRule()">Create</button>
     </div>
 </div>
