@@ -5,8 +5,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --base-href=",
-    "build": "ng build --output-path=../web --base-href=/automation/",
-    "prod": "ng build --output-path=../web -prod --base-href=/automation/",
+    "build": "ng build --output-path=../web",
+    "prod": "ng build --output-path=../web -prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

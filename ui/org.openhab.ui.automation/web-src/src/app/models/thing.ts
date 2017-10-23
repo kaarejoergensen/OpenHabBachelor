@@ -1,3 +1,4 @@
+import { Item } from './item';
 export class Thing {
   statusInfo: StatusInfo;
   label: string;
@@ -6,6 +7,8 @@ export class Thing {
   thingTypeUID: string;
   location: string;
   channels: Channel[];
+  items = [];
+  editableItems = [];
 }
 
 export class StatusInfo {

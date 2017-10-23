@@ -8,8 +8,22 @@ import { SharedPropertiesService } from './services/shared-properties.service';
 import { ItemsComponent } from './components/items/items.component';
 import { CreateComponent } from './components/create/create.component';
 import { ModalComponent } from './components/modal/modal.component';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { OverviewComponent } from './components/overview/overview.component';
+
+const routes: Routes = [
+      {
+        path: 'create',
+        component: CreateComponent
+      },
+      {
+        path: 'overview',
+        component: OverviewComponent
+      },
+      {
+        path: '', redirectTo: 'create', pathMatch: 'full'
+      }
+];
 
 @NgModule({
   declarations: [
@@ -23,19 +37,7 @@ import { OverviewComponent } from './components/overview/overview.component';
     BrowserModule,
     FormsModule,
     HttpModule,
-    RouterModule.forRoot([
-      {
-        path: 'create',
-        component: CreateComponent
-      },
-      {
-        path: 'overview',
-        component: OverviewComponent
-      },
-      {
-        path: '', redirectTo: 'create', pathMatch: 'full'
-      }
-    ])
+    RouterModule.forRoot(routes, { useHash: true })
   ],
   providers: [SharedPropertiesService],
   bootstrap: [AppComponent]

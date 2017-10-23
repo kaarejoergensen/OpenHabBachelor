@@ -3,19 +3,13 @@
     height: 100%;
 }
 
-.conditions, .actions {
+.creatediv {
     width: 45%;
     height: 75%;
     display: inline-block;
     /* If worried about IE7 and IE6, add the two next lines */
     *display: inline;
     *zoom: 1;
-}
-
-.conditions {
     float: middle;
-}
-
-.actions {
-    float: middle;
+    clear:both;
 }

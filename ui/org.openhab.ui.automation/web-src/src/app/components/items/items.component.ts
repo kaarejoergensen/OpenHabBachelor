@@ -1,4 +1,5 @@
 import { Item } from '../../models/item';
+import { Thing } from '../../models/thing';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 
@@ -8,38 +9,38 @@ import { Component, OnInit, Input, ViewChild } from '@angular/core';
   styleUrls: ['./items.component.css']
 })
 export class ItemsComponent implements OnInit {
-  @Input() items: Item[];
-  @Input() itemType: string;
+  @Input() things: Thing[];
+  @Input() thingType: string;
   @ViewChild('modal') conditionModal;
-  selectedItems: Item[];
-  selectedItem: Item;
+  selectedThings: Thing[];
+  selectedThing: Thing;
   constructor(private sharedProperteis: SharedPropertiesService) { }
 
   ngOnInit() {
-    this.selectedItems = [];
+    this.selectedThings = [];
   }
 
-  onSelect(item: Item): void {
-    const index = this.selectedItems.indexOf(item);
+  onSelect(thing: Thing): void {
+    const index = this.selectedThings.indexOf(thing);
     if (index > -1) {
-      this.selectedItems.splice(index, 1);
+      this.selectedThings.splice(index, 1);
     } else {
-      this.selectedItem = item;
+      this.selectedThing = thing;
       this.conditionModal.show();
     }
   }
 
-  addItemToSelected(item: Item): void {
-    if (this.selectedItems.indexOf(item) === -1) {
-      this.selectedItems.push(item);
+  addThingToSelected(thing: Thing): void {
+    if (this.selectedThings.indexOf(thing) === -1) {
+      this.selectedThings.push(thing);
     }
   }
 
   getModalHeader(): string {
-    if (this.itemType === 'condition') {
-      return 'Conditions modal';
+    if (this.thingType === 'condition') {
+      return 'Create condition';
     } else {
-      return 'Actions modal';
+      return 'Create action';
     }
   }
 }

@@ -2,9 +2,11 @@ import { Module } from '../../models/module';
 import { Item } from '../../models/item';
 import { Thing } from '../../models/thing';
 import { ItemService } from '../../services/item.service';
+import { RuleService } from '../../services/rule.service';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
 import { ThingService } from '../../services/thing.service';
-import { Component, OnInit } from '@angular/core';
+import { JsonPipe } from '@angular/common';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -16,26 +18,27 @@ import 'rxjs/add/operator/concat';
   selector: 'app-create',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css'],
-  providers: [ItemService, ThingService]
+  providers: [ItemService, ThingService, RuleService]
 })
 export class CreateComponent implements OnInit {
-titleText = 'Welcome to the Automation UI for openHAB project!';
-  items: Item[];
-  editableItems: Item[];
-  isLoading = true;
-  isConditionsChosen = false;
+  @ViewChild('bodyJson') jsonChild: ElementRef;
+//  items: Item[];
+//  editableItems: Item[];
+  things: Thing[];
+  thingsWithEditableItems: Thing[];
+  step = 0;
+  ruleName: string;
+  ruleDescription: string;
+  hidden = true;
 
   ngOnInit(): void {
-    this.items = [];
-    this.editableItems = [];
     this.getItemsAndThings();
   }
 
   constructor(private itemService: ItemService, private sharedProperties: SharedPropertiesService,
-  private thingService: ThingService) { }
+  private thingService: ThingService, private ruleService: RuleService) { }
 
   getItemsAndThings(): void {
-    this.isLoading = true;
     let items = [];
     let things = [];
     this.itemService.getItems()
@@ -49,11 +52,11 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
         items = res;
       }
       if (things.length > 0 && items.length > 0) {
-        this.items = this.setItemName(items, things);
-        this.editableItems = this.sortItems(this.items);
-        this.isLoading = false;
-        console.log(this.items.length + ' items with names');
-        console.log(this.editableItems.length + ' editable items');
+//        this.items = this.setItemName(items, things);
+//        this.editableItems = this.sortItems(this.items);
+        this.things = this.addItemsToThings(items, things);
+        this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
+        this.next();
       }
     },
     error => this.handleError(error));
@@ -63,8 +66,8 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
     console.log('Error! ', error);
   }
 
-  setItemName(items: Item[], things: Thing[]): Item[] {
-    const itemsWithNames = [];
+  addItemsToThings(items: Item[], things: Thing[]): Thing[] {
+    const thingsWithItems = [];
     for (const thing of things) {
       if (thing.channels && thing.channels.length > 0) {
         for (const channel of thing.channels) {
@@ -72,8 +75,20 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
             for (const linkedItem of channel.linkedItems) {
               for (const item of items) {
                 if (linkedItem === item.name) {
-                  item.thingName = thing.label;
-                  itemsWithNames.push(item);
+                  if (thing.items !== undefined) {
+                    thing.items.push(item);
+                  } else {
+                    thing['items'] = [];
+                    thing.items.push(item);
+                  }
+                  if (!item.stateDescription || !item.stateDescription.readOnly) {
+                    if (thing.editableItems !== undefined) {
+                      thing.editableItems.push(item);
+                    } else {
+                      thing['editableItems'] = [];
+                      thing.editableItems.push(item);
+                    }
+                  }
                 }
               }
             }
@@ -81,43 +96,77 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
         }
       }
     }
-    return itemsWithNames;
+    return things.filter(t => t.items !== undefined && t.items.length > 0);
   }
 
-  sortItems(items: Item[]): Item[] {
-    const editableItems = [];
-    for (const item of items) {
-      if (item.stateDescription) {
-        if (!item.stateDescription.readOnly) {
-          editableItems.push(item);
-        }
-      } else {
-        editableItems.push(item);
-      }
-    }
-    return editableItems;
-  }
+//  setItemName(items: Item[], things: Thing[]): Item[] {
+//    const itemsWithNames = [];
+//    for (const thing of things) {
+//      if (thing.channels && thing.channels.length > 0) {
+//        for (const channel of thing.channels) {
+//          if (channel.linkedItems && channel.linkedItems.length > 0) {
+//            for (const linkedItem of channel.linkedItems) {
+//              for (const item of items) {
+//                if (linkedItem === item.name) {
+//                  item.thingName = thing.label;
+//                  itemsWithNames.push(item);
+//                }
+//              }
+//            }
+//          }
+//        }
+//      }
+//    }
+//    return itemsWithNames;
+//  }
+
+//  sortItems(items: Item[]): Item[] {
+//    const editableItems = [];
+//    for (const item of items) {
+//      if (item.stateDescription) {
+//        if (!item.stateDescription.readOnly) {
+//          editableItems.push(item);
+//        }
+//      } else {
+//        editableItems.push(item);
+//      }
+//    }
+//    return editableItems;
+//  }
 
   next(): void {
-    this.isConditionsChosen = true;
+    this.step++;
   }
 
+  goBack(): void {
+    this.step--;
+  }
+
+  saveNameAndDescription(name: string, desc: string): void {
+    this.ruleName = name;
+    this.ruleDescription = desc;
+  }
   createRule(): void {
     const body = this.getRuleJson(null);
-    console.log('Not implemented');
+    this.ruleService.createRule(body)
+      .subscribe(res => this.jsonChild.nativeElement.innerHTML = res ? 'Created!' : 'Error!',
+                 error => this.jsonChild.nativeElement.innerHTML = error);
   }
 
   getRuleJson(uid: string): any {
-    return {
+    const body = {
       tags: [],
       conditions: this.sharedProperties.getModuleJSON('condition'),
-      description: 'Description',
-      name: 'Name',
+      description: this.ruleDescription,
+      name: this.ruleDescription,
       triggers: this.sharedProperties.getModuleJSON('trigger'),
       configDescriptions: [],
       actions: this.sharedProperties.getModuleJSON('action'),
-      uid: uid
     };
+    if (uid !== undefined && uid !== null) {
+      body['uid'] = uid;
+    }
+    return body;
   }
 
   isThingArray(arr: Thing[] | Item[]): arr is Thing[] {
@@ -126,9 +175,5 @@ titleText = 'Welcome to the Automation UI for openHAB project!';
 
   isItemArray(arr: Thing[] | Item[]): arr is Item[] {
     return arr.length > 0 && (<Item>arr[0]).link !== undefined;
-  }
-
-  goBack(): void {
-    this.isConditionsChosen = false;
   }
 }

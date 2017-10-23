@@ -1,16 +1,15 @@
-<div *ngIf="items" class="itemsdiv">
+<div *ngIf="things" class="itemsdiv">
     <ul class="items">
-        <li *ngFor="let item of items">
+        <li *ngFor="let thing of things">
             <div class="inner-item"
-            (click)="onSelect(item)"
-            [class.selected]="selectedItems.indexOf(item) > -1">
-               {{item.thingName}} <br>
-               {{item.label}}
+            (click)="onSelect(thing)"
+            [class.selected]="selectedThings.indexOf(thing) > -1">
+               {{thing.label}}
             </div>        
          </li>
      </ul>
 </div>
-<app-modal [item]="selectedItem" [itemType]="this.itemType" (onSelected)="addItemToSelected(selectedItem)" #modal>
+<app-modal [thing]="selectedThing" [thingType]="thingType" (onSelected)="addThingToSelected(selectedThing)" #modal>
     <div class="app-modal-header">
       {{getModalHeader()}}
     </div>

@@ -1,25 +1,40 @@
-<a routerLink="/overview">Overview</a>
-<div *ngIf="isLoading" class="loader"></div>
-<div *ngIf="!isLoading && !isConditionsChosen" class="creatediv">
-    <div class="itemsdiv">
-        <h2>Choose conditions</h2>
-        <div class="conditions">
-           <app-items [items]="items" [itemType]="'condition'"></app-items>
-        </div>
-    </div>
-    <div class="btn-div">
-       <button type="button" class="btn btn-primary" (click)="next()">Next</button>
-    </div>
+<div *ngIf="step == 0" class="loader"></div>
+<div [hidden]="step != 1" class="creatediv">
+	<h2>Enter name and description</h2>
+	<div class="form-group">
+		<label for="usr">Name:</label>
+		<input #name type="text" class="form-control" id="name">
+	</div>
+	<div class="form-group">
+		<label for="pwd">Description:</label>
+		<input #desc type="text" class="form-control">
+	</div>
+	<div class="btn-div">
+		<button type="button" class="btn btn-primary" (click)="saveNameAndDescription(name.value, desc.value); next();">Next</button>
+	</div>
 </div>
-<div *ngIf="!isLoading && isConditionsChosen" class="creatediv">
-    <div class="itemsdiv">
-        <h2>Choose actions</h2>
-        <div class="actions">
-           <app-items [items]="editableItems" [itemType]="'action'"></app-items>
-        </div>
-    </div>
-    <div class="btn-div">
-       <button type="button" class="btn btn-default" (click)="goBack()">Back</button>
-       <button type="button" class="btn btn-primary" (click)="createRule()">Create</button>
-    </div>
+<div [hidden]="step != 2" class="creatediv">
+	<div class="itemsdiv">
+		<h2>Choose conditions</h2>
+		<div class="conditions">
+			<app-items [things]="things" [thingType]="'condition'"></app-items>
+		</div>
+	</div>
+	<div class="btn-div">
+		<button type="button" class="btn btn-default" (click)="goBack()">Back</button>
+		<button type="button" class="btn btn-primary" (click)="next()">Next</button>
+	</div>
+</div>
+<div [hidden]="step != 3" class="creatediv">
+	<div class="itemsdiv">
+		<h2>Choose actions</h2>
+		<div class="actions">
+			<app-items [things]="thingsWithEditableItems" [thingType]="'action'"></app-items>
+		</div>
+	</div>
+	<div class="btn-div">
+		<button type="button" class="btn btn-default" (click)="goBack()">Back</button>
+		<button type="button" class="btn btn-primary" (click)="createRule()">Create</button>
+	</div>
+	<div #bodyJson></div>
 </div>

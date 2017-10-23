@@ -1,25 +1,43 @@
-<div *ngIf="item" (click)="onContainerClicked($event)" class="modal fade" tabindex="-1" role="dialog"
-     [ngClass]="{'in': visibleAnimate}"
-     [ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}">
+<div *ngIf="thing" (click)="onContainerClicked($event)" class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'in': visibleAnimate}" [ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}">
 	<div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" (click)="hide()"><span>&times;</span></button>
-        <h4 class="modal-title"><ng-content select=".app-modal-header"></ng-content></h4>
-      </div>
-      <div class="modal-body">
-        When
-        <select>
-            <option value={{item.name}}>{{item.label}}</option>
-        </select>
-        <select [(ngModel)]="selectedOperator" (ngModelChange)="onOperatorChange($event)">
-            <option *ngFor="let o of operators" [ngValue]="o">{{o}}</option>
-        </select>
-        <input #stateInput type="number" 
-            name="value" min={{item.stateDescription.minimum}} max={{item.stateDescription.maximum}}>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" (click)="hide()">Close</button>
-        <button type="button" class="btn btn-primary" (click)="save(stateInput.value)">Save changes</button>
-      </div>
+		<div class="modal-header">
+			<button type="button" class="close" (click)="hide()">
+				<span>&times;</span>
+			</button>
+			<h4 class="modal-title">
+				<ng-content select=".app-modal-header"></ng-content>
+			</h4>
+		</div>
+		<div *ngIf="thingType=='condition'">
+			<div class="modal-body">
+				When 
+				<select [(ngModel)]="selectedItem" (ngModelChange)="onItemChange($event)">
+					<option *ngFor="let i of thing.items" [ngValue]="i">{{i.label}}</option>
+				</select>
+				 is 
+				<select [(ngModel)]="selectedOperator" (ngModelChange)="onOperatorChange($event)">
+					<option *ngFor="let o of operators" [ngValue]="o">{{o.name}}</option>
+				</select>
+				<input #stateInput type="number" name="value">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" (click)="hide()">Close</button>
+				<button type="button" class="btn btn-primary" (click)="save(stateInput.value)">Save changes</button>
+			</div>
+		</div>
+		<div *ngIf="thingType==='action'">
+			<div class="modal-body">
+				Set
+				<select [(ngModel)]="selectedItem" (ngModelChange)="onItemChange($event)">
+					<option *ngFor="let i of thing.editableItems" [ngValue]="i">{{i.label}}</option>
+				</select>
+				to
+				<input #stateInput type="number" name="value" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" (click)="hide()">Close</button>
+				<button type="button" class="btn btn-primary" (click)="save(stateInput.value)">Save changes</button>
+			</div>
+		</div>
 	</div>
 </div>

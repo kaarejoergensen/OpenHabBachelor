@@ -1,22 +1,18 @@
 export class Module {
   id: string;
   uid: string;
-  configuration = [];
+  configuration = {};
   type: string;
   // Only used in triggers
   correspondingConditionId: string;
 
   addConfiguration(name: string, command: string): void {
-    const obj = {};
-    obj[name] = command;
-    this.configuration.push(obj);
+    this.configuration[name] = command;
   }
 
   getConfiguration(name: string): string {
-    for (const conf of this.configuration) {
-      if (conf[name] !== undefined) {
-        return conf[name];
-      }
+    if (this.configuration[name] !== undefined) {
+      return this.configuration[name];
     }
     return '';
   }
