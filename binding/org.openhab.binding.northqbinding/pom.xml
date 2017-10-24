@@ -15,5 +15,46 @@
 
 	<name>NorthQBinding Binding</name>
 	<packaging>eclipse-plugin</packaging>
+	
+	  <build>
+	<extensions>
+		<extension>
+			<groupId>org.apache.maven.wagon</groupId>
+			<artifactId>wagon-ssh</artifactId>
+			<version>3.0.0</version>
+		</extension>
+	</extensions>
+    <plugins>
+	  <plugin>
+	  <groupId>org.codehaus.mojo</groupId>
+		<artifactId>wagon-maven-plugin</artifactId>
+		<version>1.0</version>
+		<configuration>
+			<serverId>ec2-node</serverId>
+			<url>${server-url}</url>
+			<fromFile>${basedir}/target/${project.build.finalName}.jar</fromFile>
+			<toFile>/home/ubuntu/${project.build.finalName}.jar</toFile>
+			<commands>sudo mv /home/ubuntu/${project.build.finalName}.jar /usr/share/openhab2/addons/${project.build.finalName}.jar; sudo systemctl restart openhab2.service</commands>
+			<displayCommandOutputs>true</displayCommandOutputs>
+		</configuration>
+		<executions>
+			<execution>
+				<id>upload-puppet-module</id>
+				<phase>none</phase>
+				<goals>
+					<goal>upload-single</goal>
+				</goals>
+			</execution>
+			<execution>
+				<id>openHAB install</id>
+				<phase>none</phase>
+				<goals>
+					<goal>sshexec</goal>
+				</goals>
+			</execution>
+		</executions>
+		</plugin>
+    </plugins>
+  </build>
 
 </project>

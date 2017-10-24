@@ -18,3 +18,7 @@
     width:100%;
   }
 }
+mat-progress-bar {
+	width: 45%;
+	margin: auto;
+}

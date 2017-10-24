@@ -125,23 +125,22 @@
 }
 
 /* Add animation to "page content" */
-.creatediv,
-.overviewdiv {
+.animate-from-right {
   position: relative;
-  -webkit-animation-name: animatebottom;
-  -webkit-animation-duration: 0.75s;
-  animation-name: animatebottom;
-  animation-duration: 0.75s
+  -webkit-animation-name: animatefromright;
+  -webkit-animation-duration: 1s;
+  animation-name: animatefromright;
+  animation-duration: 1s
 }
 
-@-webkit-keyframes animatebottom {
-  from { bottom:-100px; opacity:0 } 
-  to { bottom:0px; opacity:1 }
+@-webkit-keyframes animatefromright {
+  from { left:100px; opacity:0 } 
+  to { left:0px; opacity:1 }
 }
 
-@keyframes animatebottom { 
-  from{ bottom:-100px; opacity:0 } 
-  to{ bottom:0; opacity:1 }
+@keyframes animatefromright { 
+  from{ left:100px; opacity:0 } 
+  to{ left:0; opacity:1 }
 }
 
 div[hidden] {

@@ -1,5 +1,15 @@
 <div *ngIf="step == 0" class="loader"></div>
-<div [hidden]="step != 1" class="creatediv">
+<div *ngIf="step != 0" class="animate-from-right">
+    <section>
+      <mat-progress-bar
+          class="example-margin"
+          color="primary"
+          mode="determinate"
+          [value]="(step - 1)*33.3333">
+      </mat-progress-bar>
+    </section>
+</div>
+<div [hidden]="step != 1" class="creatediv animate-from-right">
 	<h2>Enter name and description</h2>
 	<mat-form-field style="width: 100%;"> <input #name matInput placeholder="Name"> </mat-form-field>
 	<mat-form-field style="width: 100%;"> <input #desc matInput placeholder="Description" (keyup.enter)="saveNameAndDescription(name.value, desc.value); next();"> </mat-form-field>
@@ -7,7 +17,7 @@
 		<button type="button" class="btn btn-primary" (click)="saveNameAndDescription(name.value, desc.value); next();">Next</button>
 	</div>
 </div>
-<div [hidden]="step != 2" class="creatediv">
+<div [hidden]="step != 2" class="creatediv animate-from-right">
 	<div class="itemsdiv">
 		<h2>Choose conditions</h2>
 		<div class="conditions">
@@ -19,7 +29,7 @@
 		<button type="button" class="btn btn-primary" (click)="next()">Next</button>
 	</div>
 </div>
-<div [hidden]="step != 3" class="creatediv">
+<div [hidden]="step != 3" class="creatediv animate-from-right">
 	<div class="itemsdiv">
 		<h2>Choose actions</h2>
 		<div class="actions">
