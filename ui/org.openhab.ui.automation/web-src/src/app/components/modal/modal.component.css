@@ -1,0 +1,14 @@
+.date-button {
+	margin: 5px;
+	background-color: white;
+	color: black;
+}
+
+.selectedday {
+	background-color: #4CAF50 !important;
+}
+
+mat-form-field {
+    width: 150px;
+    text-align: center;
+}

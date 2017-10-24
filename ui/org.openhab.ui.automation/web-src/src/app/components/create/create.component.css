@@ -13,3 +13,8 @@
     float: middle;
     clear:both;
 }
+@media (max-width:800px) {
+  .creatediv {
+    width:100%;
+  }
+}

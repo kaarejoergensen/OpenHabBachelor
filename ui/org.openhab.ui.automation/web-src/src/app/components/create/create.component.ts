@@ -22,8 +22,6 @@ import 'rxjs/add/operator/concat';
 })
 export class CreateComponent implements OnInit {
   @ViewChild('bodyJson') jsonChild: ElementRef;
-//  items: Item[];
-//  editableItems: Item[];
   things: Thing[];
   thingsWithEditableItems: Thing[];
   step = 0;
@@ -52,10 +50,9 @@ export class CreateComponent implements OnInit {
         items = res;
       }
       if (things.length > 0 && items.length > 0) {
-//        this.items = this.setItemName(items, things);
-//        this.editableItems = this.sortItems(this.items);
         this.things = this.addItemsToThings(items, things);
         this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
+        this.things.push(this.createTimeThing());
         this.next();
       }
     },
@@ -99,40 +96,15 @@ export class CreateComponent implements OnInit {
     return things.filter(t => t.items !== undefined && t.items.length > 0);
   }
 
-//  setItemName(items: Item[], things: Thing[]): Item[] {
-//    const itemsWithNames = [];
-//    for (const thing of things) {
-//      if (thing.channels && thing.channels.length > 0) {
-//        for (const channel of thing.channels) {
-//          if (channel.linkedItems && channel.linkedItems.length > 0) {
-//            for (const linkedItem of channel.linkedItems) {
-//              for (const item of items) {
-//                if (linkedItem === item.name) {
-//                  item.thingName = thing.label;
-//                  itemsWithNames.push(item);
-//                }
-//              }
-//            }
-//          }
-//        }
-//      }
-//    }
-//    return itemsWithNames;
-//  }
-
-//  sortItems(items: Item[]): Item[] {
-//    const editableItems = [];
-//    for (const item of items) {
-//      if (item.stateDescription) {
-//        if (!item.stateDescription.readOnly) {
-//          editableItems.push(item);
-//        }
-//      } else {
-//        editableItems.push(item);
-//      }
-//    }
-//    return editableItems;
-//  }
+  createTimeThing(): Thing {
+    const thing = new Thing();
+    thing.label = 'Time';
+    const item = new Item();
+    item.type = 'CustomTime';
+    item.label = 'time';
+    thing.items = [item];
+    return thing;
+  }
 
   next(): void {
     this.step++;
@@ -148,9 +120,10 @@ export class CreateComponent implements OnInit {
   }
   createRule(): void {
     const body = this.getRuleJson(null);
+    this.jsonChild.nativeElement.innerHTML = new JsonPipe().transform(body);
     this.ruleService.createRule(body)
-      .subscribe(res => this.jsonChild.nativeElement.innerHTML = res ? 'Created!' : 'Error!',
-                 error => this.jsonChild.nativeElement.innerHTML = error);
+      .subscribe(res => this.jsonChild.nativeElement.innerHTML += '<br>' +  (res ? 'Created!' : 'Error!'),
+                 error => this.jsonChild.nativeElement.innerHTML += '<br>' + error);
   }
 
   getRuleJson(uid: string): any {
@@ -158,7 +131,7 @@ export class CreateComponent implements OnInit {
       tags: [],
       conditions: this.sharedProperties.getModuleJSON('condition'),
       description: this.ruleDescription,
-      name: this.ruleDescription,
+      name: this.ruleName,
       triggers: this.sharedProperties.getModuleJSON('trigger'),
       configDescriptions: [],
       actions: this.sharedProperties.getModuleJSON('action'),

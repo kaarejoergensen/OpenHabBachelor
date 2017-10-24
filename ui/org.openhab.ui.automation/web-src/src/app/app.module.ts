@@ -10,6 +10,8 @@ import { CreateComponent } from './components/create/create.component';
 import { ModalComponent } from './components/modal/modal.component';
 import { RouterModule, Routes } from '@angular/router';
 import { OverviewComponent } from './components/overview/overview.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatButtonModule, MatInputModule, MatSelectModule, MatNativeDateModule, MatDatepickerModule } from '@angular/material';
 
 const routes: Routes = [
       {
@@ -37,7 +39,13 @@ const routes: Routes = [
     BrowserModule,
     FormsModule,
     HttpModule,
-    RouterModule.forRoot(routes, { useHash: true })
+    RouterModule.forRoot(routes, { useHash: true }),
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatInputModule,
+    MatSelectModule,
+    MatNativeDateModule,
+    MatDatepickerModule
   ],
   providers: [SharedPropertiesService],
   bootstrap: [AppComponent]

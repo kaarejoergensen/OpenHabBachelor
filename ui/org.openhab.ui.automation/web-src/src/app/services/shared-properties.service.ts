@@ -62,8 +62,18 @@ export class SharedPropertiesService {
       trigger.id = this.triggers[index].id;
     }
     trigger.correspondingConditionId = condition.id;
-    trigger.type = 'core.ItemStateUpdateTrigger';
-    trigger.addConfiguration('itemName', condition.getConfiguration('itemName'));
+    if (condition.type !== 'timer.DayOfWeekCondition') {
+      trigger.type = 'core.ItemStateUpdateTrigger';
+      trigger.addConfiguration('itemName', condition.getConfiguration('itemName'));
+      trigger.name = 'an item state is updated';
+      trigger.description = 'This triggers the rule if an item state is updated (even if it does not change).';
+    } else {
+      trigger.type = 'timer.TimeOfDayTrigger';
+      trigger.name = 'it is a fixed time of day';
+      trigger.description = 'Triggers at a specified time';
+      trigger.addConfiguration('time', condition.getConfiguration('tempTime'));
+      condition.removeConfiguration('tempTime');
+    }
     return trigger;
   }
 
@@ -95,14 +105,14 @@ export class SharedPropertiesService {
   getModuleJSON(moduleType: string): any[] {
     const moduleJSON = [];
     const modules = this.getModules(moduleType);
-    for (const condition of modules) {
-      const conditionType = typeof condition.uid === 'undefined' ? condition.type : condition.type;
+    for (const mod of modules) {
+      const conditionType = typeof mod.uid === 'undefined' ? mod.type : mod.type;
       moduleJSON.push({
-        'id': condition.id,
-        'label': 'label',
-        'description': 'description',
+        'id': mod.id,
+        'label': mod.name,
+        'description': mod.description,
         'type': conditionType,
-        'configuration': condition.configuration ? condition.configuration : {}
+        'configuration': mod.configuration ? mod.configuration : {}
       });
     }
     return moduleJSON;

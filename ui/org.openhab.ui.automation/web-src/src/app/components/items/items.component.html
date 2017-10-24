@@ -3,13 +3,13 @@
         <li *ngFor="let thing of things">
             <div class="inner-item"
             (click)="onSelect(thing)"
-            [class.selected]="selectedThings.indexOf(thing) > -1">
+            [class.selecteditem]="selectedThings.indexOf(thing) > -1">
                {{thing.label}}
             </div>        
          </li>
      </ul>
 </div>
-<app-modal [thing]="selectedThing" [thingType]="thingType" (onSelected)="addThingToSelected(selectedThing)" #modal>
+<app-modal [thing]="selectedThing" [modalType]="thingType" (onSelected)="addThingToSelected(selectedThing)" #modal>
     <div class="app-modal-header">
       {{getModalHeader()}}
     </div>

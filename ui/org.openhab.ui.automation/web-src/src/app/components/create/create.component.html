@@ -1,14 +1,8 @@
 <div *ngIf="step == 0" class="loader"></div>
 <div [hidden]="step != 1" class="creatediv">
 	<h2>Enter name and description</h2>
-	<div class="form-group">
-		<label for="usr">Name:</label>
-		<input #name type="text" class="form-control" id="name">
-	</div>
-	<div class="form-group">
-		<label for="pwd">Description:</label>
-		<input #desc type="text" class="form-control">
-	</div>
+	<mat-form-field style="width: 100%;"> <input #name matInput placeholder="Name"> </mat-form-field>
+	<mat-form-field style="width: 100%;"> <input #desc matInput placeholder="Description" (keyup.enter)="saveNameAndDescription(name.value, desc.value); next();"> </mat-form-field>
 	<div class="btn-div">
 		<button type="button" class="btn btn-primary" (click)="saveNameAndDescription(name.value, desc.value); next();">Next</button>
 	</div>
