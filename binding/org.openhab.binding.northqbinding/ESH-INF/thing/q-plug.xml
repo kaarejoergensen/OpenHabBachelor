@@ -38,7 +38,7 @@
     <!-- Sample Channel Type -->
     <channel-type id="binaryswitch-channel">
         <item-type>Switch</item-type>
-        <label>Turn switch on/off</label>
+        <label>Power-state</label>
         <description>Switch for changing the power-state</description>
     </channel-type>
     

@@ -39,7 +39,7 @@
      <!-- Sample Channel Type -->
     <channel-type id="thermostat-temperature-channel">
         <item-type>Number</item-type>
-        <label>Set temperature</label>
+        <label>Temperature</label>
         <description>Get or set current temperature on thermostat</description>
         <state min="5" max="28" step="0.5" pattern="%.1f °C" readOnly="false"/>
     </channel-type>

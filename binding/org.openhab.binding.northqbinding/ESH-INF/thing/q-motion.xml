@@ -40,7 +40,7 @@
 
     <channel-type id="binarysensor-arm-channel">
         <item-type>Switch</item-type>
-        <label>Arm/Disarm</label>
+        <label>Armed</label>
         <description>Switch for arming/disarming the Q-Motion</description>
     </channel-type>
     
