@@ -22,3 +22,19 @@ mat-progress-bar {
 	width: 45%;
 	margin: auto;
 }
+
+.button-row {
+	padding: 2px 16px;
+	float: right;
+}
+
+.loader {
+    display: inline-block;
+    /* If worried about IE7 and IE6, add the two next lines */
+    *display: inline;
+    *zoom: 1;
+    float: middle;
+    clear:both;
+    margin: 20px;
+    float: middle;
+}

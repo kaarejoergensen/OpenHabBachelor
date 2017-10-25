@@ -2,7 +2,7 @@ import { Item } from '../../models/item';
 import { Module } from '../../models/module';
 import { Thing } from '../../models/thing';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
-import { Component, OnChanges, Input, HostListener, Output, EventEmitter, ViewChild, ElementRef, OnInit} from '@angular/core';
+import { Component, OnChanges, Input, HostListener, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 
 
 @Component({
@@ -10,7 +10,7 @@ import { Component, OnChanges, Input, HostListener, Output, EventEmitter, ViewCh
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.css']
 })
-export class ModalComponent implements OnChanges, OnInit {
+export class ModalComponent implements OnChanges {
   @Input() thing: Thing;
   @Input() modalType: string;
   @Output() onSelected: EventEmitter<any> = new EventEmitter();
@@ -36,10 +36,6 @@ export class ModalComponent implements OnChanges, OnInit {
         this.selectedItem = this.thing.editableItems[0];
       }
     }
-  }
-
-  ngOnInit() {
-    this.days.forEach(d => this.selectedDays.push(d));
   }
 
   @HostListener('document:keyup', ['$event'])

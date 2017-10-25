@@ -12,7 +12,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { OverviewComponent } from './components/overview/overview.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule, MatInputModule, MatSelectModule, MatNativeDateModule, MatDatepickerModule } from '@angular/material';
-import { MatProgressBarModule, MatStepperModule } from '@angular/material';
+import { MatProgressBarModule, MatStepperModule, MatProgressSpinnerModule, MatDialogModule } from '@angular/material';
 
 const routes: Routes = [
       {
@@ -48,7 +48,9 @@ const routes: Routes = [
     MatNativeDateModule,
     MatDatepickerModule,
     MatProgressBarModule,
-    MatStepperModule
+    MatStepperModule,
+    MatProgressSpinnerModule,
+    MatDialogModule
   ],
   providers: [SharedPropertiesService],
   bootstrap: [AppComponent]

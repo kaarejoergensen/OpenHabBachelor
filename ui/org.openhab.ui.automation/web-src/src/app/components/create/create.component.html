@@ -1,8 +1,12 @@
-<div *ngIf="step == 0" class="loader"></div>
+<div *ngIf="step == 0" class="loader">
+        <mat-progress-spinner
+        color="primary"
+        mode="indeterminate">
+    </mat-progress-spinner>
+</div>
 <div *ngIf="step != 0" class="animate-from-right">
     <section>
       <mat-progress-bar
-          class="example-margin"
           color="primary"
           mode="determinate"
           [value]="(step - 1)*33.3333">
@@ -13,8 +17,8 @@
 	<h2>Enter name and description</h2>
 	<mat-form-field style="width: 100%;"> <input #name matInput placeholder="Name"> </mat-form-field>
 	<mat-form-field style="width: 100%;"> <input #desc matInput placeholder="Description" (keyup.enter)="saveNameAndDescription(name.value, desc.value); next();"> </mat-form-field>
-	<div class="btn-div">
-		<button type="button" class="btn btn-primary" (click)="saveNameAndDescription(name.value, desc.value); next();">Next</button>
+	<div class="button-row">
+	    <button mat-raised-button color="primary" (click)="saveNameAndDescription(name.value, desc.value); next();">Next</button>
 	</div>
 </div>
 <div [hidden]="step != 2" class="creatediv animate-from-right">
@@ -24,9 +28,9 @@
 			<app-items [things]="things" [thingType]="'condition'"></app-items>
 		</div>
 	</div>
-	<div class="btn-div">
-		<button type="button" class="btn btn-default" (click)="goBack()">Back</button>
-		<button type="button" class="btn btn-primary" (click)="next()">Next</button>
+	<div class="button-row">
+	    <button mat-raised-button (click)="goBack()">Back</button>
+	    <button mat-raised-button color="primary" (click)="next()">Next</button>
 	</div>
 </div>
 <div [hidden]="step != 3" class="creatediv animate-from-right">
@@ -36,9 +40,16 @@
 			<app-items [things]="thingsWithEditableItems" [thingType]="'action'"></app-items>
 		</div>
 	</div>
-	<div class="btn-div">
-		<button type="button" class="btn btn-default" (click)="goBack()">Back</button>
-		<button type="button" class="btn btn-primary" (click)="createRule()">Create</button>
-	</div>
-	<div #bodyJson></div>
+    <div class="button-row">
+        <button mat-raised-button (click)="goBack()">Back</button>
+        <button mat-raised-button color="primary" (click)="next()">Next</button>
+    </div>
+</div>
+<div [hidden]="step != 4" class="creatediv animate-from-right">
+    <h2>Overview</h2>
+    <div class="button-row">
+        <button mat-raised-button (click)="goBack()">Back</button>
+        <button mat-raised-button color="primary" (click)="createRule()">Create</button>
+    </div>
+    <div #bodyJson></div>
 </div>
