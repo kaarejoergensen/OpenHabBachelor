@@ -1,6 +1,46 @@
+.selecteditem {
+	background-color: #CFD8DC !important;
+	color: white;
+}
+
+.items {
+	list-style-type: none;
+}
+
+.items li {
+	width: 33%;
+	position: relative;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.inner-item {
+	background-color: #EEE;
+	margin: .5em;
+	padding: .3em 0;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.inner-item.selected:hover {
+	background-color: #BBD8DC !important;
+	color: white;
+}
+
+.inner-item:hover {
+	color: #607D8B;
+	background-color: #DDD;
+	left: .1em;
+}
+
+.inner-item .text {
+	position: relative;
+}
+
 .itemsdiv {
-    background-color:#f1f1f1;
-    padding:0.01em 16px;
-    margin:20px 0;
-    /*box-shadow:0 2px 4px 0 rgba(0,0,0,0.16),0 2px 1000px 0 rgba(0,0,0,0.12)!important*/
+	background-color: #f1f1f1;
+	padding: 0.01em 16px;
+	margin: 20px 0;
+	border-radius: 25px;
+	/*box-shadow:0 2px 4px 0 rgba(0,0,0,0.16),0 2px 1000px 0 rgba(0,0,0,0.12)!important*/
 }

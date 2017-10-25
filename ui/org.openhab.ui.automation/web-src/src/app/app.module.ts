@@ -12,7 +12,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { OverviewComponent } from './components/overview/overview.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule, MatInputModule, MatSelectModule, MatNativeDateModule, MatDatepickerModule } from '@angular/material';
-import { MatProgressBarModule, MatStepperModule, MatProgressSpinnerModule, MatDialogModule } from '@angular/material';
+import { MatProgressBarModule, MatStepperModule, MatProgressSpinnerModule, MatDialogModule, MatListModule } from '@angular/material';
+import { MatIconModule, MatSlideToggleModule, MatSnackBarModule } from '@angular/material';
 
 const routes: Routes = [
       {
@@ -24,7 +25,7 @@ const routes: Routes = [
         component: OverviewComponent
       },
       {
-        path: '', redirectTo: 'create', pathMatch: 'full'
+        path: '', redirectTo: 'overview', pathMatch: 'full'
       }
 ];
 
@@ -50,7 +51,11 @@ const routes: Routes = [
     MatProgressBarModule,
     MatStepperModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    MatListModule,
+    MatIconModule,
+    MatSlideToggleModule,
+    MatSnackBarModule
   ],
   providers: [SharedPropertiesService],
   bootstrap: [AppComponent]

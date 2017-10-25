@@ -18,6 +18,7 @@
 	<mat-form-field style="width: 100%;"> <input #name matInput placeholder="Name"> </mat-form-field>
 	<mat-form-field style="width: 100%;"> <input #desc matInput placeholder="Description" (keyup.enter)="saveNameAndDescription(name.value, desc.value); next();"> </mat-form-field>
 	<div class="button-row">
+        <button mat-raised-button (click)="cancel()">Cancel</button>
 	    <button mat-raised-button color="primary" (click)="saveNameAndDescription(name.value, desc.value); next();">Next</button>
 	</div>
 </div>

@@ -1,0 +1,33 @@
+.overviewdiv {
+	width: 60%;
+	height: 75%;
+	display: inline-block;
+	/* If worried about IE7 and IE6, add the two next lines */
+	*display: inline;
+	*zoom: 1;
+	float: middle;
+	clear: both;
+}
+@media (max-width:800px) {
+  .overviewdiv {
+    width:100%;
+  }
+}
+.rules {
+	position: relative;
+	text-align: left;
+}
+
+.inner-rule {
+	background-color: #EEE;
+	margin: .5em;
+	padding: .3em 0;
+	cursor: pointer;
+	border-radius: 25px;
+}
+
+.button-row {
+	padding: 2px 16px;
+	float: right;
+	clear: both;
+}

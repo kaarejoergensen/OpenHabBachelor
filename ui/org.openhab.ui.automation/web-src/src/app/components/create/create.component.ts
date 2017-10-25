@@ -5,8 +5,9 @@ import { ItemService } from '../../services/item.service';
 import { RuleService } from '../../services/rule.service';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
 import { ThingService } from '../../services/thing.service';
-import { JsonPipe } from '@angular/common';
+import { JsonPipe, Location } from '@angular/common';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -30,11 +31,16 @@ export class CreateComponent implements OnInit {
   hidden = true;
 
   ngOnInit(): void {
+    const edit = this.route.snapshot.queryParams['edit'] || undefined;
+    if (edit && edit !== 'true') {
+      this.sharedProperties.reset();
+    }
     this.getItemsAndThings();
   }
 
   constructor(private itemService: ItemService, private sharedProperties: SharedPropertiesService,
-  private thingService: ThingService, private ruleService: RuleService) { }
+  private thingService: ThingService, private ruleService: RuleService, private location: Location,
+  private route: ActivatedRoute) { }
 
   getItemsAndThings(): void {
     let items = [];
@@ -120,10 +126,10 @@ export class CreateComponent implements OnInit {
   }
   createRule(): void {
     const body = this.getRuleJson(null);
-    this.jsonChild.nativeElement.innerHTML = new JsonPipe().transform(body);
+    console.log(new JsonPipe().transform(body));
     this.ruleService.createRule(body)
-      .subscribe(res => this.jsonChild.nativeElement.innerHTML += '<br>' +  (res ? 'Created!' : 'Error!'),
-                 error => this.jsonChild.nativeElement.innerHTML += '<br>' + error);
+      .subscribe(res => this.sharedProperties.setResult(res),
+                 error => this.sharedProperties.setResult(error));
   }
 
   getRuleJson(uid: string): any {
@@ -148,5 +154,9 @@ export class CreateComponent implements OnInit {
 
   isItemArray(arr: Thing[] | Item[]): arr is Item[] {
     return arr.length > 0 && (<Item>arr[0]).link !== undefined;
+  }
+
+  cancel(): void {
+    this.location.back();
   }
 }

@@ -3,9 +3,10 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class SharedPropertiesService {
-  conditions: Module[];
-  actions: Module[];
-  triggers: Module[];
+  private conditions: Module[];
+  private actions: Module[];
+  private triggers: Module[];
+  private result: any;
 
   constructor() {
     this.init();
@@ -118,9 +119,18 @@ export class SharedPropertiesService {
     return moduleJSON;
   }
 
+  getResult(): any {
+    return this.result;
+  }
+
+  setResult(result: any): void {
+    this.result = result;
+  }
+
   reset(): void {
     this.conditions = [];
     this.actions = [];
     this.triggers = [];
+    this.result = null;
   }
 }

@@ -1,7 +1,9 @@
 import { Item } from '../../models/item';
 import { Thing } from '../../models/thing';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
+import { ModalComponent } from '../modal/modal.component';
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-items',
@@ -14,7 +16,7 @@ export class ItemsComponent implements OnInit {
   @ViewChild('modal') conditionModal;
   selectedThings: Thing[];
   selectedThing: Thing;
-  constructor(private sharedProperteis: SharedPropertiesService) { }
+  constructor(private sharedProperteis: SharedPropertiesService, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.selectedThings = [];
@@ -43,4 +45,14 @@ export class ItemsComponent implements OnInit {
       return 'Create action';
     }
   }
+
+//  openDialog(): void {
+//    const dialogRef = this.dialog.open(ModalComponent);
+//
+//    dialogRef.afterClosed().subscribe(result => {
+//      if (this.selectedThings.indexOf(result) === -1) {
+//        this.selectedThings.push(result);
+//      }
+//    });
+//  }
 }
