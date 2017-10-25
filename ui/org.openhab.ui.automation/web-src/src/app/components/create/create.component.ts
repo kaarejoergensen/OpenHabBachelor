@@ -7,7 +7,7 @@ import { SharedPropertiesService } from '../../services/shared-properties.servic
 import { ThingService } from '../../services/thing.service';
 import { JsonPipe, Location } from '@angular/common';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -40,7 +40,7 @@ export class CreateComponent implements OnInit {
 
   constructor(private itemService: ItemService, private sharedProperties: SharedPropertiesService,
   private thingService: ThingService, private ruleService: RuleService, private location: Location,
-  private route: ActivatedRoute) { }
+  private route: ActivatedRoute, private router: Router) { }
 
   getItemsAndThings(): void {
     let items = [];
@@ -128,8 +128,13 @@ export class CreateComponent implements OnInit {
     const body = this.getRuleJson(null);
     console.log(new JsonPipe().transform(body));
     this.ruleService.createRule(body)
-      .subscribe(res => this.sharedProperties.setResult(res),
-                 error => this.sharedProperties.setResult(error));
+      .subscribe(res => this.goToOverview(res),
+                 error => this.goToOverview(error));
+  }
+
+  goToOverview(result: any) {
+    this.sharedProperties.setResult(result);
+    this.router.navigate(['/overview']);
   }
 
   getRuleJson(uid: string): any {

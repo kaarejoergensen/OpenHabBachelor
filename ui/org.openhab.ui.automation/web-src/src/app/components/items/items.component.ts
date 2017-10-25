@@ -1,9 +1,10 @@
 import { Item } from '../../models/item';
+import { Module } from '../../models/module';
 import { Thing } from '../../models/thing';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
-import { ModalComponent } from '../modal/modal.component';
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { ModuleCreatorDialogComponent } from '../module-creator-dialog/module-creator-dialog.component';
+import { Component, OnInit, Input, ViewChild, Inject, ElementRef } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'app-items',
@@ -16,7 +17,7 @@ export class ItemsComponent implements OnInit {
   @ViewChild('modal') conditionModal;
   selectedThings: Thing[];
   selectedThing: Thing;
-  constructor(private sharedProperteis: SharedPropertiesService, public dialog: MatDialog) { }
+  constructor(private sharedProperties: SharedPropertiesService, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.selectedThings = [];
@@ -28,7 +29,7 @@ export class ItemsComponent implements OnInit {
       this.selectedThings.splice(index, 1);
     } else {
       this.selectedThing = thing;
-      this.conditionModal.show();
+      this.openDialog();
     }
   }
 
@@ -46,13 +47,15 @@ export class ItemsComponent implements OnInit {
     }
   }
 
-//  openDialog(): void {
-//    const dialogRef = this.dialog.open(ModalComponent);
-//
-//    dialogRef.afterClosed().subscribe(result => {
-//      if (this.selectedThings.indexOf(result) === -1) {
-//        this.selectedThings.push(result);
-//      }
-//    });
-//  }
+  openDialog(): void {
+    const dialogRef = this.dialog.open(ModuleCreatorDialogComponent, {
+      data: {thing: this.selectedThing, modalType: this.thingType}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (this.selectedThings.indexOf(result) === -1) {
+        this.selectedThings.push(result);
+      }
+    });
+  }
 }

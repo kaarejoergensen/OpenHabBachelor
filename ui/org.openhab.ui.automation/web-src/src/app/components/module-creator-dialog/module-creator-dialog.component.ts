@@ -2,22 +2,20 @@ import { Item } from '../../models/item';
 import { Module } from '../../models/module';
 import { Thing } from '../../models/thing';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
-import { Component, OnChanges, Input, HostListener, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-
+import { Component, ViewChild, ElementRef, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
-  selector: 'app-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.css']
+  selector: 'app-dialog-overview-example-dialog',
+  templateUrl: 'module-creator-dialog.component.html',
+  styleUrls: ['./module-creator-dialog.component.css']
 })
-export class ModalComponent implements OnChanges {
-  @Input() thing: Thing;
-  @Input() modalType: string;
-  @Output() onSelected: EventEmitter<any> = new EventEmitter();
+export class ModuleCreatorDialogComponent {
+  thing: Thing;
+  selectedItem: Item;
+  modalType: string;
   @ViewChild('stateInput') stateInput: ElementRef;
   @ViewChild('datePicker') datePicker: ElementRef;
-  public visible = false;
-  public visibleAnimate = false;
   operators = [{name: 'greater than', value: '>'}, {name: 'equal to', value: '='}, {name: 'less than', value: '<'}];
   selectedOperator = this.operators[0];
   switchStates = [{name: 'turned off', value: 'OFF'}, {name: 'turned on', value: 'ON'}];
@@ -25,29 +23,29 @@ export class ModalComponent implements OnChanges {
   days = [{name: 'M', value: 'MON'}, {name: 'T', value: 'THU'}, {name: 'W', value: 'WED'},
   {name: 'T', value: 'THU'}, {name: 'F', value: 'FRI'}, {name: 'S', value: 'SAT'}, {name: 'S', value: 'SUN'}];
   selectedDays = [];
-  selectedItem: Item;
-  constructor(private sharedProperties: SharedPropertiesService) { }
-
-  ngOnChanges() {
-    if (this.thing) {
+  finalMod: Module;
+  constructor(private sharedProperties: SharedPropertiesService, public dialogRef: MatDialogRef<ModuleCreatorDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any) {
+      this.thing = data.thing;
+      this.modalType = data.modalType;
       if (this.modalType === 'condition' && this.thing.items) {
         this.selectedItem = this.thing.items[0];
       } else if (this.thing.editableItems) {
         this.selectedItem = this.thing.editableItems[0];
       }
+  }
+
+    onSelectDay(day: any) {
+    const index = this.selectedDays.indexOf(day);
+    if (index > -1) {
+      this.selectedDays.splice(index, 1);
+    } else {
+      this.selectedDays.push(day);
     }
   }
 
-  @HostListener('document:keyup', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.keyCode === 27 && this.visible) {
-      this.hide();
-    }
-  }
   save(): void {
     if (this.isConditionValid()) {
-      this.onSelected.emit();
-      this.hide();
       const mod = new Module();
       if (this.modalType === 'condition') {
         if (this.selectedItem.type !== 'CustomTime') {
@@ -94,6 +92,7 @@ export class ModalComponent implements OnChanges {
         }
       }
       this.sharedProperties.updateModule(this.modalType, mod);
+      this.dialogRef.close(this.thing);
     }
   }
 
@@ -101,38 +100,8 @@ export class ModalComponent implements OnChanges {
     return true;
   }
 
-  getModalBody(): string {
-    if (this.modalType === 'condition') {
-      switch (this.selectedItem.type) {
-      case 'Number':
-        return '';
-    }
-    }
-    return '';
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 
-  onSelectDay(day: any) {
-    const index = this.selectedDays.indexOf(day);
-    if (index > -1) {
-      this.selectedDays.splice(index, 1);
-    } else {
-      this.selectedDays.push(day);
-    }
-  }
-
-  public show(): void {
-    this.visible = true;
-    setTimeout(() => this.visibleAnimate = true, 100);
-  }
-
-  public hide(): void {
-    this.visibleAnimate = false;
-    setTimeout(() => this.visible = false, 300);
-  }
-
-  public onContainerClicked(event: MouseEvent): void {
-    if ((<HTMLElement>event.target).classList.contains('modal')) {
-      this.hide();
-    }
-  }
 }

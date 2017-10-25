@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { SharedPropertiesService } from './services/shared-properties.service';
 import { ItemsComponent } from './components/items/items.component';
 import { CreateComponent } from './components/create/create.component';
-import { ModalComponent } from './components/modal/modal.component';
+import { ModuleCreatorDialogComponent } from './components/module-creator-dialog/module-creator-dialog.component';
 import { RouterModule, Routes } from '@angular/router';
 import { OverviewComponent } from './components/overview/overview.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -34,8 +34,8 @@ const routes: Routes = [
     AppComponent,
     ItemsComponent,
     CreateComponent,
-    ModalComponent,
-    OverviewComponent
+    OverviewComponent,
+    ModuleCreatorDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -58,6 +58,7 @@ const routes: Routes = [
     MatSnackBarModule
   ],
   providers: [SharedPropertiesService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [ItemsComponent, ModuleCreatorDialogComponent]
 })
 export class AppModule { }
