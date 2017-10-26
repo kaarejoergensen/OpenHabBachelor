@@ -9,7 +9,7 @@
 		<span matLine style="width: 55%">{{rule.uid}}</span>
 		<mat-slide-toggle class="example-margin" color="primary" style="width: 15%; height: auto;"></mat-slide-toggle>
 		<div style="width: 15%"><button mat-icon-button><mat-icon>edit</mat-icon></button></div>
-		<div style="width: 15%"><button mat-icon-button><mat-icon>delete</mat-icon></button></div>
+		<div style="width: 15%"><button mat-icon-button (click)="deleteRule(rule)"><mat-icon>delete</mat-icon></button></div>
 	</mat-list-item> </mat-list>
 	<div class="button-row">
         <button mat-fab color="primary" (click)="openCreate(false)"><mat-icon>add</mat-icon></button>

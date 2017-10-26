@@ -17,7 +17,7 @@ export class ItemsComponent implements OnInit {
   @ViewChild('modal') conditionModal;
   selectedThings: Thing[];
   selectedThing: Thing;
-  constructor(private sharedProperties: SharedPropertiesService, public dialog: MatDialog) { }
+  constructor(private sharedProperties: SharedPropertiesService, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.selectedThings = [];

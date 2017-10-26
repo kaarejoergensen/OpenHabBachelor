@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
+import 'rxjs/add/observable/of';
+
 @Injectable()
 export class RuleService {
   apiURL = environment.apiURL;
@@ -17,5 +19,14 @@ export class RuleService {
   getRules(): Observable<any[]> {
     return this.http.get(this.apiURL + '/rest/rules')
       .map(response => response.json() as any[]);
+  }
+
+  deleteRule(uid: string): Observable<boolean> {
+    if (uid !== undefined && uid !== null) {
+      return this.http.delete(this.apiURL + '/rest/rules/' + uid, {headers: this.headers})
+        .map(response => response.ok as boolean);
+    } else {
+      return Observable.of(false);
+    }
   }
 }
