@@ -15,11 +15,13 @@
 </div>
 <div [hidden]="step != 1" class="creatediv animate-from-right">
 	<h2>Enter name and description</h2>
-	<mat-form-field style="width: 100%;"> <input #name matInput placeholder="Name"> </mat-form-field>
-	<mat-form-field style="width: 100%;"> <input #desc matInput placeholder="Description" (keyup.enter)="saveNameAndDescription(name.value, desc.value); next();"> </mat-form-field>
+	<form>
+		<mat-form-field style="width: 100%;"> <input #name matInput placeholder="Name" [formControl]="requiredFormControl" required> <mat-error *ngIf="requiredFormControl.hasError('required')">Please enter value</mat-error></mat-form-field>
+		<mat-form-field style="width: 100%;"> <textarea #desc matInput placeholder="Description" (keyup.enter)="saveNameAndDescription(name.value, desc.value); next();"></textarea> </mat-form-field>
+	</form>
 	<div class="button-row">
         <button mat-raised-button (click)="cancel()">Cancel</button>
-	    <button mat-raised-button color="primary" (click)="saveNameAndDescription(name.value, desc.value); next();">Next</button>
+	    <button mat-raised-button color="primary" [disabled]="requiredFormControl.hasError('required')" (click)="saveNameAndDescription(name.value, desc.value); next();">Next</button>
 	</div>
 </div>
 <div [hidden]="step != 2" class="creatediv animate-from-right">
@@ -31,7 +33,7 @@
 	</div>
 	<div class="button-row">
 	    <button mat-raised-button (click)="goBack()">Back</button>
-	    <button mat-raised-button color="primary" (click)="next()">Next</button>
+	    <button mat-raised-button color="primary" [disabled]="isConditionsZero()" (click)="next()">Next</button>
 	</div>
 </div>
 <div [hidden]="step != 3" class="creatediv animate-from-right">
@@ -43,7 +45,7 @@
 	</div>
     <div class="button-row">
         <button mat-raised-button (click)="goBack()">Back</button>
-        <button mat-raised-button color="primary" (click)="next()">Next</button>
+        <button mat-raised-button color="primary" [disabled]="isConditionsZero()" (click)="next()">Next</button>
     </div>
 </div>
 <div [hidden]="step != 4" class="creatediv animate-from-right">

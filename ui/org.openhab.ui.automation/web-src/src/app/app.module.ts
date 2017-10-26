@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
@@ -14,6 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule, MatInputModule, MatSelectModule, MatNativeDateModule, MatDatepickerModule } from '@angular/material';
 import { MatProgressBarModule, MatStepperModule, MatProgressSpinnerModule, MatDialogModule, MatListModule } from '@angular/material';
 import { MatIconModule, MatSlideToggleModule, MatSnackBarModule } from '@angular/material';
+import 'hammerjs';
 
 const routes: Routes = [
       {
@@ -40,6 +41,7 @@ const routes: Routes = [
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpModule,
     RouterModule.forRoot(routes, { useHash: true }),
     BrowserAnimationsModule,

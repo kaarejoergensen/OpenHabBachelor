@@ -7,6 +7,7 @@ import { SharedPropertiesService } from '../../services/shared-properties.servic
 import { ThingService } from '../../services/thing.service';
 import { JsonPipe, Location } from '@angular/common';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import 'rxjs/add/operator/map';
@@ -29,7 +30,8 @@ export class CreateComponent implements OnInit {
   ruleName: string;
   ruleDescription: string;
   hidden = true;
-
+  requiredFormControl = new FormControl('', [
+    Validators.required]);
   ngOnInit(): void {
     const edit = this.route.snapshot.queryParams['edit'] || undefined;
     if (edit && edit !== 'true') {
@@ -37,7 +39,6 @@ export class CreateComponent implements OnInit {
     }
     this.getItemsAndThings();
   }
-
   constructor(private itemService: ItemService, private sharedProperties: SharedPropertiesService,
   private thingService: ThingService, private ruleService: RuleService, private location: Location,
   private route: ActivatedRoute, private router: Router) { }
@@ -163,5 +164,13 @@ export class CreateComponent implements OnInit {
 
   cancel(): void {
     this.location.back();
+  }
+
+  isConditionsZero(): boolean {
+    return this.sharedProperties.getModules('condition').length === 0;
+  }
+
+  isActionsZero(): boolean {
+    return this.sharedProperties.getModules('action').length === 0;
   }
 }
