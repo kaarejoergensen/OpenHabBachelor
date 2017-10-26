@@ -29,4 +29,13 @@ export class RuleService {
       return Observable.of(false);
     }
   }
+
+  enableDisableRule(rule: any): Observable<boolean> {
+    if (rule !== undefined && rule !== null) {
+      return this.http.post(this.apiURL + '/rest/rules/' + rule.uid + '/enable', rule.enabled ? 'false' : 'true')
+        .map(response => response.ok as boolean);
+    } else {
+      Observable.of(false);
+    }
+  }
 }

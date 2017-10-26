@@ -82,6 +82,11 @@ export class OverviewComponent implements OnInit {
         error => this.openSnackbar('Failed: ' + error.message));
     });
   }
+
+  enableDisableRule(rule: any): void {
+    this.ruleService.enableDisableRule(rule)
+      .subscribe(res => rule.enabled = res ? !rule.enabled : rule.enabled);
+  }
 }
 
 @Component({
