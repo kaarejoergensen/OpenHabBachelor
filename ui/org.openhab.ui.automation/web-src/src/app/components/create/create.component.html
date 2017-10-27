@@ -28,7 +28,10 @@
 	<div class="itemsdiv">
 		<h2>Choose conditions</h2>
 		<div class="conditions">
-			<app-items [things]="things" [thingType]="'condition'" [rule]="rule" (ruleUpdated)="onRuleUpdated($event)"></app-items>
+		  <div *ngIf="step == 2">
+		    <app-items *ngFor="let condition of rule.conditions" [things]="things" [thingType]="'condition'" [mod]="condition" (ruleUpdated)="onRuleUpdated($event)"></app-items>
+		  </div>
+		  <app-items [things]="things" [thingType]="'condition'" (ruleUpdated)="onRuleUpdated($event)"></app-items>
 		</div>
 	</div>
 	<div class="button-row">
@@ -40,7 +43,10 @@
 	<div class="itemsdiv">
 		<h2>Choose actions</h2>
 		<div class="actions">
-			<app-items [things]="thingsWithEditableItems" [thingType]="'action'" [rule]="rule" (ruleUpdated)="onRuleUpdated($event)"></app-items>
+		  <div *ngIf="step == 3">
+		      <app-items *ngFor="let action of rule.actions" [things]="thingsWithEditableItems" [thingType]="'action'" [mod]="action" (ruleUpdated)="onRuleUpdated($event)"></app-items>
+          </div>
+		  <app-items [things]="thingsWithEditableItems" [thingType]="'action'" (ruleUpdated)="onRuleUpdated($event)"></app-items>
 		</div>
 	</div>
     <div class="button-row">

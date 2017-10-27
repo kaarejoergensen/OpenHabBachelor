@@ -14,7 +14,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 export class ItemsComponent implements OnInit {
   @Input() things: Thing[];
   @Input() thingType: string;
-  @Input() rule: Rule;
+  @Input() mod: any;
   @Output() ruleUpdated = new EventEmitter();
   @ViewChild('modal') conditionModal;
   selectedThingsUIDS: string[];
@@ -30,15 +30,17 @@ export class ItemsComponent implements OnInit {
 
   openDialog(selectedThing: Thing): void {
     const dialogRef = this.dialog.open(ModuleCreatorDialogComponent, {
-      data: {thing: selectedThing, modalType: this.thingType, rule: this.rule}
+      data: {thing: selectedThing, modalType: this.thingType, mod: this.mod}
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (this.selectedThingsUIDS.indexOf(result.thing.UID) === -1) {
-        this.selectedThingsUIDS.push(result.thing.UID);
+      if (result) {
+        if (this.selectedThingsUIDS.indexOf(result.thing.UID) === -1) {
+          this.selectedThingsUIDS.push(result.thing.UID);
+        }
+        this.mod = result.mod;
+        this.ruleUpdated.emit(this.mod);
       }
-      this.rule = result.rule;
-      this.ruleUpdated.emit(this.rule);
     });
   }
 }

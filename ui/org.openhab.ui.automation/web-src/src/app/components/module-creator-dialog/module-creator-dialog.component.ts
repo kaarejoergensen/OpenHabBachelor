@@ -22,12 +22,12 @@ export class ModuleCreatorDialogComponent {
   selectedSwitchState = this.switchStates[0];
   days = DAYS;
   selectedDays = [];
-  rule: Rule;
+  mod: any;
   constructor(private sharedProperties: SharedPropertiesService,
   public dialogRef: MatDialogRef<ModuleCreatorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
     this.thing = data.thing;
     this.modalType = data.modalType;
-    this.rule = data.rule;
+    this.mod = data.mod;
     if (this.modalType === 'condition' && this.thing.items) {
       this.selectedItem = this.thing.items[0];
     } else if (this.thing.editableItems) {
@@ -50,6 +50,7 @@ export class ModuleCreatorDialogComponent {
         const condition = new Condition();
         if (this.selectedItem.type !== 'CustomTime') {
           condition.type = STATE_CONDITION_TYPE;
+          condition.thing = this.thing;
           condition.itemName = this.selectedItem.name;
           if (this.selectedItem.type === 'Number') {
             condition.operator = this.selectedOperator.value;
@@ -76,18 +77,19 @@ export class ModuleCreatorDialogComponent {
           condition.days = this.selectedDays.map(function(d) {return d.value; } );
           condition.tempTime = this.stateInput.nativeElement.value;
         }
-        this.rule.conditions.push(condition);
+        this.mod = condition;
       } else {
         const action = new Action();
+        action.thing  = this.thing;
         action.itemName = this.selectedItem.name;
         if (this.selectedItem.type === 'Number') {
           action.command = this.stateInput.nativeElement.value;
         } else if (this.selectedItem.type === 'Switch') {
           action.command = this.selectedSwitchState.value;
         }
-        this.rule.actions.push(action);
+        this.mod = action;
       }
-      this.dialogRef.close({thing: this.thing, rule: this.rule});
+      this.dialogRef.close({thing: this.thing, mod: this.mod});
     }
   }
 

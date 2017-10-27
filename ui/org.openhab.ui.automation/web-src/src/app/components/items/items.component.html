@@ -1,4 +1,4 @@
-<div *ngIf="things" class="itemsdiv">
+<div *ngIf="things && !mod" class="itemsdiv">
     <ul class="items">
         <li *ngFor="let thing of things">
             <div class="inner-item"
@@ -9,8 +9,13 @@
          </li>
      </ul>
 </div>
-<!-- <app-modal [thing]="selectedThing" [modalType]="thingType" (onSelected)="addThingToSelected(selectedThing)" #modal>
-    <div class="app-modal-header">
-      {{getModalHeader()}}
-    </div>
-</app-modal> -->
+<div *ngIf="mod" class="itemsdiv">
+    <ul class="items">
+        <li >
+            <div class="inner-item" (click)="onSelect(mod.thing)">
+                {{mod.thing.label}} <br>
+                Already exists
+            </div>
+        </li>
+     </ul>
+</div>

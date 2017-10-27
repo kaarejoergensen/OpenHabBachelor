@@ -1,3 +1,4 @@
+import { Thing } from './thing';
 export const OPERATORS = [{name: 'greater than', value: '>'}, {name: 'equal to', value: '='}, {name: 'less than', value: '<'}];
 export const SWITCH_STATES = [{name: 'turned off', value: 'OFF'}, {name: 'turned on', value: 'ON'}];
 export const DAYS = [{name: 'M', value: 'MON'}, {name: 'T', value: 'THU'}, {name: 'W', value: 'WED'},
@@ -16,17 +17,21 @@ export class Rule {
 }
 
 export class Condition {
+  id: string;
   type: string;
   // State type
   itemName: string;
   operator: string;
   state: string;
+  thing: Thing;
   // Time type
   days: string[] = [];
   tempTime: string;
 }
 
 export class Action {
+  id: string;
   itemName: string;
   command: string;
+  thing: Thing;
 }

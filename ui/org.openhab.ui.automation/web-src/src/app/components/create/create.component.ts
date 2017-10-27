@@ -1,6 +1,6 @@
 import { RuleMapperHelper } from '../../helpers/rule-mapper-helper';
 import { Item } from '../../models/item';
-import { Rule } from '../../models/rule';
+import { Rule, Condition } from '../../models/rule';
 import { Thing } from '../../models/thing';
 import { ItemService } from '../../services/item.service';
 import { RuleService } from '../../services/rule.service';
@@ -68,6 +68,7 @@ export class CreateComponent implements OnInit {
         this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
         this.things.push(this.createTimeThing());
         if (this.edit) {
+          this.addThingToRule();
           this.step = 4;
         } else {
           this.next();
@@ -90,6 +91,7 @@ export class CreateComponent implements OnInit {
             for (const linkedItem of channel.linkedItems) {
               for (const item of items) {
                 if (linkedItem === item.name) {
+                  item.thingName = linkedItem;
                   if (thing.items !== undefined) {
                     thing.items.push(item);
                   } else {
@@ -112,6 +114,25 @@ export class CreateComponent implements OnInit {
       }
     }
     return things.filter(t => t.items !== undefined && t.items.length > 0);
+  }
+
+  addThingToRule(): void {
+    for (const action of this.rule.actions) {
+      const things = this.thingsWithEditableItems.filter(t => t.editableItems.filter(i => i.name === action.itemName).length > 0);
+      if (things.length > 0) {
+        action.thing = things[0];
+      } else {
+        console.log('No thing found for action ' + action.id);
+      }
+    }
+    for (const condition of this.rule.conditions) {
+      const things = this.things.filter(t => t.items.filter(i => i.name === condition.itemName).length > 0);
+      if (things.length > 0) {
+        condition.thing = things[0];
+      } else {
+        console.log('No thing found for action ' + condition.id);
+      }
+    }
   }
 
   createTimeThing(): Thing {
@@ -170,7 +191,48 @@ export class CreateComponent implements OnInit {
     return this.rule.actions.length === 0;
   }
 
-  onRuleUpdated(rule: Rule) {
-    this.rule = rule;
+  onRuleUpdated(mod: any) {
+    if (this.isCondition(mod)) {
+      if (mod.id !== null && mod.id !== undefined) {
+        const conditions = this.rule.conditions.filter(c => c.id === mod.id);
+        if (conditions && conditions.length > 0) {
+          const index = this.rule.conditions.indexOf(conditions[0]);
+          this.rule.conditions.splice(index, 1);
+        }
+      } else {
+        mod.id = this.getMaxId();
+      }
+      this.rule.conditions.push(mod);
+    } else {
+      if (mod.id !== null && mod.id !== undefined) {
+        const actions = this.rule.actions.filter(a => a.id === mod.id);
+        if (actions && actions.length > 0) {
+          const index = this.rule.actions.indexOf(actions[0]);
+          this.rule.actions.splice(index, 1);
+        }
+      } else {
+        mod.id = this.getMaxId();
+      }
+      this.rule.actions.push(mod);
+    }
+  }
+
+  isCondition(arr: any): arr is Condition {
+    return (<Condition>arr).state !== undefined || (<Condition>arr).days !== undefined;
+  }
+
+  getMaxId(): string {
+    let maxId = 0;
+    for (const c of this.rule.conditions) {
+      if (c.id && !isNaN(parseInt(c.id, 10)) && parseInt(c.id, 10) > maxId) {
+        maxId = parseInt(c.id, 10);
+      }
+    }
+    for (const a of this.rule.conditions) {
+      if (a.id && !isNaN(parseInt(a.id, 10)) && parseInt(a.id, 10) > maxId) {
+        maxId = parseInt(a.id, 10);
+      }
+    }
+    return (++maxId).toString();
   }
 }
