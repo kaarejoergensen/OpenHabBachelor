@@ -3,7 +3,7 @@
         <li *ngFor="let thing of things">
             <div class="inner-item"
             (click)="onSelect(thing)"
-            [class.selecteditem]="selectedThings.indexOf(thing) > -1">
+            [class.selecteditem]="selectedThingsUIDS.indexOf(thing.UID) > -1">
                {{thing.label}}
             </div>        
          </li>

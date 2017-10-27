@@ -1,9 +1,9 @@
 import { Item } from '../../models/item';
-import { Module } from '../../models/module';
+import { Rule } from '../../models/rule';
 import { Thing } from '../../models/thing';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
 import { ModuleCreatorDialogComponent } from '../module-creator-dialog/module-creator-dialog.component';
-import { Component, OnInit, Input, ViewChild, Inject, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Inject, ElementRef, EventEmitter, Output } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
@@ -14,48 +14,31 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 export class ItemsComponent implements OnInit {
   @Input() things: Thing[];
   @Input() thingType: string;
+  @Input() rule: Rule;
+  @Output() ruleUpdated = new EventEmitter();
   @ViewChild('modal') conditionModal;
-  selectedThings: Thing[];
-  selectedThing: Thing;
+  selectedThingsUIDS: string[];
   constructor(private sharedProperties: SharedPropertiesService, private dialog: MatDialog) { }
 
   ngOnInit() {
-    this.selectedThings = [];
+    this.selectedThingsUIDS = [];
   }
 
   onSelect(thing: Thing): void {
-    const index = this.selectedThings.indexOf(thing);
-    if (index > -1) {
-      this.selectedThings.splice(index, 1);
-    } else {
-      this.selectedThing = thing;
-      this.openDialog();
-    }
+    this.openDialog(thing);
   }
 
-  addThingToSelected(thing: Thing): void {
-    if (this.selectedThings.indexOf(thing) === -1) {
-      this.selectedThings.push(thing);
-    }
-  }
-
-  getModalHeader(): string {
-    if (this.thingType === 'condition') {
-      return 'Create condition';
-    } else {
-      return 'Create action';
-    }
-  }
-
-  openDialog(): void {
+  openDialog(selectedThing: Thing): void {
     const dialogRef = this.dialog.open(ModuleCreatorDialogComponent, {
-      data: {thing: this.selectedThing, modalType: this.thingType}
+      data: {thing: selectedThing, modalType: this.thingType, rule: this.rule}
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (this.selectedThings.indexOf(result) === -1) {
-        this.selectedThings.push(result);
+      if (this.selectedThingsUIDS.indexOf(result.thing.UID) === -1) {
+        this.selectedThingsUIDS.push(result.thing.UID);
       }
+      this.rule = result.rule;
+      this.ruleUpdated.emit(this.rule);
     });
   }
 }

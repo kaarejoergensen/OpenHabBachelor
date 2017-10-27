@@ -1,5 +1,6 @@
-import { Module } from '../../models/module';
+import { RuleMapperHelper } from '../../helpers/rule-mapper-helper';
 import { Item } from '../../models/item';
+import { Rule } from '../../models/rule';
 import { Thing } from '../../models/thing';
 import { ItemService } from '../../services/item.service';
 import { RuleService } from '../../services/rule.service';
@@ -27,12 +28,11 @@ export class CreateComponent implements OnInit {
   things: Thing[];
   thingsWithEditableItems: Thing[];
   step = 0;
-  ruleName: string;
-  ruleDescription: string;
-  hidden = true;
+  rule: Rule;
   requiredFormControl = new FormControl('', [
     Validators.required]);
   ngOnInit(): void {
+    this.rule = new Rule();
     const edit = this.route.snapshot.queryParams['edit'] || undefined;
     if (edit && edit !== 'true') {
       this.sharedProperties.reset();
@@ -122,11 +122,12 @@ export class CreateComponent implements OnInit {
   }
 
   saveNameAndDescription(name: string, desc: string): void {
-    this.ruleName = name;
-    this.ruleDescription = desc;
+    this.rule.name = name;
+    this.rule.description = desc;
   }
   createRule(): void {
-    const body = this.getRuleJson(null);
+    const ruleDTO = RuleMapperHelper.mapRuleToDTO(this.rule);
+    const body = ruleDTO.getJSON();
     console.log(new JsonPipe().transform(body));
     this.ruleService.createRule(body)
       .subscribe(res => this.goToOverview(res),
@@ -136,22 +137,6 @@ export class CreateComponent implements OnInit {
   goToOverview(result: any) {
     this.sharedProperties.setResult(result);
     this.router.navigate(['/overview']);
-  }
-
-  getRuleJson(uid: string): any {
-    const body = {
-      tags: [],
-      conditions: this.sharedProperties.getModuleJSON('condition'),
-      description: this.ruleDescription,
-      name: this.ruleName,
-      triggers: this.sharedProperties.getModuleJSON('trigger'),
-      configDescriptions: [],
-      actions: this.sharedProperties.getModuleJSON('action'),
-    };
-    if (uid !== undefined && uid !== null) {
-      body['uid'] = uid;
-    }
-    return body;
   }
 
   isThingArray(arr: Thing[] | Item[]): arr is Thing[] {
@@ -167,10 +152,14 @@ export class CreateComponent implements OnInit {
   }
 
   isConditionsZero(): boolean {
-    return this.sharedProperties.getModules('condition').length === 0;
+    return this.rule.conditions.length === 0;
   }
 
   isActionsZero(): boolean {
-    return this.sharedProperties.getModules('action').length === 0;
+    return this.rule.actions.length === 0;
+  }
+
+  onRuleUpdated(rule: Rule) {
+    this.rule = rule;
   }
 }

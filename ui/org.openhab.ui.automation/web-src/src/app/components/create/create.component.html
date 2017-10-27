@@ -16,8 +16,8 @@
 <div [hidden]="step != 1" class="creatediv animate-from-right">
 	<h2>Enter name and description</h2>
 	<form>
-		<mat-form-field style="width: 100%;"> <input #name matInput placeholder="Name" [formControl]="requiredFormControl" required> <mat-error *ngIf="requiredFormControl.hasError('required')">Please enter value</mat-error></mat-form-field>
-		<mat-form-field style="width: 100%;"> <textarea #desc matInput placeholder="Description" (keyup.enter)="saveNameAndDescription(name.value, desc.value); next();"></textarea> </mat-form-field>
+		<mat-form-field style="width: 100%;"> <input #name matInput placeholder="Name" [formControl]="requiredFormControl" required [value]="rule.name"> <mat-error *ngIf="requiredFormControl.hasError('required')">Please enter value</mat-error></mat-form-field>
+		<mat-form-field style="width: 100%;"> <textarea #desc matInput placeholder="Description" (keyup.enter)="saveNameAndDescription(name.value, desc.value); next();" [value]="rule.description"></textarea> </mat-form-field>
 	</form>
 	<div class="button-row">
         <button mat-raised-button (click)="cancel()">Cancel</button>
@@ -28,7 +28,7 @@
 	<div class="itemsdiv">
 		<h2>Choose conditions</h2>
 		<div class="conditions">
-			<app-items [things]="things" [thingType]="'condition'"></app-items>
+			<app-items [things]="things" [thingType]="'condition'" [rule]="rule" (ruleUpdated)="onRuleUpdated($event)"></app-items>
 		</div>
 	</div>
 	<div class="button-row">
@@ -40,7 +40,7 @@
 	<div class="itemsdiv">
 		<h2>Choose actions</h2>
 		<div class="actions">
-			<app-items [things]="thingsWithEditableItems" [thingType]="'action'"></app-items>
+			<app-items [things]="thingsWithEditableItems" [thingType]="'action'" [rule]="rule" (ruleUpdated)="onRuleUpdated($event)"></app-items>
 		</div>
 	</div>
     <div class="button-row">
