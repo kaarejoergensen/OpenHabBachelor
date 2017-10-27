@@ -1,3 +1,6 @@
+import { RuleMapperHelper } from '../../helpers/rule-mapper-helper';
+import { Rule } from '../../models/rule';
+import { RuleDTO } from '../../models/rule-dto';
 import { RuleService } from '../../services/rule.service';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
 import { Component, OnInit, Inject } from '@angular/core';
@@ -12,7 +15,7 @@ import { Router } from '@angular/router';
   providers: [RuleService]
 })
 export class OverviewComponent implements OnInit {
-  rules: any[];
+  rules: Rule[];
   isLoading = true;
   constructor(private ruleService: RuleService, private sharedProperties: SharedPropertiesService,
     private location: Location, private router: Router, public snackBar: MatSnackBar, private dialog: MatDialog) { }
@@ -25,7 +28,7 @@ export class OverviewComponent implements OnInit {
     this.isLoading = true;
     this.ruleService.getRules().
       subscribe(res => {
-        this.rules = res;
+        this.rules = res.map(function(r) {return RuleMapperHelper.mapDTOtoRule(r); });
         this.isLoading = false;
         if (handleCreateResult) {
           this.handleCreateResult(this.sharedProperties.getResult());
@@ -55,8 +58,13 @@ export class OverviewComponent implements OnInit {
     });
   }
 
-  openCreate(edit: boolean) {
-    this.router.navigate(['/create'], {queryParams: {edit: edit}});
+  openCreate(rule: Rule) {
+    if (rule !== undefined && rule !== null) {
+      this.sharedProperties.setRule(rule);
+      this.router.navigate(['/create'], {queryParams: {edit: true}});
+    } else {
+      this.router.navigate(['/create'], {queryParams: {edit: false}});
+    }
   }
 
   deleteRule(rule: any): void {
@@ -65,22 +73,23 @@ export class OverviewComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.ruleService.deleteRule(result.uid)
-        .subscribe(res => {
-          if (res) {
-            this.openSnackbar('Rule removed');
-            const index = this.rules.indexOf(result);
-            if (index !== -1) {
-              this.rules.splice(index, 1);
+      if (result) {
+        this.ruleService.deleteRule(result.uid)
+          .subscribe(res => {
+            if (res) {
+              this.openSnackbar('Rule removed');
+              const index = this.rules.indexOf(result);
+              if (index !== -1) {
+                this.rules.splice(index, 1);
+              } else {
+                this.updateRules(false);
+              }
             } else {
-              this.updateRules(false);
+              this.openSnackbar('Rule removal failed');
             }
-          } else {
-            this.openSnackbar('Rule removal failed');
-          }
-        },
-        error => this.openSnackbar('Failed: ' + error.message));
-    });
+          },
+          error => this.openSnackbar('Failed: ' + error.message));
+      }});
   }
 
   enableDisableRule(rule: any): void {

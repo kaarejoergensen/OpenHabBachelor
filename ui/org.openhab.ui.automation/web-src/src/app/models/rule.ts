@@ -7,6 +7,8 @@ export const STATE_CONDITION_TYPE = 'state';
 export const TIME_CONDITION_TYPE = 'time';
 
 export class Rule {
+  uid: string;
+  enabled: boolean;
   name: string = null;
   description: string = null;
   conditions: Condition[] = [];

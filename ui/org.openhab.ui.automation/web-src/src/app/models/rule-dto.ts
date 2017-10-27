@@ -1,4 +1,5 @@
 export class RuleDTO {
+  enabled: boolean;
   uid: string;
   name: string;
   description: string;
@@ -9,12 +10,12 @@ export class RuleDTO {
   getJSON(): any {
     const body = {
       tags: [],
-      conditions: this.conditions.map(function(c) { return c.getJSON(); }),
+      conditions: this.conditions.map(function(c) { return Module.getJSON(c); }),
       description: this.description,
       name: this.name,
-      triggers: this.triggers.map(function(t) { return t.getJSON(); }),
+      triggers: this.triggers.map(function(t) { return Module.getJSON(t); }),
       configDescriptions: [],
-      actions: this.actions.map(function(a) {return a.getJSON(); })
+      actions: this.actions.map(function(a) {return Module.getJSON(a); })
     };
     if (this.uid !== undefined && this.uid !== null) {
       body['uid'] = this.uid;
@@ -25,35 +26,35 @@ export class RuleDTO {
 
 export class Module {
   id: string;
-  name: string;
+  label: string;
   description: string;
   type: string;
   configuration = {};
   // Only used in triggers
   correspondingConditionId: string;
 
-  addConfiguration(name: string, command: any): void {
-    this.configuration[name] = command;
+  static addConfiguration(name: string, command: any, mod: Module): void {
+    mod.configuration[name] = command;
   }
 
-  getConfiguration(name: string): string {
-    if (this.configuration[name] !== undefined) {
-      return this.configuration[name];
+  static getConfiguration(name: string, mod: Module): any {
+    if (mod.configuration[name] !== undefined) {
+      return mod.configuration[name];
     }
     return '';
   }
 
-  removeConfiguration(name: string): void {
-    this.configuration[name] = undefined;
+  static removeConfiguration(name: string, mod: Module): void {
+    mod.configuration[name] = undefined;
   }
 
-  getJSON(): any {
+  static getJSON(mod: Module): any {
     return {
-      'id': this.id,
-      'label': this.name,
-      'description': this.description,
-      'type': this.type,
-      'configuration': this.configuration
+      'id': mod.id,
+      'label': mod.label,
+      'description': mod.description,
+      'type': mod.type,
+      'configuration': mod.configuration
     };
   }
 }

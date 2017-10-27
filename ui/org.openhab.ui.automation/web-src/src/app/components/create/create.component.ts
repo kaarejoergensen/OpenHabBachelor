@@ -31,10 +31,17 @@ export class CreateComponent implements OnInit {
   rule: Rule;
   requiredFormControl = new FormControl('', [
     Validators.required]);
+  edit: boolean;
+
   ngOnInit(): void {
     this.rule = new Rule();
-    const edit = this.route.snapshot.queryParams['edit'] || undefined;
-    if (edit && edit !== 'true') {
+    const editString = this.route.snapshot.queryParams['edit'] || undefined;
+    if (editString && editString === 'true'
+        && this.sharedProperties.getRule() !== undefined && this.sharedProperties.getRule() !== null) {
+      this.edit = true;
+      this.rule = this.sharedProperties.getRule();
+    } else {
+      this.edit = false;
       this.sharedProperties.reset();
     }
     this.getItemsAndThings();
@@ -60,7 +67,11 @@ export class CreateComponent implements OnInit {
         this.things = this.addItemsToThings(items, things);
         this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
         this.things.push(this.createTimeThing());
-        this.next();
+        if (this.edit) {
+          this.step = 4;
+        } else {
+          this.next();
+        }
       }
     },
     error => this.handleError(error));

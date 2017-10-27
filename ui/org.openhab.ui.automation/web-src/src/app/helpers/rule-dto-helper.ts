@@ -47,15 +47,15 @@ export class RuleDTOHelper {
     trigger.correspondingConditionId = condition.id;
     if (condition.type !== 'timer.DayOfWeekCondition') {
       trigger.type = 'core.ItemStateUpdateTrigger';
-      trigger.addConfiguration('itemName', condition.getConfiguration('itemName'));
-      trigger.name = 'an item state is updated';
+      Module.addConfiguration('itemName', Module.getConfiguration('itemName', condition), trigger);
+      trigger.label = 'an item state is updated';
       trigger.description = 'This triggers the rule if an item state is updated (even if it does not change).';
     } else {
       trigger.type = 'timer.TimeOfDayTrigger';
-      trigger.name = 'it is a fixed time of day';
+      trigger.label = 'it is a fixed time of day';
       trigger.description = 'Triggers at a specified time';
-      trigger.addConfiguration('time', condition.getConfiguration('tempTime'));
-      condition.removeConfiguration('tempTime');
+      Module.addConfiguration('time', Module.getConfiguration('tempTime', condition), trigger);
+      Module.removeConfiguration('tempTime', condition);
     }
     return trigger;
   }

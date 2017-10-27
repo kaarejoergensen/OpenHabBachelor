@@ -50,6 +50,8 @@
 </div>
 <div [hidden]="step != 4" class="creatediv animate-from-right">
     <h2>Overview</h2>
+    <h3><b>Name:</b> {{rule.name}}</h3>
+    <h3 *ngIf="rule.description"><b>Description:</b> {{rule.description}}</h3>
     <div class="button-row">
         <button mat-raised-button (click)="goBack()">Back</button>
         <button mat-raised-button color="primary" (click)="createRule()">Create</button>

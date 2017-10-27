@@ -1,4 +1,5 @@
 import { environment } from '../../environments/environment';
+import { RuleDTO } from '../models/rule-dto';
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
@@ -16,9 +17,9 @@ export class RuleService {
       .map(response => response.ok as boolean);
   }
 
-  getRules(): Observable<any[]> {
+  getRules(): Observable<RuleDTO[]> {
     return this.http.get(this.apiURL + '/rest/rules')
-      .map(response => response.json() as any[]);
+      .map(response => response.json() as RuleDTO[]);
   }
 
   deleteRule(uid: string): Observable<boolean> {
