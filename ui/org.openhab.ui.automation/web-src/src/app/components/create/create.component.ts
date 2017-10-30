@@ -207,7 +207,7 @@ export class CreateComponent implements OnInit {
   }
 
   cancel(): void {
-    this.location.back();
+    this.goToOverview(null);
   }
 
   isConditionsZero(): boolean {

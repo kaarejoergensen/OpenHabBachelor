@@ -6,11 +6,16 @@
 </div>
 <div *ngIf="step != 0" class="animate-from-right">
     <section>
-      <mat-progress-bar
-          color="primary"
-          mode="determinate"
-          [value]="(step - 1)*33.3333">
-      </mat-progress-bar>
+        <div style="width: 60%; margin: auto; display:flex; align-items: center; justify-content: center">
+			<div style="flex: 1;">
+			<mat-progress-bar style="max-width: 75%; margin: auto;"
+			    color="primary"
+			    mode="determinate"
+			    [value]="(step - 1)*33.3333">
+			</mat-progress-bar>
+			</div>
+            <button mat-icon-button (click)="cancel()" style="align-self: flex-end;"><mat-icon>close</mat-icon></button>
+        </div>
     </section>
 </div>
 <div [hidden]="step != 1" class="creatediv animate-from-right">
