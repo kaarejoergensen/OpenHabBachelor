@@ -28,10 +28,8 @@
 	<div class="itemsdiv">
 		<h2>Choose conditions</h2>
 		<div class="conditions">
-		  <div *ngIf="step == 2">
-		    <app-items *ngFor="let condition of rule.conditions" [things]="things" [thingType]="'condition'" [mod]="condition" (ruleUpdated)="onRuleUpdated($event)"></app-items>
-		  </div>
-		  <app-items [things]="things" [thingType]="'condition'" (ruleUpdated)="onRuleUpdated($event)"></app-items>
+		  <app-dynamic-component [componentData]="conditionsComponentData" (ruleUpdated)="onRuleUpdated($event)"></app-dynamic-component>
+		  <button mat-raised-button (click)="createNewConditionComponent()">New condition</button>
 		</div>
 	</div>
 	<div class="button-row">
@@ -43,10 +41,8 @@
 	<div class="itemsdiv">
 		<h2>Choose actions</h2>
 		<div class="actions">
-		  <div *ngIf="step == 3">
-		      <app-items *ngFor="let action of rule.actions" [things]="thingsWithEditableItems" [thingType]="'action'" [mod]="action" (ruleUpdated)="onRuleUpdated($event)"></app-items>
-          </div>
-		  <app-items [things]="thingsWithEditableItems" [thingType]="'action'" (ruleUpdated)="onRuleUpdated($event)"></app-items>
+		  <app-dynamic-component [componentData]="actionsComponentData" (ruleUpdated)="onRuleUpdated($event)"></app-dynamic-component>
+          <button mat-raised-button (click)="createNewActionComponent()">New action</button>
 		</div>
 	</div>
     <div class="button-row">

@@ -1,11 +1,12 @@
 import { RuleMapperHelper } from '../../helpers/rule-mapper-helper';
 import { Item } from '../../models/item';
-import { Rule, Condition } from '../../models/rule';
+import { Rule, Condition, Action } from '../../models/rule';
 import { Thing } from '../../models/thing';
 import { ItemService } from '../../services/item.service';
 import { RuleService } from '../../services/rule.service';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
 import { ThingService } from '../../services/thing.service';
+import { ItemsComponent } from '../items/items.component';
 import { JsonPipe, Location } from '@angular/common';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
@@ -32,6 +33,8 @@ export class CreateComponent implements OnInit {
   requiredFormControl = new FormControl('', [
     Validators.required]);
   edit: boolean;
+  conditionsComponentData = null;
+  actionsComponentData = null;
 
   ngOnInit(): void {
     this.rule = new Rule();
@@ -64,18 +67,42 @@ export class CreateComponent implements OnInit {
         items = res;
       }
       if (things.length > 0 && items.length > 0) {
-        this.things = this.addItemsToThings(items, things);
-        this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
-        this.things.push(this.createTimeThing());
-        if (this.edit) {
-          this.addThingToRule();
-          this.step = 4;
-        } else {
-          this.next();
-        }
+        // TODO: Fix this method. We assume length of things and length of items
+        this.initializeThingsAndItems(things, items);
+        this.initializeModules();
       }
+      
     },
     error => this.handleError(error));
+  }
+  
+  initializeThingsAndItems(things: Thing[], items: Item[]): void {
+    this.things = this.addItemsToThings(items, things);
+    this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
+    this.things.push(this.createTimeThing());
+    if (this.edit) {
+      this.addThingToRule();
+      this.step = 4;
+    } else {
+      this.next();
+    }
+  }
+  
+  initializeModules(): void {
+    if (this.rule.conditions.length > 0) {
+      for (const condition of this.rule.conditions) {
+        this.createNewConditionComponent(condition);
+      }
+    } else {
+      this.createNewConditionComponent(null);
+    }
+    if (this.rule.actions.length > 0) {
+      for (const action of this.rule.actions) {
+        this.createNewActionComponent(action);
+      }
+    } else {
+      this.createNewActionComponent(null);
+    }
   }
 
   handleError(error: any): void {
@@ -234,5 +261,27 @@ export class CreateComponent implements OnInit {
       }
     }
     return (++maxId).toString();
+  }
+  
+  createNewConditionComponent(mod: Condition): void {
+    this.conditionsComponentData = {
+      component: ItemsComponent,
+      inputs: {
+        things: this.things,
+        thingType: 'condition',
+        mod: mod
+      }
+    };
+  }
+  
+  createNewActionComponent(mod: Action): void {
+    this.actionsComponentData = {
+      component: ItemsComponent,
+      inputs: {
+        things: this.thingsWithEditableItems,
+        thingType: 'action',
+        mod: mod
+      }
+    };
   }
 }

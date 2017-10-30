@@ -5,7 +5,7 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { SharedPropertiesService } from './services/shared-properties.service';
-import { ItemsComponent } from './components/items/items.component';
+import { ItemsComponent, DynamicComponent } from './components/items/items.component';
 import { CreateComponent } from './components/create/create.component';
 import { ModuleCreatorDialogComponent } from './components/module-creator-dialog/module-creator-dialog.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -37,7 +37,8 @@ const routes: Routes = [
     CreateComponent,
     OverviewComponent,
     ModuleCreatorDialogComponent,
-    DialogDeleteRuleComponent
+    DialogDeleteRuleComponent,
+    DynamicComponent
   ],
   imports: [
     BrowserModule,
@@ -62,6 +63,6 @@ const routes: Routes = [
   ],
   providers: [SharedPropertiesService],
   bootstrap: [AppComponent],
-  entryComponents: [ItemsComponent, ModuleCreatorDialogComponent, OverviewComponent, DialogDeleteRuleComponent]
+  entryComponents: [ItemsComponent, ModuleCreatorDialogComponent, OverviewComponent, DialogDeleteRuleComponent, DynamicComponent]
 })
 export class AppModule { }

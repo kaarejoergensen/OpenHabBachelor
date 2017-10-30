@@ -2,8 +2,7 @@
     <ul class="items">
         <li *ngFor="let thing of things">
             <div class="inner-item"
-            (click)="onSelect(thing)"
-            [class.selecteditem]="selectedThingsUIDS.indexOf(thing.UID) > -1">
+            (click)="onSelect(thing)">
                {{thing.label}}
             </div>        
          </li>
@@ -13,8 +12,20 @@
     <ul class="items">
         <li >
             <div class="inner-item" (click)="onSelect(mod.thing)">
-                {{mod.thing.label}} <br>
-                Already exists
+                <div *ngIf="thingType === 'condition'">
+                    <div *ngIf="mod.itemName">
+                        {{mod.thing.label}} <br>
+                        {{mod.operator}}
+                    </div>
+                    <div *ngIf="mod.tempTime">
+                        At {{mod.tempTime}} <br>
+                        On {{mod.days}}
+                    </div>
+                </div>
+                <div *ngIf="thingType === 'action'">
+                    {{mod.thing.label}} <br>
+                    {{mod.command}}
+                </div>
             </div>
         </li>
      </ul>
