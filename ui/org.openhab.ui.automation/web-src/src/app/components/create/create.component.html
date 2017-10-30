@@ -34,10 +34,14 @@
 		<h2>Choose conditions</h2>
 		<div class="conditions">
 		  <app-dynamic-component [componentData]="conditionsComponentData" (ruleUpdated)="onRuleUpdated($event)"></app-dynamic-component>
-		  <button *ngIf="newConditionButtonEnabled" mat-raised-button (click)="createNewConditionComponent()">New condition</button>
+		  <!-- <button *ngIf="newConditionButtonEnabled" mat-raised-button (click)="createNewConditionComponent()">New condition</button> -->
+		  <a *ngIf="newConditionButtonEnabled" mat-icon-button color="green" (click)="createNewConditionComponent()" style="float:left;">		      
+			<mat-icon>add</mat-icon>
+			<span>New condition</span>
+          </a>
 		</div>
 	</div>
-	<div class="button-row">
+	<div class="button-row" style="clear:both;">
 	    <button mat-raised-button (click)="goBack()">Back</button>
 	    <button mat-raised-button color="primary" [disabled]="isConditionsZero()" (click)="next()">Next</button>
 	</div>
