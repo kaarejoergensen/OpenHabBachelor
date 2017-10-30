@@ -35,6 +35,8 @@ export class CreateComponent implements OnInit {
   edit: boolean;
   conditionsComponentData = null;
   actionsComponentData = null;
+  newConditionButtonEnabled = false;
+  newActionButtonEnabled = false;
 
   ngOnInit(): void {
     this.rule = new Rule();
@@ -93,6 +95,7 @@ export class CreateComponent implements OnInit {
       for (const condition of this.rule.conditions) {
         this.createNewConditionComponent(condition);
       }
+      this.newConditionButtonEnabled = true;
     } else {
       this.createNewConditionComponent(null);
     }
@@ -100,6 +103,7 @@ export class CreateComponent implements OnInit {
       for (const action of this.rule.actions) {
         this.createNewActionComponent(action);
       }
+      this.newActionButtonEnabled = true;
     } else {
       this.createNewActionComponent(null);
     }
@@ -230,6 +234,7 @@ export class CreateComponent implements OnInit {
         mod.id = this.getMaxId();
       }
       this.rule.conditions.push(mod);
+      this.newConditionButtonEnabled = true;
     } else {
       if (mod.id !== null && mod.id !== undefined) {
         const actions = this.rule.actions.filter(a => a.id === mod.id);
@@ -241,6 +246,7 @@ export class CreateComponent implements OnInit {
         mod.id = this.getMaxId();
       }
       this.rule.actions.push(mod);
+      this.newActionButtonEnabled = true;
     }
   }
 
@@ -272,6 +278,7 @@ export class CreateComponent implements OnInit {
         mod: mod
       }
     };
+    this.newConditionButtonEnabled = false;
   }
   
   createNewActionComponent(mod: Action): void {
@@ -283,5 +290,6 @@ export class CreateComponent implements OnInit {
         mod: mod
       }
     };
+    this.newActionButtonEnabled = false;
   }
 }

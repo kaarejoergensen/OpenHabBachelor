@@ -34,7 +34,7 @@
 		<h2>Choose conditions</h2>
 		<div class="conditions">
 		  <app-dynamic-component [componentData]="conditionsComponentData" (ruleUpdated)="onRuleUpdated($event)"></app-dynamic-component>
-		  <button mat-raised-button (click)="createNewConditionComponent()">New condition</button>
+		  <button *ngIf="newConditionButtonEnabled" mat-raised-button (click)="createNewConditionComponent()">New condition</button>
 		</div>
 	</div>
 	<div class="button-row">
@@ -47,12 +47,12 @@
 		<h2>Choose actions</h2>
 		<div class="actions">
 		  <app-dynamic-component [componentData]="actionsComponentData" (ruleUpdated)="onRuleUpdated($event)"></app-dynamic-component>
-          <button mat-raised-button (click)="createNewActionComponent()">New action</button>
+          <button *ngIf="newActionButtonEnabled" mat-raised-button (click)="createNewActionComponent()">New action</button>
 		</div>
 	</div>
     <div class="button-row">
         <button mat-raised-button (click)="goBack()">Back</button>
-        <button mat-raised-button color="primary" [disabled]="isConditionsZero()" (click)="next()">Next</button>
+        <button mat-raised-button color="primary" [disabled]="isActionsZero()" (click)="next()">Next</button>
     </div>
 </div>
 <div [hidden]="step != 4" class="creatediv animate-from-right">
