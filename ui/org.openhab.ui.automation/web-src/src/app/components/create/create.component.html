@@ -81,7 +81,7 @@
 	<div style="display: flex">
 		<div style="width: 15%">
 			<h3 style="margin: 16px 0 16px 0;">
-				<b>Conditions:</b>
+				<b>If:</b>
 			</h3>
 		</div>
 		<div style="width: 70%">
@@ -95,11 +95,10 @@
 	<div style="display: flex">
 		<div style="width: 15%">
 			<h3 style="margin: 16px 0 16px 0;">
-				<b>Actions:</b>
+				<b>Then:</b>
 			</h3>
 		</div>
 		<div style="width: 70%">
-
 			<app-dynamic-component [componentData]="actionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)" style="text-align: center; width: 80%"></app-dynamic-component>
 			<a *ngIf="newActionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewActionComponent()" style="float: left">
 				<mat-icon style="color: green;">add</mat-icon>

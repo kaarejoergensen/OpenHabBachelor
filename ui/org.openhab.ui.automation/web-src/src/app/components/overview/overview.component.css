@@ -24,10 +24,12 @@
 	padding: .3em 0;
 	cursor: pointer;
 	border-radius: 25px;
+	width: 100%;
+	clear: both;
 }
 
 .button-row {
-	padding: 2px 16px;
+	padding: 0 16px 16px;
 	float: right;
 	clear: both;
 }
