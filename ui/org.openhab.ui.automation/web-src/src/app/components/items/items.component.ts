@@ -84,6 +84,34 @@ export class ItemsComponent {
     this.modDeleted.emit(this.mod);
     this.mod = null;
   }
+  
+  parseState(state: string): string {
+    if (this.item && this.item.type === 'DateTime') {
+      return new Date(state).toLocaleString();
+    }
+    return state;
+  }
+  
+  parseDays(days: string[]): string {
+    let result = '';
+    for (let i = 0; i < days.length - 2; i++) {
+      const day = days[i];
+      result += this.capitalize(day) + ', ';
+    }
+    if (days.length > 1) {
+      result += this.capitalize(days[days.length - 2]) + ' and ' + this.capitalize(days[days.length - 1]);
+    } else {
+      if (days.length > 0) {
+        result = this.capitalize(days[0]);
+      }
+    }
+    
+    return result;
+  }
+  
+  capitalize(s: string): string {
+      return s.length > 0 ? (s.length > 1 ? s.charAt(0) + s.slice(1).toLowerCase() : s.charAt(0)) : s;
+  }
 }
 
 @Component({
