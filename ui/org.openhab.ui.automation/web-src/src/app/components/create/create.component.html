@@ -33,11 +33,11 @@
 	<div class="itemsdiv">
 		<h2>Choose conditions</h2>
 		<div class="conditions">
-		  <app-dynamic-component [componentData]="conditionsComponentData" (ruleUpdated)="onRuleUpdated($event)"></app-dynamic-component>
+		  <app-dynamic-component [componentData]="conditionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 		  <!-- <button *ngIf="newConditionButtonEnabled" mat-raised-button (click)="createNewConditionComponent()">New condition</button> -->
-		  <a *ngIf="newConditionButtonEnabled" mat-icon-button color="green" (click)="createNewConditionComponent()" style="float:left;">		      
-			<mat-icon>add</mat-icon>
-			<span>New condition</span>
+		  <a *ngIf="newConditionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewConditionComponent()" style="float:left">		      
+			<mat-icon style="color: green;">add</mat-icon>
+			<span style="color: green;">New condition</span>
           </a>
 		</div>
 	</div>
@@ -50,8 +50,11 @@
 	<div class="itemsdiv">
 		<h2>Choose actions</h2>
 		<div class="actions">
-		  <app-dynamic-component [componentData]="actionsComponentData" (ruleUpdated)="onRuleUpdated($event)"></app-dynamic-component>
-          <button *ngIf="newActionButtonEnabled" mat-raised-button (click)="createNewActionComponent()">New action</button>
+		  <app-dynamic-component [componentData]="actionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
+		  <a *ngIf="newActionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewActionComponent()" style="float:left">              
+            <mat-icon style="color: green;">add</mat-icon>
+            <span style="color: green;">New action</span>
+          </a>
 		</div>
 	</div>
     <div class="button-row">

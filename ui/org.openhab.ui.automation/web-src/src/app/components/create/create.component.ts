@@ -8,7 +8,7 @@ import { SharedPropertiesService } from '../../services/shared-properties.servic
 import { ThingService } from '../../services/thing.service';
 import { ItemsComponent } from '../items/items.component';
 import { JsonPipe, Location } from '@angular/common';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, trigger, transition, style, animate } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -22,7 +22,15 @@ import 'rxjs/add/operator/concat';
   selector: 'app-create',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css'],
-  providers: [ItemService, ThingService, RuleService]
+  providers: [ItemService, ThingService, RuleService],
+  animations: [
+  trigger('fadeIn', [
+    transition(':enter', [   // :enter is alias to 'void => *'
+      style({opacity: 0}),
+      animate(500, style({opacity: 1})) 
+    ])
+  ])
+]
 })
 export class CreateComponent implements OnInit {
   @ViewChild('bodyJson') jsonChild: ElementRef;
@@ -247,6 +255,32 @@ export class CreateComponent implements OnInit {
       }
       this.rule.actions.push(mod);
       this.newActionButtonEnabled = true;
+    }
+  }
+  
+  onModDeleted(mod: any) {
+    if (this.isCondition(mod)) {
+      if (mod.id !== null && mod.id !== undefined) {
+        const conditions = this.rule.conditions.filter(c => c.id === mod.id);
+        if (conditions && conditions.length > 0) {
+          const index = this.rule.conditions.indexOf(conditions[0]);
+          this.rule.conditions.splice(index, 1);
+        }
+      }
+      if (this.rule.conditions.length === 0) {
+        this.newConditionButtonEnabled = false;
+      }
+    } else {
+      if (mod.id !== null && mod.id !== undefined) {
+        const actions = this.rule.actions.filter(a => a.id === mod.id);
+        if (actions && actions.length > 0) {
+          const index = this.rule.actions.indexOf(actions[0]);
+          this.rule.actions.splice(index, 1);
+        }
+      }
+    }
+    if (this.rule.actions.length === 0) {
+      this.newActionButtonEnabled = false;
     }
   }
 
