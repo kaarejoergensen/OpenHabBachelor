@@ -6,6 +6,7 @@ export class RuleMapperHelper {
   static mapRuleToDTO(rule: Rule): RuleDTO {
     const ruleDTO = new RuleDTO();
 
+    ruleDTO.uid = rule.uid;
     ruleDTO.name = rule.name;
     ruleDTO.description = rule.description;
     rule.conditions.forEach(c => RuleDTOHelper.updateModule('condition', this.mapConditionToModule(c), ruleDTO));

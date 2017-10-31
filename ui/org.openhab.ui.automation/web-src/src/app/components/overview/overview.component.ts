@@ -38,14 +38,10 @@ export class OverviewComponent implements OnInit {
 
   handleCreateResult(result: any) {
     if (result !== undefined && result !== null) {
-      if (typeof result === 'boolean') {
-        if (result) {
-          this.openSnackbar('Rule added');
-        } else {
-          this.openSnackbar('Rule creation failed');
-        }
+      if (typeof result === 'string') {
+        this.openSnackbar(result);
       } else {
-        this.openSnackbar('Failed: ' + result.message);
+        this.openSnackbar('Failed: ' + (result.statusText ? result.statusText : '') + (result.status ? ' (' + result.status + ')' : ''));
       }
       this.sharedProperties.setResult(null);
     }

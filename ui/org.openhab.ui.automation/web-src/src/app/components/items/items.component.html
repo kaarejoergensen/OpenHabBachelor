@@ -1,30 +1,28 @@
-<div *ngIf="things && !mod" class="itemsdiv">
-	<ul class="items">
-		<li *ngFor="let thing of things">
-			<div class="inner-item" (click)="onSelect(thing)">{{thing.label}}</div>
-		</li>
-	</ul>
-</div>
-<div *ngIf="mod" [@fadeIn] class="itemsdiv">
-	<ul class="items">
-		<li style="width: 60% !important;">
-			<div class="inner-item" (click)="onSelect(mod.thing)">
-				<div *ngIf="thingType === 'condition'">
-					<div *ngIf="mod.itemName && item">
-						When <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> is <i> <span *ngIf="item.type === 'Number'">{{getOperator(mod.operator)}} </span> <span *ngIf="item.type === 'Switch'">turned to </span> {{mod.state}}
-						</i>
-					</div>
-					<div *ngIf="mod.tempTime">
-						When the time is <i>{{mod.tempTime}}</i> on {{mod.days}}
-					</div>
-				</div>
-				<div *ngIf="thingType === 'action'">
-					<div *ngIf="item">
-					   Set <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> to <i>{{mod.command}}</i>
-					</div>
-				</div>
-			</div>
-			<button mat-raised-button color="warn" (click)="onDeleteMod()">Delete</button>
-		</li>
-	</ul>
+<div class="itemsdiv">
+    <ul *ngIf="things && !mod" class="items">
+        <li *ngFor="let thing of things">
+            <div class="inner-item" (click)="onSelect(thing)">{{thing.label}}</div>
+        </li>
+    </ul>
+    <ul *ngIf="mod" [@fadeIn] class="itemsdiv" class="items">
+        <li style="width: 60% !important;">
+            <div class="inner-item" (click)="onSelect(mod.thing)">
+                <div *ngIf="thingType === 'condition'">
+                    <div *ngIf="mod.itemName && item">
+                        When <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> is <i> <span *ngIf="item.type === 'Number'">{{getOperator(mod.operator)}} </span> <span *ngIf="item.type === 'Switch'">turned to </span> {{mod.state}}
+                        </i>
+                    </div>
+                    <div *ngIf="mod.tempTime">
+                        When the time is <i>{{mod.tempTime}}</i> on {{mod.days}}
+                    </div>
+                </div>
+                <div *ngIf="thingType === 'action'">
+                    <div *ngIf="item">
+                       Set <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> to <i>{{mod.command}}</i>
+                    </div>
+                </div>
+            </div>
+            <button mat-raised-button color="warn" (click)="onDeleteMod()">Delete</button>
+        </li>
+    </ul>
 </div>

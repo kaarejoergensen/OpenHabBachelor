@@ -191,17 +191,20 @@ export class CreateComponent implements OnInit {
   goBack(): void {
     this.step--;
   }
-
-  saveNameAndDescription(name: string, desc: string): void {
-    this.rule.name = name;
-    this.rule.description = desc;
+  
+  updateRule(): void {
+    const ruleDTO = RuleMapperHelper.mapRuleToDTO(this.rule);
+    const body = ruleDTO.getJSON();
+    this.ruleService.updateRule(body)
+      .subscribe(res => res ? this.goToOverview('Rule updated') : this.goToOverview('Rule update failed'),
+                 error => this.goToOverview(error));
   }
+  
   createRule(): void {
     const ruleDTO = RuleMapperHelper.mapRuleToDTO(this.rule);
     const body = ruleDTO.getJSON();
-    console.log(new JsonPipe().transform(body));
     this.ruleService.createRule(body)
-      .subscribe(res => this.goToOverview(res),
+      .subscribe(res => res ? this.goToOverview('Rule added') : this.goToOverview('Rule creation failed'),
                  error => this.goToOverview(error));
   }
 

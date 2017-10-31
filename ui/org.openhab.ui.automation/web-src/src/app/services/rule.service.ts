@@ -16,6 +16,11 @@ export class RuleService {
     return this.http.post(this.apiURL + '/rest/rules', JSON.stringify(rule), {headers: this.headers})
       .map(response => response.ok as boolean);
   }
+  
+  updateRule(rule: any): Observable<boolean> {
+    return this.http.put(this.apiURL + '/rest/rules/' + rule.uid, JSON.stringify(rule), {headers: this.headers})
+      .map(response => response.ok as boolean);
+  }
 
   getRules(): Observable<RuleDTO[]> {
     return this.http.get(this.apiURL + '/rest/rules')
