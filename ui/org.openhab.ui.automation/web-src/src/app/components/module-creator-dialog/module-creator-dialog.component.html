@@ -8,7 +8,7 @@
 	            <div *ngIf="selectedItem.type==='Number'" style="display: inline-block">
 	                is
 	                <mat-form-field> <mat-select [(ngModel)]="selectedOperator"> <mat-option *ngFor="let o of operators" [value]="o">{{ o.name }}</mat-option> </mat-select> </mat-form-field>
-	                <mat-form-field> <input matInput #stateInput type="number"> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> </mat-form-field>
+	                <mat-form-field> <input matInput type="number" [(ngModel)]="stateInput"> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> </mat-form-field>
 	            </div>
 	            <div *ngIf="selectedItem.type==='Switch'" style="display: inline-block">
 	                is
@@ -18,7 +18,7 @@
 	        <div *ngIf="selectedItem.type === 'CustomTime'">
 	            <div>
 	                When the time is
-	                <mat-form-field style="width: 75px"> <input matInput #stateInput type="time"></mat-form-field>
+	                <mat-form-field style="width: 75px"> <input matInput [(ngModel)]="stateInput" type="time"></mat-form-field>
 	            </div>
 	            <div>
 	                On these days
@@ -31,7 +31,7 @@
 	            is
 	            <mat-form-field> <input #datePicker matInput [matDatepicker]="picker" placeholder="Choose a date"> <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle> <mat-datepicker #picker></mat-datepicker> </mat-form-field>
 	            at
-	            <mat-form-field style="width: 75px"> <input matInput #stateInput type="time"></mat-form-field>
+	            <mat-form-field style="width: 75px"> <input matInput [(ngModel)]="stateInput" type="time"></mat-form-field>
 	        </div>
 	    </div>
 	    <div *ngIf="modalType==='action'">
@@ -39,7 +39,11 @@
 	        <mat-form-field> <mat-select [(ngModel)]="selectedItem"> <mat-option *ngFor="let item of thing.editableItems" [value]="item">{{ item.label }}</mat-option> </mat-select> </mat-form-field>
 	        to
 	        <div *ngIf="selectedItem.type === 'Number'" style="display: inline-block">
-	            <mat-form-field> <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" #stateInput type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}> <ng-template #noStateDescription> <input matInput #stateInput type="number"></ng-template> </mat-form-field>
+	            <mat-form-field> 
+	               <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(ngModel)]="stateInput" type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}> 
+	               <ng-template #noStateDescription> <input matInput [ngModel]="stateInput" type="number"></ng-template>
+	               <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> 
+	            </mat-form-field>
 	        </div>
 	        <div *ngIf="selectedItem.type === 'Switch'" style="display: inline-block">
 	            <mat-form-field> <mat-select [(ngModel)]="selectedSwitchState"> <mat-option *ngFor="let s of switchStates" [value]="s">{{ s.value | lowercase}}</mat-option> </mat-select> </mat-form-field>
