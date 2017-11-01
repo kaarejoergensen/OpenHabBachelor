@@ -16,6 +16,7 @@
 .rules {
 	position: relative;
 	text-align: left;
+	clear: both;
 }
 
 .inner-rule {
@@ -25,11 +26,9 @@
 	cursor: pointer;
 	border-radius: 25px;
 	width: 100%;
-	clear: both;
 }
 
 .button-row {
-	padding: 0 16px 16px;
+	padding: 0 16px 8px;
 	float: right;
-	clear: both;
 }

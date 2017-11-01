@@ -25,7 +25,7 @@ import 'rxjs/add/operator/concat';
   providers: [ItemService, ThingService, RuleService],
   animations: [
   trigger('fadeIn', [
-    transition(':enter', [   // :enter is alias to 'void => *'
+    transition(':enter', [
       style({opacity: 0}),
       animate(500, style({opacity: 1})) 
     ])
