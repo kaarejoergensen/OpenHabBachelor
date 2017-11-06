@@ -4,34 +4,32 @@ export const SWITCH_STATES = [{name: 'turned off', value: 'OFF'}, {name: 'turned
 export const DAYS = [{name: 'M', value: 'MON'}, {name: 'T', value: 'TUE'}, {name: 'W', value: 'WED'},
   {name: 'T', value: 'THU'}, {name: 'F', value: 'FRI'}, {name: 'S', value: 'SAT'}, {name: 'S', value: 'SUN'}];
 
-export const STATE_CONDITION_TYPE = 'state';
-export const TIME_CONDITION_TYPE = 'time';
+export const EVENT_TYPE = 'event';
+export const CONDITION_TYPE = 'condition';
+export const ACTION_TYPE = 'action';
 
 export class Rule {
   uid: string;
   enabled: boolean;
   name: string = null;
   description: string = null;
-  conditions: Condition[] = [];
-  actions: Action[] = [];
+  events: RuleModule[] = [];
+  conditions: RuleModule[] = [];
+  actions: RuleModule[] = [];
 }
 
-export class Condition {
+export class RuleModule {
   id: string;
   type: string;
-  // State type
+  // Common
   itemName: string;
+  thing: Thing;
+  // Event
+  time: string;
+  // Condition
   operator: string;
   state: string;
-  thing: Thing;
-  // Time type
   days: string[] = [];
-  tempTime: string;
-}
-
-export class Action {
-  id: string;
-  itemName: string;
+  // Action
   command: string;
-  thing: Thing;
 }

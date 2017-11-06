@@ -14,9 +14,6 @@ export class RuleDTOHelper {
         modules.push(mod);
       }
     }
-    if (moduleType === 'condition') {
-      this.updateModule('trigger', this.inferTrigger(mod, ruleDTO), ruleDTO);
-    }
   }
 
   private static searhArray(modules: Module[], id: string): number {
@@ -38,28 +35,6 @@ export class RuleDTOHelper {
     }
   }
 
-  private static inferTrigger(condition: Module, ruleDTO: RuleDTO): Module {
-    const trigger = new Module;
-    const index = this.findExistingTriggerIndex(condition.id, ruleDTO);
-    if (index !== -1) {
-      trigger.id = ruleDTO.triggers[index].id;
-    }
-    trigger.correspondingConditionId = condition.id;
-    if (condition.type !== 'timer.DayOfWeekCondition') {
-      trigger.type = 'core.ItemStateUpdateTrigger';
-      Module.addConfiguration('itemName', Module.getConfiguration('itemName', condition), trigger);
-      trigger.label = 'an item state is updated';
-      trigger.description = 'This triggers the rule if an item state is updated (even if it does not change).';
-    } else {
-      trigger.type = 'timer.TimeOfDayTrigger';
-      trigger.label = 'it is a fixed time of day';
-      trigger.description = 'Triggers at a specified time';
-      Module.addConfiguration('time', Module.getConfiguration('tempTime', condition), trigger);
-      Module.removeConfiguration('tempTime', condition);
-    }
-    return trigger;
-  }
-
   private static getMaxId(ruleDTO: RuleDTO): string {
     let maxId = 0;
     const modules = ['condition', 'action', 'trigger'];
@@ -73,15 +48,5 @@ export class RuleDTOHelper {
       }
     }
     return (++maxId).toString();
-  }
-
-  private static findExistingTriggerIndex(id: string, ruleDTO: RuleDTO): number {
-    for (let i = 0; i < ruleDTO.triggers.length; i++) {
-      const trigger = ruleDTO.triggers[i];
-      if (trigger.correspondingConditionId === id) {
-        return i;
-      }
-    }
-    return -1;
   }
 }

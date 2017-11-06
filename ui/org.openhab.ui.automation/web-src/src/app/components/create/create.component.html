@@ -5,7 +5,7 @@
 	<section>
 		<div style="width: 60%; margin: auto; display: flex; align-items: center; justify-content: center">
 			<div style="flex: 1;">
-				<mat-progress-bar style="max-width: 75%; margin: auto;" color="primary" mode="determinate" [value]="(step - 1)*33.3333"> </mat-progress-bar>
+				<mat-progress-bar style="max-width: 75%; margin: auto;" color="primary" mode="determinate" [value]="(step - 1)*25"> </mat-progress-bar>
 			</div>
 			<button mat-icon-button (click)="cancel()" style="align-self: flex-end;">
 				<mat-icon>close</mat-icon>
@@ -26,26 +26,26 @@
 </div>
 <div [hidden]="step != 2" class="creatediv animate-from-right">
 	<div class="itemsdiv">
-		<h2>Choose conditions</h2>
-		<div class="conditions">
-			<app-dynamic-component [componentData]="conditionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
-			<a *ngIf="newConditionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewConditionComponent()" style="float: left">
+		<h2>When</h2>
+		<div class="events">
+			<app-dynamic-component [componentData]="eventsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
+			<a *ngIf="newEventButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewModuleComponent(null, 'event')" style="float: left">
 				<mat-icon style="color: green;">add</mat-icon>
-				<span style="color: green;">New condition</span>
+				<span style="color: green;">New event</span>
 			</a>
 		</div>
 	</div>
 	<div class="button-row" style="clear: both;">
 		<button mat-raised-button (click)="goBack()">Previous</button>
-		<button mat-raised-button color="primary" [disabled]="isConditionsZero()" (click)="next()">Next</button>
+		<button mat-raised-button color="primary" (click)="next()">Next</button>
 	</div>
 </div>
 <div [hidden]="step != 3" class="creatediv animate-from-right">
 	<div class="itemsdiv">
-		<h2>Choose actions</h2>
+		<h2>Then</h2>
 		<div class="actions">
 			<app-dynamic-component [componentData]="actionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
-			<a *ngIf="newActionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewActionComponent()" style="float: left">
+			<a *ngIf="newActionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewModuleComponent(null, 'action')" style="float: left">
 				<mat-icon style="color: green;">add</mat-icon>
 				<span style="color: green;">New action</span>
 			</a>
@@ -56,7 +56,23 @@
 		<button mat-raised-button color="primary" [disabled]="isActionsZero()" (click)="next()">Next</button>
 	</div>
 </div>
-<div [hidden]="step != 4" class="creatediv animate-from-right" style="text-align: left; width: 50%;">
+<div [hidden]="step != 4" class="creatediv animate-from-right">
+    <div class="itemsdiv">
+        <h2>But only if</h2>
+        <div class="conditions">
+            <app-dynamic-component [componentData]="conditionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
+            <a *ngIf="newConditionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewActionComponent(null, 'condition')" style="float: left">
+                <mat-icon style="color: green;">add</mat-icon>
+                <span style="color: green;">New condition</span>
+            </a>
+        </div>
+    </div>
+    <div class="button-row">
+        <button mat-raised-button (click)="goBack()">Previous</button>
+        <button mat-raised-button color="primary" [disabled]="isConditionsZero()" (click)="next()">Next</button>
+    </div>
+</div>
+<div [hidden]="step != 5" class="creatediv animate-from-right" style="text-align: left; width: 50%;">
 	<h2 style="text-align: center;">Overview</h2>
 	<div style="display: flex; align-items: center;">
 		<div style="width: 15%">

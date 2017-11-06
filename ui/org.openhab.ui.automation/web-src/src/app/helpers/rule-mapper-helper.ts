@@ -1,4 +1,4 @@
-import { Rule, Condition, STATE_CONDITION_TYPE, TIME_CONDITION_TYPE, Action } from '../models/rule';
+import { Rule, RuleModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE } from '../models/rule';
 import { RuleDTO, Module } from '../models/rule-dto';
 import { RuleDTOHelper } from './rule-dto-helper';
 export class RuleMapperHelper {
@@ -9,32 +9,50 @@ export class RuleMapperHelper {
     ruleDTO.uid = rule.uid;
     ruleDTO.name = rule.name;
     ruleDTO.description = rule.description;
+    rule.events.forEach(e => RuleDTOHelper.updateModule('trigger', this.mapEventToModule(e), ruleDTO));
     rule.conditions.forEach(c => RuleDTOHelper.updateModule('condition', this.mapConditionToModule(c), ruleDTO));
     rule.actions.forEach(a => RuleDTOHelper.updateModule('action', this.mapActionToModule(a), ruleDTO));
 
     return ruleDTO;
   }
-
-  static mapConditionToModule(condition: Condition): Module {
+  
+  static mapEventToModule(event: RuleModule): Module {
     const mod = new Module();
-    if (condition.type === STATE_CONDITION_TYPE) {
+    
+    if (event.itemName) {
+      mod.type = 'core.ItemStateUpdateTrigger';
+      Module.addConfiguration('itemName', event.itemName, mod);
+      mod.label = 'an item state is updated';
+      mod.description = 'This triggers the rule if an item state is updated (even if it does not change).';
+    } else {
+      mod.type = 'timer.TimeOfDayTrigger';
+      mod.label = 'it is a fixed time of day';
+      mod.description = 'Triggers at a specified time';
+      Module.addConfiguration('time', event.time, mod);
+    }
+    
+    return mod;
+  }
+
+  static mapConditionToModule(condition: RuleModule): Module {
+    const mod = new Module();
+    if (condition.itemName) {
       mod.type = 'core.ItemStateCondition';
       mod.label = 'an item has a given state';
       mod.description = 'Compares the item state with the given value';
       Module.addConfiguration('itemName', condition.itemName, mod);
       Module.addConfiguration('operator', condition.operator, mod);
       Module.addConfiguration('state', condition.state, mod);
-    } else if (condition.type === TIME_CONDITION_TYPE) {
+    } else {
       mod.type = 'timer.DayOfWeekCondition';
       mod.label = 'it is a certain day of the week';
       mod.description = 'checks for the current day of the week';
       Module.addConfiguration('days', condition.days, mod);
-      Module.addConfiguration('tempTime', condition.tempTime, mod);
     }
     return mod;
   }
 
-  static mapActionToModule(action: Action): Module {
+  static mapActionToModule(action: RuleModule): Module {
     const mod = new Module();
     mod.type = 'core.ItemCommandAction';
     mod.label = 'send a command';
@@ -51,34 +69,39 @@ export class RuleMapperHelper {
     rule.enabled = ruleDTO.enabled;
     rule.name = ruleDTO.name;
     rule.description = ruleDTO.description;
-    ruleDTO.conditions.forEach(c => rule.conditions.push(this.mapModuleToCondition(c, ruleDTO.triggers)));
+    ruleDTO.conditions.forEach(c => rule.conditions.push(this.mapModuleToCondition(c)));
     ruleDTO.actions.forEach(a => rule.actions.push(this.mapModuleToAction(a)));
 
     return rule;
   }
+  
+  static mapModuleToEvent(mod: Module): RuleModule {
+    const event = new RuleModule();
+    event.type = EVENT_TYPE;
+    if (mod.type === 'core.ItemStateUpdateTrigger') {
+      event.itemName = Module.getConfiguration('itemName', mod);
+    } else {
+      event.time = Module.getConfiguration('time', mod);
+    }
+    return event;
+  }
 
-  static mapModuleToCondition(mod: Module, triggers?: Module[]): Condition {
-    const condition = new Condition();
+  static mapModuleToCondition(mod: Module): RuleModule {
+    const condition = new RuleModule();
+    condition.type = CONDITION_TYPE;
     if (mod.type === 'core.ItemStateCondition') {
-      condition.type = STATE_CONDITION_TYPE;
       condition.itemName = Module.getConfiguration('itemName', mod);
       condition.operator = Module.getConfiguration('operator', mod);
       condition.state = Module.getConfiguration('state', mod);
     } else if (mod.type === 'timer.DayOfWeekCondition') {
-      condition.type = TIME_CONDITION_TYPE;
       condition.days = Module.getConfiguration('days', mod);
-      if (triggers) {
-        const timers = triggers.filter(t => t.type === 'timer.TimeOfDayTrigger');
-        if (timers && timers.length > 0) {
-          condition.tempTime = Module.getConfiguration('time', timers[0]);
-        }
-      }
     }
     return condition;
   }
 
-  static mapModuleToAction(mod: Module): Action {
-    const action = new Action();
+  static mapModuleToAction(mod: Module): RuleModule {
+    const action = new RuleModule();
+    action.type = ACTION_TYPE;
     action.itemName = Module.getConfiguration('itemName', mod);
     action.command = Module.getConfiguration('command', mod);
     return action;

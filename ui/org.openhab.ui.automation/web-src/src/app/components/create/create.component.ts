@@ -1,6 +1,7 @@
+import { RuleHelper } from '../../helpers/rule-helper';
 import { RuleMapperHelper } from '../../helpers/rule-mapper-helper';
 import { Item } from '../../models/item';
-import { Rule, Condition, Action } from '../../models/rule';
+import { Rule, RuleModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE } from '../../models/rule';
 import { Thing } from '../../models/thing';
 import { ItemService } from '../../services/item.service';
 import { RuleService } from '../../services/rule.service';
@@ -41,8 +42,10 @@ export class CreateComponent implements OnInit {
   requiredFormControl = new FormControl('', [
     Validators.required]);
   edit: boolean;
+  eventsComponentData = null;
   conditionsComponentData = null;
   actionsComponentData = null;
+  newEventButtonEnabled = false;
   newConditionButtonEnabled = false;
   newActionButtonEnabled = false;
 
@@ -99,22 +102,13 @@ export class CreateComponent implements OnInit {
   }
   
   initializeModules(): void {
-    if (this.rule.conditions.length > 0) {
-      for (const condition of this.rule.conditions) {
-        this.createNewConditionComponent(condition);
-      }
-      this.newConditionButtonEnabled = true;
-    } else {
-      this.createNewConditionComponent(null);
+    const allModules = this.rule.events.concat(this.rule.conditions, this.rule.actions);
+    for (const mod of allModules) {
+      this.createNewModuleComponent(mod, mod.type);
     }
-    if (this.rule.actions.length > 0) {
-      for (const action of this.rule.actions) {
-        this.createNewActionComponent(action);
-      }
-      this.newActionButtonEnabled = true;
-    } else {
-      this.createNewActionComponent(null);
-    }
+    this.rule.events.length > 0 ? this.newEventButtonEnabled = true : this.createNewModuleComponent(null, EVENT_TYPE);
+    this.rule.conditions.length > 0 ? this.newConditionButtonEnabled = true : this.createNewModuleComponent(null, CONDITION_TYPE);
+    this.rule.actions.length > 0 ? this.newActionButtonEnabled = true : this.createNewModuleComponent(null, ACTION_TYPE);
   }
 
   handleError(error: any): void {
@@ -156,6 +150,14 @@ export class CreateComponent implements OnInit {
   }
 
   addThingToRule(): void {
+    for (const event of this.rule.events) {
+      const things = this.thingsWithEditableItems.filter(t => t.editableItems.filter(i => i.name === event.itemName).length > 0);
+      if (things.length > 0) {
+        event.thing = things[0];
+      } else {
+        console.log('No thing found for action ' + event.id);
+      }
+    }
     for (const action of this.rule.actions) {
       const things = this.thingsWithEditableItems.filter(t => t.editableItems.filter(i => i.name === action.itemName).length > 0);
       if (things.length > 0) {
@@ -224,6 +226,10 @@ export class CreateComponent implements OnInit {
   cancel(): void {
     this.goToOverview(null);
   }
+  
+  isEventsZero(): boolean {
+    return false; // this.rule.events.length === 0;
+  }
 
   isConditionsZero(): boolean {
     return this.rule.conditions.length === 0;
@@ -233,100 +239,49 @@ export class CreateComponent implements OnInit {
     return this.rule.actions.length === 0;
   }
 
-  onRuleUpdated(mod: any) {
-    if (this.isCondition(mod)) {
-      if (mod.id !== null && mod.id !== undefined) {
-        const conditions = this.rule.conditions.filter(c => c.id === mod.id);
-        if (conditions && conditions.length > 0) {
-          const index = this.rule.conditions.indexOf(conditions[0]);
-          this.rule.conditions.splice(index, 1);
-        }
-      } else {
-        mod.id = this.getMaxId();
-      }
-      this.rule.conditions.push(mod);
+  onRuleUpdated(mod: RuleModule) {
+    RuleHelper.updateModule(mod, this.rule);
+    if (mod.type === EVENT_TYPE) {
+      this.newEventButtonEnabled = true;
+    } else if (mod.type === CONDITION_TYPE) {
       this.newConditionButtonEnabled = true;
-    } else {
-      if (mod.id !== null && mod.id !== undefined) {
-        const actions = this.rule.actions.filter(a => a.id === mod.id);
-        if (actions && actions.length > 0) {
-          const index = this.rule.actions.indexOf(actions[0]);
-          this.rule.actions.splice(index, 1);
-        }
-      } else {
-        mod.id = this.getMaxId();
-      }
-      this.rule.actions.push(mod);
+    } else if (mod.type === ACTION_TYPE) {
       this.newActionButtonEnabled = true;
     }
   }
   
   onModDeleted(mod: any) {
-    if (this.isCondition(mod)) {
-      if (mod.id !== null && mod.id !== undefined) {
-        const conditions = this.rule.conditions.filter(c => c.id === mod.id);
-        if (conditions && conditions.length > 0) {
-          const index = this.rule.conditions.indexOf(conditions[0]);
-          this.rule.conditions.splice(index, 1);
-        }
-      }
-      if (this.rule.conditions.length === 0) {
-        this.newConditionButtonEnabled = false;
-      }
-    } else {
-      if (mod.id !== null && mod.id !== undefined) {
-        const actions = this.rule.actions.filter(a => a.id === mod.id);
-        if (actions && actions.length > 0) {
-          const index = this.rule.actions.indexOf(actions[0]);
-          this.rule.actions.splice(index, 1);
-        }
-      }
+    RuleHelper.removeModule(mod, this.rule);
+    if (this.rule.events.length === 0) {
+      this.newEventButtonEnabled = false;
+    }
+    if (this.rule.conditions.length === 0) {
+      this.newConditionButtonEnabled = false;
     }
     if (this.rule.actions.length === 0) {
       this.newActionButtonEnabled = false;
     }
   }
-
-  isCondition(arr: any): arr is Condition {
-    return (<Condition>arr).state !== undefined || (<Condition>arr).days !== undefined;
-  }
-
-  getMaxId(): string {
-    let maxId = 0;
-    for (const c of this.rule.conditions) {
-      if (c.id && !isNaN(parseInt(c.id, 10)) && parseInt(c.id, 10) > maxId) {
-        maxId = parseInt(c.id, 10);
-      }
-    }
-    for (const a of this.rule.conditions) {
-      if (a.id && !isNaN(parseInt(a.id, 10)) && parseInt(a.id, 10) > maxId) {
-        maxId = parseInt(a.id, 10);
-      }
-    }
-    return (++maxId).toString();
-  }
   
-  createNewConditionComponent(mod: Condition): void {
-    this.conditionsComponentData = {
+  createNewModuleComponent(mod: RuleModule, type: string): void {
+    const componentData = {
       component: ItemsComponent,
       inputs: {
-        things: this.things,
-        thingType: 'condition',
+        things: type === ACTION_TYPE ? this.thingsWithEditableItems : this.things,
+        thingType: type,
         mod: mod
       }
     };
-    this.newConditionButtonEnabled = false;
+    if (type === EVENT_TYPE) {
+      this.newEventButtonEnabled = false;
+      this.eventsComponentData = componentData;
+    } else if (type === CONDITION_TYPE) {
+      this.newConditionButtonEnabled = false;
+      this.conditionsComponentData = componentData;
+    } else if (type === ACTION_TYPE) {
+      this.newActionButtonEnabled = false;
+      this.actionsComponentData = componentData;
+    }
   }
   
-  createNewActionComponent(mod: Action): void {
-    this.actionsComponentData = {
-      component: ItemsComponent,
-      inputs: {
-        things: this.thingsWithEditableItems,
-        thingType: 'action',
-        mod: mod
-      }
-    };
-    this.newActionButtonEnabled = false;
-  }
 }
