@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><sca xmlns:functx="http://www.functx.com">
+<file name="C:\Users\Kaare\openhab2-master\git\openhab2-addons\addons\misc\org.eclipse.smarthome.automation.module.extension\.classpath">
+      <message tool="checkstyle" line="0" message="File does not end with a newline." priority="3" rule="NewlineAtEndOfFileCheck" category="style"/>
+   </file>
+   <file name="C:\Users\Kaare\openhab2-master\git\openhab2-addons\addons\misc\org.eclipse.smarthome.automation.module.extension\about.html">
+      <message tool="checkstyle" line="0" message="File does not end with a newline." priority="3" rule="NewlineAtEndOfFileCheck" category="style"/>
+   </file>
+   <file name="C:\Users\Kaare\openhab2-master\git\openhab2-addons\addons\misc\org.eclipse.smarthome.automation.module.extension\build.properties">
+      <message tool="checkstyle" line="0" message="File does not end with a newline." priority="3" rule="NewlineAtEndOfFileCheck" category="style"/>
+   </file>
+   <file name="C:\Users\Kaare\openhab2-master\git\openhab2-addons\addons\misc\org.eclipse.smarthome.automation.module.extension\ESH-INF\automation\moduletypes\ItemTriggers.json">
+      <message tool="checkstyle" line="0" message="File does not end with a newline." priority="3" rule="NewlineAtEndOfFileCheck" category="style"/>
+   </file>
+   <file name="C:\Users\Kaare\openhab2-master\git\openhab2-addons\addons\misc\org.eclipse.smarthome.automation.module.extension\META-INF\MANIFEST.MF">
+      <message tool="checkstyle" line="0" message="The package org.eclipse.smarthome.automation.module.core.factory should be marked as &#34;internal&#34; if it is not exported." priority="2" rule="PackageExportsNameCheck" category="style"/>
+      <message tool="checkstyle" line="0" message="The package org.eclipse.smarthome.automation.module.core.handler should be marked as &#34;internal&#34; if it is not exported." priority="2" rule="PackageExportsNameCheck" category="style"/>
+   </file>
+   <file name="C:\Users\Kaare\openhab2-master\git\openhab2-addons\addons\misc\org.eclipse.smarthome.automation.module.extension\OSGI-INF\BasicModuleHandlerFactory.xml">
+      <message tool="checkstyle" line="0" message="File does not end with a newline." priority="3" rule="NewlineAtEndOfFileCheck" category="style"/>
+   </file>
+   <file name="C:\Users\Kaare\openhab2-master\git\openhab2-addons\addons\misc\org.eclipse.smarthome.automation.module.extension\pom.xml">
+      <message tool="checkstyle" line="0" message="File does not end with a newline." priority="3" rule="NewlineAtEndOfFileCheck" category="style"/>
+   </file>
+   <file name="org.eclipse.smarthome.automation.module.core.factory.CoreModuleHandlerFactory.java">
+      <message tool="checkstyle" line="0" message="File does not end with a newline." priority="3" rule="NewlineAtEndOfFileCheck" category="style"/>
+      <message tool="checkstyle" line="36" message="Name 'types' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'." priority="3" rule="ConstantNameCheck" category="style"/>
+   </file>
+   <file name="org.eclipse.smarthome.automation.module.core.handler.ItemStateTriggerHandler.java">
+      <message tool="checkstyle" line="0" message="File does not end with a newline." priority="3" rule="NewlineAtEndOfFileCheck" category="style"/>
+   </file>
+</sca>
