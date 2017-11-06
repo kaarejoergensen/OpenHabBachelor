@@ -1,2 +1,0 @@
-# Automation REST API
-TODO
