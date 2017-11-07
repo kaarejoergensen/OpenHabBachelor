@@ -12,6 +12,12 @@
     float: middle;
     clear:both;
 }
+
+.itemsdiv .li{
+	background-color: red; 
+}
+
+
 @media (max-width:800px) {
   .creatediv {
     width:100%;
