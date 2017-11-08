@@ -7,7 +7,7 @@ import { SharedPropertiesService } from './services/shared-properties.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  titleText = 'Welcome to the Automation UI for openHAB project!';
+  titleText = 'Control your intelligent home';
 
   ngOnInit(): void {
   }

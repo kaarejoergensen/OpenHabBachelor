@@ -16,7 +16,7 @@
 }
 
 .inner-item {
-	background-color: #EEE;
+	background-color: foreground;
 	margin: .5em;
 	padding: .3em 0;
 	border-radius: 5px;
