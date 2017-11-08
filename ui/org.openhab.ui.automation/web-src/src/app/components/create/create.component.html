@@ -1,6 +1,7 @@
 <div *ngIf="step == 0" class="loader">
 	<mat-progress-spinner color="primary" mode="indeterminate"> </mat-progress-spinner>
 </div>
+<h1 class="headers">Create new rule</h1>
 <div *ngIf="step != 0" class="animate-from-right">
 	<section>
 		<div style="width: 60%; margin: auto; display: flex; align-items: center; justify-content: center">
@@ -26,7 +27,7 @@
 </div>
 <div [hidden]="step != 2" class="creatediv animate-from-right">
 	<div class="itemsdiv">
-		<h2>When</h2>
+		<h2>What should activate the rule?</h2>
 		<div class="events">
 			<app-dynamic-component [componentData]="eventsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 			<a *ngIf="newEventButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewModuleComponent(null, 'event')" style="float: left">
@@ -42,7 +43,7 @@
 </div>
 <div [hidden]="step != 3" class="creatediv animate-from-right">
 	<div class="itemsdiv">
-		<h2>Then</h2>
+		<h2>What should happen when the rule activates?</h2>
 		<div class="actions">
 			<app-dynamic-component [componentData]="actionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 			<a *ngIf="newActionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewModuleComponent(null, 'action')" style="float: left">
@@ -58,7 +59,7 @@
 </div>
 <div [hidden]="step != 4" class="creatediv animate-from-right">
     <div class="itemsdiv">
-        <h2>But only if</h2>
+        <h2>Are there any conditions that needs to be met before your action should happen?</h2>
         <div class="conditions">
             <app-dynamic-component [componentData]="conditionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
             <a *ngIf="newConditionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewActionComponent(null, 'condition')" style="float: left">

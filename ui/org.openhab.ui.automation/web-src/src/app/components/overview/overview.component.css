@@ -19,7 +19,6 @@
     margin: 15px;
     margin-top: 30px;
     color: cadetblue;
-
 }
 
 ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar  {

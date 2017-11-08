@@ -12,6 +12,11 @@
     float: middle;
     clear:both;
 }
+.headers{
+	margin-left: -580px;
+    margin-top: 30px;
+    color: cadetblue;
+}
 
 .itemsdiv .li{
 	background-color: red; 
