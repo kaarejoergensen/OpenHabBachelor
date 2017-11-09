@@ -8,9 +8,9 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.eclipse.smarthome.automation.module.core.factory.basicmodulehandlerfactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.openhab.automation.module.extension.factory.abovebelowmodulehandlerfactory">
    
-   <implementation class="org.eclipse.smarthome.automation.module.core.factory.CoreModuleHandlerFactory"/>
+   <implementation class="org.openhab.automation.module.extension.factory.AboveBelowModuleHandlerFactory"/>
    
    <service>
       <provide interface="org.eclipse.smarthome.automation.handler.ModuleHandlerFactory"/>

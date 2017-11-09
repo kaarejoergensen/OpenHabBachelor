@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.eclipse.smarthome.automation.module.core.handler;
+package org.openhab.automation.module.extension.handler;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
  * @author Simon Merschjohann
  *
  */
-public class ItemStateTriggerHandler extends BaseTriggerModuleHandler implements EventSubscriber, EventFilter {
-    private final Logger logger = LoggerFactory.getLogger(ItemStateTriggerHandler.class);
+public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implements EventSubscriber, EventFilter {
+    private final Logger logger = LoggerFactory.getLogger(AboveBelowTriggerHandler.class);
 
     private String itemName;
     private String operator;
@@ -64,7 +64,7 @@ public class ItemStateTriggerHandler extends BaseTriggerModuleHandler implements
 
     private ItemRegistry itemRegistry;
 
-    public ItemStateTriggerHandler(Trigger module, BundleContext bundleContext) {
+    public AboveBelowTriggerHandler(Trigger module, BundleContext bundleContext) {
         super(module);
         this.itemName = (String) module.getConfiguration().get(CFG_ITEMNAME);
         this.state = (String) module.getConfiguration().get(CFG_STATE);
