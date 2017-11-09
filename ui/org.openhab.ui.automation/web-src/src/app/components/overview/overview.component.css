@@ -13,6 +13,28 @@
     width:100%;
   }
 }
+
+.headers {
+    text-align: left;
+    margin: 15px;
+    margin-top: 30px;
+    color: cadetblue;
+}
+
+::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar  {
+    background-color: #62f442; 
+       
+}
+::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb  {
+    background-color: white; 
+}
+
+/*
+::ng-deep .mat-fab{
+	background-color: green !important; 
+}*/
+
+
 .rules {
 	position: relative;
 	text-align: left;
@@ -24,9 +46,10 @@
 	margin: .5em;
 	padding: .3em 0;
 	cursor: pointer;
-	border-radius: 25px;
+	border-radius: 25px; 
 	width: 100%;
 }
+
 
 .button-row {
 	padding: 0 16px 8px;

@@ -19,7 +19,7 @@ export class OverviewComponent implements OnInit {
   isLoading = true;
   constructor(private ruleService: RuleService, private sharedProperties: SharedPropertiesService,
     private location: Location, private router: Router, public snackBar: MatSnackBar, private dialog: MatDialog) { }
-
+  titleText = 'Camilla tester';
   ngOnInit() {
     this.updateRules(true);
   }

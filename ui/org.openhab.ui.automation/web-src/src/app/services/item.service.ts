@@ -17,4 +17,5 @@ export class ItemService {
     return this.http.get(this.apiURL + '/rest/items')
     .map(response => response.json() as Item[]);
   }
+  
 }

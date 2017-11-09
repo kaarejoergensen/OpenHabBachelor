@@ -1,0 +1,13 @@
+::ng-deep .md-toolbar-tools, .md-medium-tall{
+	 background-color: #009688; 
+	 height: 6em;
+	 margin: -6px;
+}
+
+.title {
+	color: white;
+	padding: 22px; 
+	font-size: 41px; 
+	margin-left: -47px;
+	
+}

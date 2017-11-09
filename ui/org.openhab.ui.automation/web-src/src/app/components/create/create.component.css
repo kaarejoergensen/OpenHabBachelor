@@ -12,6 +12,17 @@
     float: middle;
     clear:both;
 }
+.headers{
+	margin-left: -580px;
+    margin-top: 30px;
+    color: cadetblue;
+}
+
+.itemsdiv .li{
+	background-color: red; 
+}
+
+
 @media (max-width:800px) {
   .creatediv {
     width:100%;
