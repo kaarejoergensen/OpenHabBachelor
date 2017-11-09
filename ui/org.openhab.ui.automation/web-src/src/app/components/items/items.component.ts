@@ -35,6 +35,7 @@ export class ItemsComponent {
     this.things = this.injector.get('things');
     this.thingType = this.injector.get('thingType');
     this.mod = this.injector.get('mod');
+    console.log(this.mod);
     if (this.mod && this.mod.itemName && this.mod.thing) {
       this.item = this.getItem(this.mod.thing, this.mod.itemName);
     }

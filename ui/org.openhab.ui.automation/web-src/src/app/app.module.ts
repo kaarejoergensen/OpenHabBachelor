@@ -16,6 +16,7 @@ import { MatProgressBarModule, MatStepperModule, MatProgressSpinnerModule, MatDi
 import { MatIconModule, MatSlideToggleModule, MatSnackBarModule } from '@angular/material';
 import 'hammerjs';
 
+
 const routes: Routes = [
       {
         path: 'create',
@@ -38,7 +39,7 @@ const routes: Routes = [
     OverviewComponent,
     ModuleCreatorDialogComponent,
     DialogDeleteRuleComponent,
-    DynamicComponent
+    DynamicComponent,
   ],
   imports: [
     BrowserModule,

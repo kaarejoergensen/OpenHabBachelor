@@ -1,10 +1,11 @@
 import {Item} from '../../models/item';
-import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE } from '../../models/rule';
+import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE, EVENT_TYPE } from '../../models/rule';
 import {Thing} from '../../models/thing';
 import {SharedPropertiesService} from '../../services/shared-properties.service';
 import {DatePipe} from '@angular/common';
 import {Component, ViewChild, ElementRef, Inject, AfterViewInit, ChangeDetectorRef} from '@angular/core';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import { Validators, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-dialog-overview-example-dialog',
@@ -12,6 +13,7 @@ import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
   styleUrls: ['./module-creator-dialog.component.css']
 })
 export class ModuleCreatorDialogComponent implements AfterViewInit {
+  rateControl: any; 
   thing: Thing;
   selectedItem: Item;
   modalType: string;
@@ -29,18 +31,27 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
     this.thing = data.thing;
     this.modalType = data.modalType;
     this.mod = data.mod;
-    if ((this.modalType === CONDITION_TYPE || this.modalType === ACTION_TYPE) && this.thing.items) {
+    
+    if ((this.modalType === CONDITION_TYPE || this.modalType === EVENT_TYPE) && this.thing.items) {
       this.selectedItem = this.thing.items[0];
+       if (this.selectedItem.type && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
+        console.log(this.selectedItem.stateDescription.minimum);
+        this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum)]);
+     } 
     } else if (this.thing.editableItems) {
       this.selectedItem = this.thing.editableItems[0];
+     if (this.selectedItem.type  && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
+        this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum)]);
+     } 
     }
+   
   }
 
   ngAfterViewInit(): void {
     if (this.mod) {
       if (this.mod.itemName && this.mod.thing) {
         this.selectedItem = this.getItem(this.mod.thing, this.mod.itemName);
-        if (this.modalType === 'condition') {
+        if (this.modalType === 'condition' || this.modalType ===  'event') {
           if (this.mod.operator) {
             for (const op of this.operators) {
               if (op.value === this.mod.operator) {
@@ -137,11 +148,11 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
             }
             mod.state = formattedDate;
           }
+        
         } else {
           mod.days = this.selectedDays.map(function(d) {return d.value; });
         }
-        
-      } else {
+        } else {
         mod.type = ACTION_TYPE;
         mod.thing = this.thing;
         mod.itemName = this.selectedItem.name;
@@ -154,7 +165,8 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
       this.mod = mod;
       this.dialogRef.close({thing: this.thing, mod: this.mod});
     }
-  }
+}
+
 
   isConditionValid(): boolean {
     return true;

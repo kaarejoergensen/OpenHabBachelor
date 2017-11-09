@@ -170,6 +170,7 @@ export class CreateComponent implements OnInit {
       const things = this.things.filter(t => t.items.filter(i => i.name === condition.itemName).length > 0);
       if (things.length > 0) {
         condition.thing = things[0];
+        
       } else {
         console.log('No thing found for action ' + condition.id);
       }
@@ -227,12 +228,10 @@ export class CreateComponent implements OnInit {
     this.goToOverview(null);
   }
   
-  isEventsZero(): boolean {
-    return false; // this.rule.events.length === 0;
-  }
+  
 
-  isConditionsZero(): boolean {
-    return this.rule.conditions.length === 0;
+  isEventsZero(): boolean {
+    return this.rule.events.length === 0;
   }
 
   isActionsZero(): boolean {

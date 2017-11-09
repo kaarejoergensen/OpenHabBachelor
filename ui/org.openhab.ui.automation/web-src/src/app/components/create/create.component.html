@@ -38,7 +38,7 @@
 	</div>
 	<div class="button-row" style="clear: both;">
 		<button mat-raised-button (click)="goBack()">Previous</button>
-		<button mat-raised-button color="primary" (click)="next()">Next</button>
+		<button mat-raised-button color="primary" [disabled]="isEventsZero()" (click)="next()">Next</button>
 	</div>
 </div>
 <div [hidden]="step != 3" class="creatediv animate-from-right">
@@ -70,7 +70,7 @@
     </div>
     <div class="button-row">
         <button mat-raised-button (click)="goBack()">Previous</button>
-        <button mat-raised-button color="primary" [disabled]="isConditionsZero()" (click)="next()">Next</button>
+        <button mat-raised-button color="primary" (click)="next()">Next</button>
     </div>
 </div>
 <div [hidden]="step != 5" class="creatediv animate-from-right" style="text-align: left; width: 50%;">
