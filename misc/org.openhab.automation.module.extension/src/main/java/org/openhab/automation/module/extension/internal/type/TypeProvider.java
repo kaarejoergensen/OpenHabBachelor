@@ -50,7 +50,7 @@ public class TypeProvider implements ModuleTypeProvider {
     }
 
     /**
-     * To provide the {@link ModuleType}s should register the WelcomeHomeModuleTypeProvider as
+     * To provide the {@link ModuleType}s should register the TypeProvider as
      * {@link ModuleTypeProvider} service.
      *
      * @param bc
@@ -61,7 +61,7 @@ public class TypeProvider implements ModuleTypeProvider {
     }
 
     /**
-     * This method unregisters the WelcomeHomeModuleTypeProvider as {@link ModuleTypeProvider}
+     * This method unregisters the TypeProvider as {@link ModuleTypeProvider}
      * service.
      */
     public void unregister() {

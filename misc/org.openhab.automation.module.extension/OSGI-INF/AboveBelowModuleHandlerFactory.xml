@@ -8,12 +8,14 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.openhab.automation.module.extension.internal.handler.abovebelowmodulehandlerfactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.openhab.automation.module.extension.internal.handler.AboveBelowModuleHandlerFactory">
    
    <implementation class="org.openhab.automation.module.extension.internal.handler.AboveBelowModuleHandlerFactory"/>
    
    <service>
       <provide interface="org.eclipse.smarthome.automation.handler.ModuleHandlerFactory"/>
    </service>
+   
    <reference bind="setItemRegistry" cardinality="0..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="dynamic" unbind="unsetItemRegistry"/>
+
 </scr:component>

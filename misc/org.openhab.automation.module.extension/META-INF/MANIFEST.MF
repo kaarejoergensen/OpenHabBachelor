@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Bundle-Name: Module extension
-Bundle-SymbolicName: org.openhab.automation.module.extension
+Bundle-SymbolicName: org.openhab.automation.module.extension;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: org.openhab.automation.module.extension.internal.Activator
 Bundle-Vendor: openHAB

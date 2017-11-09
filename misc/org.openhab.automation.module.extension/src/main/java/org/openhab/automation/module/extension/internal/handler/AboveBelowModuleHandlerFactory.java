@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AboveBelowModuleHandlerFactory extends BaseModuleHandlerFactory {
 
-    public static final String MODULE_HANDLER_FACTORY_NAME = "[JavaAPIDemoHandlerFactory]";
+    public static final String MODULE_HANDLER_FACTORY_NAME = "[AboveBelowModuleHandlerFactory]";
     private static final Collection<String> TYPES;
 
     private ItemRegistry itemRegistry;
