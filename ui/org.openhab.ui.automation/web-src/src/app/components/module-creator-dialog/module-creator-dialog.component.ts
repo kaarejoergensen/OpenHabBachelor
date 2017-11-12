@@ -35,13 +35,12 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
     if ((this.modalType === CONDITION_TYPE || this.modalType === EVENT_TYPE) && this.thing.items) {
       this.selectedItem = this.thing.items[0];
        if (this.selectedItem.type && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
-        console.log(this.selectedItem.stateDescription.minimum);
-        this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum)]);
+        this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
      } 
     } else if (this.thing.editableItems) {
       this.selectedItem = this.thing.editableItems[0];
      if (this.selectedItem.type  && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
-        this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum)]);
+        this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
      } 
     }
    
@@ -123,8 +122,9 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
   save(): void {
     if (this.isConditionValid()) {
       const mod = new RuleModule();
-      if (this.modalType === 'condition') {
-        mod.type = CONDITION_TYPE;
+      if (this.modalType === 'event') {   
+        console.log('save');
+        mod.type = EVENT_TYPE;
         mod.thing = this.thing;
         if (this.selectedItem.type !== 'CustomTime') {
           mod.itemName = this.selectedItem.name;
@@ -152,7 +152,33 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
         } else {
           mod.days = this.selectedDays.map(function(d) {return d.value; });
         }
-        } else {
+        }else if (this.modalType === 'condition') {
+          mod.type = CONDITION_TYPE;
+        mod.thing = this.thing;
+        if (this.selectedItem.type !== 'CustomTime') {
+          mod.itemName = this.selectedItem.name;
+          if (this.selectedItem.type === 'Number') {
+            mod.operator = '=';
+            mod.state = this.stateInput;
+          } else if (this.selectedItem.type === 'Switch') {
+            mod.operator = '=';
+            mod.state = this.selectedSwitchState.value;
+          } else if (this.selectedItem.type === 'DateTime') {
+            mod.operator = '=';
+            const date = new Date(this.datePicker.nativeElement.value);
+            const time = this.stateInput;
+            const split = time.split(':');
+            if (split.length >= 2) {
+              date.setHours(Number(split[0]), Number(split[1]));
+            }
+            let formattedDate = new DatePipe('en-us').transform(date, 'yyyy-MM-ddTHH:mm:ss.000');
+            if (this.selectedItem.state) {
+              formattedDate += this.selectedItem.state.slice(-5);
+            }
+            mod.state = formattedDate;
+          }
+          }
+        } else if (this.modalType === 'action') {
         mod.type = ACTION_TYPE;
         mod.thing = this.thing;
         mod.itemName = this.selectedItem.name;

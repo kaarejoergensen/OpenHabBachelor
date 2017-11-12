@@ -11,7 +11,6 @@
                    
                 <div *ngIf="selectedItem.type==='Number'" style="display: inline-block"> 
                     is
-                    <mat-form-field> <mat-select [(ngModel)]="selectedOperator"> <mat-option *ngFor="let o of operators" [value]="o">{{ o.name }}</mat-option> </mat-select> </mat-form-field>
                     <mat-form-field>  <input matInput *ngIf="selectedItem.stateDescription else noStateDescription"  [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> </mat-form-field>  
                   </div>
                   
@@ -29,7 +28,7 @@
             <div *ngIf="selectedItem.type === 'CustomTime'">
                 <div>
                     When the time is
-                    <mat-form-field style="width: 75px"> <input matInput [(ngModel)]="stateInput" type="time"></mat-form-field>
+                    <mat-form-field style="width: 75px"> <input matInput [(ngModel)]="stateInput" type="time" ></mat-form-field>
                 </div>
                 <div>
                     On these days

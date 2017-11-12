@@ -95,7 +95,7 @@ export class CreateComponent implements OnInit {
     this.things.push(this.createTimeThing());
     if (this.edit) {
       this.addThingToRule();
-      this.step = 4;
+      this.step = 5;
     } else {
       this.next();
     }
@@ -150,6 +150,7 @@ export class CreateComponent implements OnInit {
   }
 
   addThingToRule(): void {
+    console.log(this.rule);
     for (const event of this.rule.events) {
       const things = this.thingsWithEditableItems.filter(t => t.editableItems.filter(i => i.name === event.itemName).length > 0);
       if (things.length > 0) {
@@ -167,6 +168,7 @@ export class CreateComponent implements OnInit {
       }
     }
     for (const condition of this.rule.conditions) {
+      
       const things = this.things.filter(t => t.items.filter(i => i.name === condition.itemName).length > 0);
       if (things.length > 0) {
         condition.thing = things[0];
@@ -270,16 +272,19 @@ export class CreateComponent implements OnInit {
         thingType: type,
         mod: mod
       }
-    };
+    };  
     if (type === EVENT_TYPE) {
       this.newEventButtonEnabled = false;
       this.eventsComponentData = componentData;
+      console.log(this.eventsComponentData);
     } else if (type === CONDITION_TYPE) {
       this.newConditionButtonEnabled = false;
       this.conditionsComponentData = componentData;
+      console.log(this.conditionsComponentData);
     } else if (type === ACTION_TYPE) {
       this.newActionButtonEnabled = false;
       this.actionsComponentData = componentData;
+      console.log(this.actionsComponentData);
     }
   }
   

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.eclipse.smarthome.automation.module.core.handler;
+package org.openhab.automation.module.extension.internal.handler;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -36,16 +36,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is an ModuleHandler implementation for Triggers which trigger the rule
- * if an item state event occurs. The eventType and state value can be set with the
- * configuration.
  *
- * @author Kai Kreuzer - Initial contribution and API
- * @author Simon Merschjohann
+ *
+ * @author Kåre Jørgensen - Initial Contribution
  *
  */
-public class ItemStateTriggerHandler extends BaseTriggerModuleHandler implements EventSubscriber, EventFilter {
-    private final Logger logger = LoggerFactory.getLogger(ItemStateTriggerHandler.class);
+public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implements EventSubscriber, EventFilter {
+    private final Logger logger = LoggerFactory.getLogger(AboveBelowTriggerHandler.class);
 
     private String itemName;
     private String operator;
@@ -64,7 +61,7 @@ public class ItemStateTriggerHandler extends BaseTriggerModuleHandler implements
 
     private ItemRegistry itemRegistry;
 
-    public ItemStateTriggerHandler(Trigger module, BundleContext bundleContext) {
+    public AboveBelowTriggerHandler(Trigger module, BundleContext bundleContext) {
         super(module);
         this.itemName = (String) module.getConfiguration().get(CFG_ITEMNAME);
         this.state = (String) module.getConfiguration().get(CFG_STATE);
