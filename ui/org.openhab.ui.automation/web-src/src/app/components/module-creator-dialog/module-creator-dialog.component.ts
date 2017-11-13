@@ -2,7 +2,7 @@ import {Item} from '../../models/item';
 import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE, EVENT_TYPE } from '../../models/rule';
 import {Thing} from '../../models/thing';
 import {SharedPropertiesService} from '../../services/shared-properties.service';
-import {DatePipe} from '@angular/common';
+import {DatePipe, PercentPipe } from '@angular/common';
 import {Component, ViewChild, ElementRef, Inject, AfterViewInit, ChangeDetectorRef} from '@angular/core';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import { Validators, FormControl } from '@angular/forms';
@@ -35,27 +35,23 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
     
     if ((this.modalType === CONDITION_TYPE || this.modalType === EVENT_TYPE) && this.thing.items) {
       this.selectedItem = this.thing.items[0];
-      console.log(this.selectedItem);
-       if (this.selectedItem.type && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
-        this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
-     } else {
-       this.rateControl = new FormControl('', Validators.required);
-       }
     } else if (this.thing.editableItems) {
       this.selectedItem = this.thing.editableItems[0];
-      console.log(this.selectedItem);
-     if (this.selectedItem.type  && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
+    }
+   if (this.selectedItem.type  && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
         this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
+     } else if (this.selectedItem.stateDescription && this.selectedItem.stateDescription.pattern && this.selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')) {
+       this.rateControl = new FormControl('', [Validators.min(0), Validators.max(100), Validators.required]);
      } else {
      this.rateControl = new FormControl('', Validators.required);
-     }
-    }
+     } 
    
   }
 
   ngAfterViewInit(): void {
     if (this.mod) {
       if (this.mod.itemName && this.mod.thing) {
+        console.log('pixxa');
         this.selectedItem = this.getItem(this.mod.thing, this.mod.itemName);
         if (this.modalType === 'condition' || this.modalType ===  'event') {
           if (this.mod.operator) {
@@ -198,6 +194,17 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
       this.dialogRef.close({thing: this.thing, mod: this.mod});
     }
 }
+  onChange(): void {
+  if (this.selectedItem.type  && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
+        this.rateControl = new FormControl([Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
+        console.log(this.rateControl);
+     } else if (this.selectedItem.stateDescription && this.selectedItem.stateDescription.pattern && this.selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')) {
+       this.rateControl = new FormControl('', [Validators.min(0), Validators.max(100), Validators.required]);
+        console.log(this.rateControl);
+  } else {
+     this.rateControl = new FormControl(Validators.required);
+     }
+  }
 
 
   isConditionValid(): boolean {

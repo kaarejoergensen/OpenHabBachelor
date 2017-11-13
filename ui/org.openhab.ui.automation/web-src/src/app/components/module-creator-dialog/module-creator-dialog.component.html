@@ -7,11 +7,12 @@
 	<div *ngIf="modalType=='event'">
             <div *ngIf="selectedItem.type !== 'CustomTime'">
                 When
-                <mat-form-field> <mat-select [(ngModel)]="selectedItem"> <mat-option *ngFor="let item of thing.items" [value]="item">{{ item.label }}</mat-option> </mat-select> </mat-form-field>
+                <mat-form-field> <mat-select [(ngModel)]="selectedItem" (ngModelChange)="onChange($event)"> <mat-option *ngFor="let item of thing.items" [value]="item">{{ item.label }}</mat-option> </mat-select> </mat-form-field>
                    
                 <div *ngIf="selectedItem.type==='Number'" style="display: inline-block"> 
                     is
-                    <mat-form-field>  <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> </mat-form-field>  
+                    <mat-form-field>  <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number"> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> 
+                    <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()[0]}}</span></mat-form-field>  
                   </div>
                   
                  <div *ngIf="selectedItem.type==='Number' && selectedItem.stateDescription.minimum && selectedItem.stateDescription.maximum ">
@@ -57,7 +58,7 @@
 	                is
 	                <mat-form-field> <mat-select [(ngModel)]="selectedOperator"> <mat-option *ngFor="let o of operators" [value]="o">{{ o.name }}</mat-option> </mat-select> </mat-form-field>
 	                <mat-form-field>  <input matInput *ngIf="selectedItem.stateDescription else noStateDescription"  [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> 
-	           </mat-form-field>
+	                <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()[0]}}</span></mat-form-field>  
 	           </div>
 	             <div *ngIf="selectedItem.type==='Number' && selectedItem.stateDescription.minimum && selectedItem.stateDescription.maximum ">
                    <md-error class="error"> Please enter a value between {{selectedItem.stateDescription.minimum}} and {{selectedItem.stateDescription.maximum}}</md-error>
@@ -97,7 +98,8 @@
 	               <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}> 
 	               <ng-template #noStateDescription> <input matInput [ngModel]="stateInput" type="number"></ng-template>
 	               <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> 
-	            </mat-form-field> 
+	            <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()[0]}}</span></mat-form-field>  
+             
 	        </div>
 	          <div *ngIf="selectedItem.type==='Number' && selectedItem.stateDescription.minimum && selectedItem.stateDescription.maximum ">
                    <md-error class="error"> Please enter a value between {{selectedItem.stateDescription.minimum}} and {{selectedItem.stateDescription.maximum}}</md-error>
