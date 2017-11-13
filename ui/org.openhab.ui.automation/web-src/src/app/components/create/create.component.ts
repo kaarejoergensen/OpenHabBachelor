@@ -150,6 +150,7 @@ export class CreateComponent implements OnInit {
   }
 
   addThingToRule(): void {
+    console.log(this.rule);
     for (const event of this.rule.events) {
       const things = this.thingsWithEditableItems.filter(t => t.editableItems.filter(i => i.name === event.itemName).length > 0);
       if (things.length > 0) {
@@ -167,9 +168,11 @@ export class CreateComponent implements OnInit {
       }
     }
     for (const condition of this.rule.conditions) {
+      
       const things = this.things.filter(t => t.items.filter(i => i.name === condition.itemName).length > 0);
       if (things.length > 0) {
         condition.thing = things[0];
+        
       } else {
         console.log('No thing found for action ' + condition.id);
       }
@@ -227,12 +230,10 @@ export class CreateComponent implements OnInit {
     this.goToOverview(null);
   }
   
-  isEventsZero(): boolean {
-    return false; // this.rule.events.length === 0;
-  }
+  
 
-  isConditionsZero(): boolean {
-    return this.rule.conditions.length === 0;
+  isEventsZero(): boolean {
+    return this.rule.events.length === 0;
   }
 
   isActionsZero(): boolean {
@@ -271,16 +272,19 @@ export class CreateComponent implements OnInit {
         thingType: type,
         mod: mod
       }
-    };
+    };  
     if (type === EVENT_TYPE) {
       this.newEventButtonEnabled = false;
       this.eventsComponentData = componentData;
+      console.log(this.eventsComponentData);
     } else if (type === CONDITION_TYPE) {
       this.newConditionButtonEnabled = false;
       this.conditionsComponentData = componentData;
+      console.log(this.conditionsComponentData);
     } else if (type === ACTION_TYPE) {
       this.newActionButtonEnabled = false;
       this.actionsComponentData = componentData;
+      console.log(this.actionsComponentData);
     }
   }
   

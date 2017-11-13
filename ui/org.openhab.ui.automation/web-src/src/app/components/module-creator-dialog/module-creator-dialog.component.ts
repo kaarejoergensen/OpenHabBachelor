@@ -1,10 +1,11 @@
 import {Item} from '../../models/item';
-import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE } from '../../models/rule';
+import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE, EVENT_TYPE } from '../../models/rule';
 import {Thing} from '../../models/thing';
 import {SharedPropertiesService} from '../../services/shared-properties.service';
 import {DatePipe} from '@angular/common';
 import {Component, ViewChild, ElementRef, Inject, AfterViewInit, ChangeDetectorRef} from '@angular/core';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import { Validators, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-dialog-overview-example-dialog',
@@ -12,6 +13,7 @@ import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
   styleUrls: ['./module-creator-dialog.component.css']
 })
 export class ModuleCreatorDialogComponent implements AfterViewInit {
+  rateControl: any; 
   thing: Thing;
   selectedItem: Item;
   modalType: string;
@@ -29,18 +31,26 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
     this.thing = data.thing;
     this.modalType = data.modalType;
     this.mod = data.mod;
-    if ((this.modalType === CONDITION_TYPE || this.modalType === ACTION_TYPE) && this.thing.items) {
+    
+    if ((this.modalType === CONDITION_TYPE || this.modalType === EVENT_TYPE) && this.thing.items) {
       this.selectedItem = this.thing.items[0];
+       if (this.selectedItem.type && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
+        this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
+     } 
     } else if (this.thing.editableItems) {
       this.selectedItem = this.thing.editableItems[0];
+     if (this.selectedItem.type  && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
+        this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
+     } 
     }
+   
   }
 
   ngAfterViewInit(): void {
     if (this.mod) {
       if (this.mod.itemName && this.mod.thing) {
         this.selectedItem = this.getItem(this.mod.thing, this.mod.itemName);
-        if (this.modalType === 'condition') {
+        if (this.modalType === 'condition' || this.modalType ===  'event') {
           if (this.mod.operator) {
             for (const op of this.operators) {
               if (op.value === this.mod.operator) {
@@ -112,8 +122,9 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
   save(): void {
     if (this.isConditionValid()) {
       const mod = new RuleModule();
-      if (this.modalType === 'condition') {
-        mod.type = CONDITION_TYPE;
+      if (this.modalType === 'event') {   
+        console.log('save');
+        mod.type = EVENT_TYPE;
         mod.thing = this.thing;
         if (this.selectedItem.type !== 'CustomTime') {
           mod.itemName = this.selectedItem.name;
@@ -137,11 +148,37 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
             }
             mod.state = formattedDate;
           }
+        
         } else {
           mod.days = this.selectedDays.map(function(d) {return d.value; });
         }
-        
-      } else {
+        }else if (this.modalType === 'condition') {
+          mod.type = CONDITION_TYPE;
+        mod.thing = this.thing;
+        if (this.selectedItem.type !== 'CustomTime') {
+          mod.itemName = this.selectedItem.name;
+          if (this.selectedItem.type === 'Number') {
+            mod.operator = '=';
+            mod.state = this.stateInput;
+          } else if (this.selectedItem.type === 'Switch') {
+            mod.operator = '=';
+            mod.state = this.selectedSwitchState.value;
+          } else if (this.selectedItem.type === 'DateTime') {
+            mod.operator = '=';
+            const date = new Date(this.datePicker.nativeElement.value);
+            const time = this.stateInput;
+            const split = time.split(':');
+            if (split.length >= 2) {
+              date.setHours(Number(split[0]), Number(split[1]));
+            }
+            let formattedDate = new DatePipe('en-us').transform(date, 'yyyy-MM-ddTHH:mm:ss.000');
+            if (this.selectedItem.state) {
+              formattedDate += this.selectedItem.state.slice(-5);
+            }
+            mod.state = formattedDate;
+          }
+          }
+        } else if (this.modalType === 'action') {
         mod.type = ACTION_TYPE;
         mod.thing = this.thing;
         mod.itemName = this.selectedItem.name;
@@ -154,7 +191,8 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
       this.mod = mod;
       this.dialogRef.close({thing: this.thing, mod: this.mod});
     }
-  }
+}
+
 
   isConditionValid(): boolean {
     return true;
