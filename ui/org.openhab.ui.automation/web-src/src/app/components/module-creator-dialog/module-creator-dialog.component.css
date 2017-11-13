@@ -16,5 +16,9 @@ mat-form-field {
 .error {
 	font-size: 10px; 
 	color: grey;
-	margin-left: 338px;
+	margin-left: 200px;
+}
+
+.dialog-buttons {
+	margin-bottom: 20px;
 }

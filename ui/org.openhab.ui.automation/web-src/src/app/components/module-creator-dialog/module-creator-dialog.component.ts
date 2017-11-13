@@ -26,6 +26,7 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
   selectedDays = [];
   stateInput = '';
   mod: any;
+  
   constructor(private sharedProperties: SharedPropertiesService, private cdRef: ChangeDetectorRef,
     public dialogRef: MatDialogRef<ModuleCreatorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
     this.thing = data.thing;
@@ -34,14 +35,20 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
     
     if ((this.modalType === CONDITION_TYPE || this.modalType === EVENT_TYPE) && this.thing.items) {
       this.selectedItem = this.thing.items[0];
+      console.log(this.selectedItem);
        if (this.selectedItem.type && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
         this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
-     } 
+     } else {
+       this.rateControl = new FormControl('', Validators.required);
+       }
     } else if (this.thing.editableItems) {
       this.selectedItem = this.thing.editableItems[0];
+      console.log(this.selectedItem);
      if (this.selectedItem.type  && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
         this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
-     } 
+     } else {
+     this.rateControl = new FormControl('', Validators.required);
+     }
     }
    
   }
@@ -123,7 +130,6 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
     if (this.isConditionValid()) {
       const mod = new RuleModule();
       if (this.modalType === 'event') {   
-        console.log('save');
         mod.type = EVENT_TYPE;
         mod.thing = this.thing;
         if (this.selectedItem.type !== 'CustomTime') {
