@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.items.events.ItemStateChangedEvent;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.automation.module.extension.internal.type.AboveBelowTriggerType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -45,8 +46,6 @@ public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implement
     private String state;
     private Set<String> types;
     private BundleContext bundleContext;
-
-    public static final String ABOVE_BELOW_TYPE_ID = "core.ItemCommandAboveBelowTrigger";
 
     private static final String CFG_ITEMNAME = "itemName";
     private static final String CFG_OPERATOR = "operator";
@@ -92,7 +91,7 @@ public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implement
             logger.debug("Received Event: Source: {} Topic: {} Type: {}  Payload: {}", event.getSource(),
                     event.getTopic(), event.getType(), event.getPayload());
             Map<String, Object> values = new HashMap<>();
-            if (event instanceof ItemStateChangedEvent && ABOVE_BELOW_TYPE_ID.equals(module.getTypeUID())) {
+            if (event instanceof ItemStateChangedEvent && AboveBelowTriggerType.UID.equals(module.getTypeUID())) {
                 State itemState = ((ItemStateChangedEvent) event).getItemState();
                 State oldState = ((ItemStateChangedEvent) event).getOldItemState();
                 if (itemState == null || itemState instanceof UnDefType || oldState == null
@@ -102,9 +101,10 @@ public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implement
                 }
 
                 State compareState = new DecimalType(this.state);
+                logger.debug("Itemstate --> {}, oldState --> {}, compareState -->{}", itemState, oldState,
+                        compareState);
                 switch (operator) {
                     case "=":
-                        logger.debug("ConditionSatisfied --> {}", itemState.equals(compareState));
                         if (itemState.equals(compareState) && !oldState.equals(compareState)) {
                             values.put("state", itemState);
                         }
