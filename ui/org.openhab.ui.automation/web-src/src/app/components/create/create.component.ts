@@ -95,7 +95,7 @@ export class CreateComponent implements OnInit {
     this.things.push(this.createTimeThing());
     if (this.edit) {
       this.addThingToRule();
-      this.step = 4;
+      this.step = 5;
     } else {
       this.next();
     }

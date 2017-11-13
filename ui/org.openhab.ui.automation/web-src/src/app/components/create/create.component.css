@@ -33,3 +33,7 @@
 	padding: 2px 16px;
 	float: right;
 }
+
+.mat-form-field {
+	width: 100%;
+}

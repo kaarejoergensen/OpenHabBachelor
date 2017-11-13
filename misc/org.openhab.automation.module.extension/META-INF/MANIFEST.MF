@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
-Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Bundle-Name: Module extension
 Bundle-SymbolicName: org.openhab.automation.module.extension;singleton:=true
@@ -24,5 +23,6 @@ Import-Package:
  org.eclipse.smarthome.io.console,
  org.eclipse.smarthome.io.console.extensions,
  org.osgi.framework,
+ org.osgi.service.component,
+ org.osgi.util.tracker,
  org.slf4j
-Service-Component: OSGI-INF/*.xml

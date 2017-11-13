@@ -21,14 +21,10 @@ import org.eclipse.smarthome.automation.handler.BaseTriggerModuleHandler;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
 import org.eclipse.smarthome.core.events.EventSubscriber;
-import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.items.ItemNotFoundException;
-import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.events.GroupItemStateChangedEvent;
 import org.eclipse.smarthome.core.items.events.ItemStateChangedEvent;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -59,8 +55,6 @@ public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implement
     @SuppressWarnings("rawtypes")
     private ServiceRegistration eventSubscriberRegistration;
 
-    private ItemRegistry itemRegistry;
-
     public AboveBelowTriggerHandler(Trigger module, BundleContext bundleContext) {
         super(module);
         this.itemName = (String) module.getConfiguration().get(CFG_ITEMNAME);
@@ -77,14 +71,6 @@ public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implement
                 properties);
     }
 
-    public void setItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = itemRegistry;
-    }
-
-    public void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
-    }
-
     @Override
     public Set<String> getSubscribedEventTypes() {
         return types;
@@ -97,17 +83,13 @@ public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implement
 
     @Override
     public void receive(Event event) {
-        if (itemRegistry == null) {
-            logger.error("The ItemRegistry is not available to evaluate the condition.");
-            return;
-        }
         if (operator == null || state == null || itemName == null) {
             logger.error("Module is not well configured: itemName={}  operator={}  state = {}", itemName, operator,
                     state);
             return;
         }
         if (ruleEngineCallback != null) {
-            logger.trace("Received Event: Source: {} Topic: {} Type: {}  Payload: {}", event.getSource(),
+            logger.debug("Received Event: Source: {} Topic: {} Type: {}  Payload: {}", event.getSource(),
                     event.getTopic(), event.getType(), event.getPayload());
             Map<String, Object> values = new HashMap<>();
             if (event instanceof ItemStateChangedEvent && ABOVE_BELOW_TYPE_ID.equals(module.getTypeUID())) {
@@ -119,14 +101,7 @@ public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implement
                     return;
                 }
 
-                Item item;
-                try {
-                    item = itemRegistry.getItem(itemName);
-                } catch (ItemNotFoundException e) {
-                    logger.error("Item with Name {} not found in itemRegistry", itemName);
-                    return;
-                }
-                State compareState = TypeParser.parseState(item.getAcceptedDataTypes(), this.state);
+                State compareState = new DecimalType(this.state);
                 switch (operator) {
                     case "=":
                         logger.debug("ConditionSatisfied --> {}", itemState.equals(compareState));
@@ -198,7 +173,8 @@ public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implement
 
     @Override
     public boolean apply(Event event) {
-        logger.trace("->FILTER: {}:{}", event.getTopic(), itemName);
+        logger.debug("->FILTER: {}:{} + {}", event.getTopic(), itemName,
+                event.getTopic().contains("/" + itemName + "/"));
         return event.getTopic().contains("/" + itemName + "/");
     }
 
