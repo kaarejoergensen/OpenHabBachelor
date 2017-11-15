@@ -40,15 +40,9 @@ export class CreateComponent implements OnInit {
   thingsWithEditableItems: Thing[];
   step = 0;
   rule: Rule;
-  requiredFormControl = new FormControl('', [
-    Validators.required]);
+  requiredFormControl = new FormControl('', [Validators.required]);
   edit: boolean;
-  eventsComponentData = null;
-  conditionsComponentData = null;
-  actionsComponentData = null;
-  newEventButtonEnabled = false;
-  newConditionButtonEnabled = false;
-  newActionButtonEnabled = false;
+  test = 0;
 
   ngOnInit(): void {
     this.rule = new Rule();
@@ -83,7 +77,6 @@ export class CreateComponent implements OnInit {
       if (things.length > 0 && items.length > 0) {
         // TODO: Fix this method. We assume length of things and length of items
         this.initializeThingsAndItems(things, items);
-        this.initializeModules();
       }
       
     },
@@ -102,16 +95,6 @@ export class CreateComponent implements OnInit {
     }
   }
   
-  initializeModules(): void {
-    const allModules = this.rule.events.concat(this.rule.conditions, this.rule.actions);
-    for (const mod of allModules) {
-      this.createNewModuleComponent(mod, mod.type);
-    }
-    this.rule.events.length > 0 ? this.newEventButtonEnabled = true : this.createNewModuleComponent(null, EVENT_TYPE);
-    this.rule.conditions.length > 0 ? this.newConditionButtonEnabled = true : this.createNewModuleComponent(null, CONDITION_TYPE);
-    this.rule.actions.length > 0 ? this.newActionButtonEnabled = true : this.createNewModuleComponent(null, ACTION_TYPE);
-  }
-
   handleError(error: any): void {
     console.log('Error! ', error);
   }
@@ -243,50 +226,10 @@ export class CreateComponent implements OnInit {
 
   onRuleUpdated(mod: RuleModule) {
     RuleHelper.updateModule(mod, this.rule);
-    if (mod.type === EVENT_TYPE) {
-      this.newEventButtonEnabled = true;
-    } else if (mod.type === CONDITION_TYPE) {
-      this.newConditionButtonEnabled = true;
-    } else if (mod.type === ACTION_TYPE) {
-      this.newActionButtonEnabled = true;
-    }
+    this.test++;
   }
   
   onModDeleted(mod: any) {
     RuleHelper.removeModule(mod, this.rule);
-    if (this.rule.events.length === 0) {
-      this.newEventButtonEnabled = false;
-    }
-    if (this.rule.conditions.length === 0) {
-      this.newConditionButtonEnabled = false;
-    }
-    if (this.rule.actions.length === 0) {
-      this.newActionButtonEnabled = false;
-    }
   }
-  
-  createNewModuleComponent(mod: RuleModule, type: string): void {
-    const componentData = {
-      component: ItemsComponent,
-      inputs: {
-        things: type === ACTION_TYPE ? this.thingsWithEditableItems : this.things,
-        thingType: type,
-        mod: mod
-      }
-    };  
-    if (type === EVENT_TYPE) {
-      this.newEventButtonEnabled = false;
-      this.eventsComponentData = componentData;
-      console.log(this.eventsComponentData);
-    } else if (type === CONDITION_TYPE) {
-      this.newConditionButtonEnabled = false;
-      this.conditionsComponentData = componentData;
-      console.log(this.conditionsComponentData);
-    } else if (type === ACTION_TYPE) {
-      this.newActionButtonEnabled = false;
-      this.actionsComponentData = componentData;
-      console.log(this.actionsComponentData);
-    }
-  }
-  
 }

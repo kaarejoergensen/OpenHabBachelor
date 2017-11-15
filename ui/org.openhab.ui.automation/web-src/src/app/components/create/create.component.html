@@ -14,7 +14,7 @@
 		</div>
 	</section>
 </div>
-<div [hidden]="step != 1" class="creatediv animate-from-right">
+<div *ngIf="step === 1" class="creatediv animate-from-right">
 	<h2>Enter name and description</h2>
 	<form>
 		<mat-form-field style="width: 100%;"> <input matInput placeholder="Name" [formControl]="requiredFormControl" required [(ngModel)]="rule.name" name="name"> <mat-error *ngIf="requiredFormControl.hasError('required')">Please enter value</mat-error></mat-form-field>
@@ -25,11 +25,11 @@
 		<button mat-raised-button color="primary" [disabled]="requiredFormControl.hasError('required')" (click)="next();">Next</button>
 	</div>
 </div>
-<div [hidden]="step != 2" class="creatediv animate-from-right">
+<div *ngIf="step === 2" class="creatediv animate-from-right">
 	<div class="itemsdiv">
 		<h2>What should activate the rule?</h2>
 		<div class="events">
-			<app-dynamic-component [componentData]="eventsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
+			<app-dynamic-component [things]="things" [mods]="rule.events" [moduleType]="'event'" [changeDetected]="test" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 		</div>
 	</div>
 	<div class="button-row" style="clear: both;">
@@ -37,15 +37,11 @@
 		<button mat-raised-button color="primary" [disabled]="isEventsZero()" (click)="next()">Next</button>
 	</div>
 </div>
-<div [hidden]="step != 3" class="creatediv animate-from-right">
+<div *ngIf="step === 3" class="creatediv animate-from-right">
 	<div class="itemsdiv">
 		<h2>What should happen when the rule activates?</h2>
 		<div class="actions">
-			<app-dynamic-component [componentData]="actionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
-			<a *ngIf="newActionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewModuleComponent(null, 'action')" style="float: left">
-				<mat-icon style="color: green;">add</mat-icon>
-				<span style="color: green;">New action</span>
-			</a>
+			<app-dynamic-component [things]="thingsWithEditableItems" [mods]="rule.actions" [moduleType]="'action'" [changeDetected]="test" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 		</div>
 	</div>
 	<div class="button-row">
@@ -53,15 +49,11 @@
 		<button mat-raised-button color="primary" [disabled]="isActionsZero()" (click)="next()">Next</button>
 	</div>
 </div>
-<div [hidden]="step != 4" class="creatediv animate-from-right">
+<div *ngIf="step === 4" class="creatediv animate-from-right">
     <div class="itemsdiv">
         <h2>Are there any conditions that needs to be met before your action should happen?</h2>
         <div class="conditions">
-            <app-dynamic-component [componentData]="conditionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
-            <a *ngIf="newConditionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewActionComponent(null, 'condition')" style="float: left">
-                <mat-icon style="color: green;">add</mat-icon>
-                <span style="color: green;">New condition</span>
-            </a>
+            <app-dynamic-component [things]="things" [mods]="rule.conditions" [moduleType]="'condition'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
         </div>
     </div>
     <div class="button-row">
@@ -69,7 +61,7 @@
         <button mat-raised-button color="primary" (click)="next()">Next</button>
     </div>
 </div>
-<div [hidden]="step != 5" class="creatediv animate-from-right" style="text-align: left; width: 50%;">
+<div *ngIf="step === 5" class="creatediv animate-from-right" style="text-align: left; width: 50%;">
 	<h2 style="text-align: center;">Overview</h2>
 	<div style="display: flex; align-items: center;">
 		<div style="width: 15%">
@@ -98,11 +90,7 @@
 			</h3>
 		</div>
 		<div style="width: 70%">
-			<app-dynamic-component [componentData]="eventsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)" style="text-align: center; width: 80%;"></app-dynamic-component>
-			<a *ngIf="newEventButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewModuleComponent(null, 'event')" style="float: left">
-				<mat-icon style="color: green;">add</mat-icon>
-				<span style="color: green;">New condition</span>
-			</a>
+			<app-dynamic-component [things]="things" [mods]="rule.events" [moduleType]="'event'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 		</div>
 	</div>
 	<hr style="width:70%">
@@ -113,11 +101,7 @@
 			</h3>
 		</div>
 		<div style="width: 70%">
-			<app-dynamic-component [componentData]="actionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)" style="text-align: center; width: 80%"></app-dynamic-component>
-			<a *ngIf="newActionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewModuleComponent(null, 'action')" style="float: left">
-				<mat-icon style="color: green;">add</mat-icon>
-				<span style="color: green;">New action</span>
-			</a>
+			<app-dynamic-component [things]="thingsWithEditableItems" [mods]="rule.actions" [moduleType]="'action'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 		</div>
 	</div>
 	<hr style="width:70%">
@@ -128,11 +112,7 @@
 			</h3>
 		</div>
 		<div style="width: 70%">
-			<app-dynamic-component [componentData]="conditionsComponentData" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)" style="text-align: center; width: 80%;"></app-dynamic-component>
-			<a *ngIf="newConditionButtonEnabled" [@fadeIn] mat-icon-button color="green" (click)="createNewModuleComponent(null, 'condition')" style="float: left">
-				<mat-icon style="color: green;">add</mat-icon>
-				<span style="color: green;">New condition</span>
-			</a>
+			<app-dynamic-component [things]="things" [mods]="rule.conditions" [moduleType]="'condition'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 		</div>
 	</div>
 	<hr style="width:70%">

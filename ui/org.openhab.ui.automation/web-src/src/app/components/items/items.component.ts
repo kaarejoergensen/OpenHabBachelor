@@ -1,11 +1,11 @@
 import { Item } from '../../models/item';
-import { Rule, OPERATORS } from '../../models/rule';
+import { Rule, OPERATORS, RuleModule } from '../../models/rule';
 import { Thing } from '../../models/thing';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
 import { ModuleCreatorDialogComponent } from '../module-creator-dialog/module-creator-dialog.component';
 import { Component, Input, ViewChild, Inject, ElementRef, EventEmitter, Output } from '@angular/core';
 import { ViewContainerRef, ReflectiveInjector, ComponentFactoryResolver } from '@angular/core';
-import { Injector, trigger, transition, style, animate } from '@angular/core';
+import { Injector, trigger, transition, style, animate, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
@@ -21,24 +21,25 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
   ])
 ]
 })
-export class ItemsComponent {
+export class ItemsComponent implements OnChanges {
   @Output() modUpdated = new EventEmitter();
   @Output() modDeleted = new EventEmitter();
   @ViewChild('modal') conditionModal;
-  things: Thing[];
-  thingType: string;
-  mod: any;
+  @Input() things: Thing[];
+  @Input() mod: any;
   item: Item;
   
-  constructor(private sharedProperties: SharedPropertiesService, private dialog: MatDialog,
-    private injector: Injector) {
-    this.things = this.injector.get('things');
-    this.thingType = this.injector.get('thingType');
-    this.mod = this.injector.get('mod');
-    if (this.mod && this.mod.itemName && this.mod.thing) {
+  constructor(private sharedProperties: SharedPropertiesService, private dialog: MatDialog) {
+        if (this.mod && this.mod.itemName && this.mod.thing) {
       this.item = this.getItem(this.mod.thing, this.mod.itemName);
     }
+    
   }
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log('ITEMCHANGE');
+  }
+  
 
   onSelect(thing: Thing): void {
     this.openDialog(thing);
@@ -46,7 +47,7 @@ export class ItemsComponent {
 
   openDialog(selectedThing: Thing): void {
     const dialogRef = this.dialog.open(ModuleCreatorDialogComponent, {
-      data: {thing: selectedThing, modalType: this.thingType, mod: this.mod}
+      data: {thing: selectedThing, mod: this.mod}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -82,7 +83,9 @@ export class ItemsComponent {
   
   onDeleteMod(): void {
     this.modDeleted.emit(this.mod);
-    this.mod = null;
+    const newMod = new RuleModule();
+    newMod.type = this.mod.type;
+    this.mod = newMod;
   }
   
   parseState(state: string): string {
@@ -119,40 +122,84 @@ export class ItemsComponent {
   entryComponents: [ItemsComponent],
   template: `
     <div #dynamicComponentContainer></div>
+    <div>
+      <a *ngIf="buttonEnabled" [@fadeIn] mat-icon-button color="green" (click)="newModule()" style="float: left">
+        <mat-icon style="color: green;">add</mat-icon>
+        <span style="color: green;">New {{moduleType}}</span>
+      </a>
+    </div>
   `,
+  animations: [
+  trigger('fadeIn', [
+    transition(':enter', [
+      style({opacity: 0}),
+      animate(500, style({opacity: 1})) 
+    ])
+  ])
+]
 })
-export class DynamicComponent {
+export class DynamicComponent implements AfterViewInit, OnChanges {
   currentComponents = [];
 
+  @Input() mods: RuleModule[];
+  @Input() things: Thing[];
+  @Input() moduleType: string;
+  @Input() changeDetected: number;
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef }) dynamicComponentContainer: ViewContainerRef;
   @Output() modUpdated = new EventEmitter();
   @Output() modDeleted = new EventEmitter();
-  @Input() set componentData(data: {component: any, inputs: any }) {
-    if (!data) {
-      return;
-    }
-    const inputProviders = Object.keys(data.inputs).map((inputName) => ({provide: inputName, useValue: data.inputs[inputName]}));
-    const resolvedInputs = ReflectiveInjector.resolve(inputProviders);
-
-    const injector = ReflectiveInjector.fromResolvedProviders(resolvedInputs, this.dynamicComponentContainer.parentInjector);
-
-    const factory = this.resolver.resolveComponentFactory(data.component);
-
-    const component = factory.create(injector);
-
-    this.dynamicComponentContainer.insert(component.hostView);
-    
-    (<any>component.instance).modUpdated.subscribe(r => this.modUpdated.emit(r));
-    (<any>component.instance).modDeleted.subscribe(r => {
-      this.modDeleted.emit(r);
-      if (this.currentComponents.length > 1) {
-        const index = this.currentComponents.indexOf(component);
-        this.currentComponents.splice(index, 1);
-        component.destroy();
-      }
-    });
-    this.currentComponents.push(component);
+  buttonEnabled = false;
+  constructor(private resolver: ComponentFactoryResolver) { }
+  
+  ngAfterViewInit(): void {
+    this.loadComponents();
   }
   
-  constructor(private resolver: ComponentFactoryResolver) { }
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log('Changes');
+//    this.loadComponents();
+  }
+  
+  newModule(): void {
+    this.mods = this.mods.filter(m => m.id);
+    const mod = new RuleModule();
+    mod.type = this.moduleType;
+    this.mods.push(mod);
+    this.buttonEnabled = false;
+    this.loadComponents();
+  }
+  
+  loadComponents(): void {
+    if (this.mods.length === 0) {
+      this.newModule();
+      return;
+    }
+//    for (const component of this.currentComponents) {
+//      const index = this.currentComponents.indexOf(component);
+//      this.currentComponents.splice(index, 1);
+//      component.destroy();
+//    }
+    for (const mod of this.mods) {
+      const factory = this.resolver.resolveComponentFactory(ItemsComponent);
+      const componentRef = this.dynamicComponentContainer.createComponent(factory);
+      this.dynamicComponentContainer.insert(componentRef.hostView);
+      (<ItemsComponent>componentRef.instance).things = this.things;
+      (<ItemsComponent>componentRef.instance).mod = mod;
+      (<ItemsComponent>componentRef.instance).modUpdated.subscribe(r => {
+        if (!r.id && this.moduleType !== 'event') {
+          this.buttonEnabled = true;
+        }
+        this.modUpdated.emit(r);
+      });
+      (<ItemsComponent>componentRef.instance).modDeleted.subscribe(r => {
+        this.modDeleted.emit(r);
+        if (this.currentComponents.length > 1) {
+          const index = this.currentComponents.indexOf(componentRef);
+          this.currentComponents.splice(index, 1);
+          componentRef.destroy();
+        }
+      });
+      this.currentComponents.push(componentRef);
+    }
+  }
 }

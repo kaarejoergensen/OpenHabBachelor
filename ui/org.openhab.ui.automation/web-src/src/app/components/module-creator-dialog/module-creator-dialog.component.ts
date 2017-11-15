@@ -25,13 +25,13 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
   days = DAYS;
   selectedDays = [];
   stateInput = '';
-  mod: any;
+  mod: RuleModule;
   
   constructor(private sharedProperties: SharedPropertiesService, private cdRef: ChangeDetectorRef,
     public dialogRef: MatDialogRef<ModuleCreatorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
     this.thing = data.thing;
-    this.modalType = data.modalType;
     this.mod = data.mod;
+    this.modalType = this.mod.type;
     
     if ((this.modalType === CONDITION_TYPE || this.modalType === EVENT_TYPE) && this.thing.items) {
       this.selectedItem = this.thing.items[0];
@@ -87,15 +87,15 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
             }
           }
         }
-      } else if (this.mod.tempTime) {
-        this.stateInput = this.mod.tempTime;
-        for (const dayString of this.mod.days) {
-          for (const day of this.days) {
-            if (dayString === day.value) {
-              this.selectedDays.push(day);
-            }
-          }
-        }
+//      } else if (this.mod.tempTime) {
+//        this.stateInput = this.mod.tempTime;
+//        for (const dayString of this.mod.days) {
+//          for (const day of this.days) {
+//            if (dayString === day.value) {
+//              this.selectedDays.push(day);
+//            }
+//          }
+//        }
       }
       this.cdRef.detectChanges();
     }
@@ -189,6 +189,9 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
         } else if (this.selectedItem.type === 'Switch') {
           mod.command = this.selectedSwitchState.value;
         }
+      }
+      if (this.mod.id) {
+        mod.id = this.mod.id;
       }
       this.mod = mod;
       this.dialogRef.close({thing: this.thing, mod: this.mod});

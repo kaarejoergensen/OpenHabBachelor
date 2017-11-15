@@ -1,13 +1,13 @@
 <div class="itemsdiv">
-    <ul *ngIf="things && !mod" class="items">
+    <ul *ngIf="things && (!mod || !mod.id)" class="items">
         <li *ngFor="let thing of things">
             <div class="inner-item" (click)="onSelect(thing)">{{thing.label}}</div>
         </li>
     </ul>
-    <ul *ngIf="mod" [@fadeIn] class="itemsdiv" class="items">
+    <ul *ngIf="mod && mod.id" [@fadeIn] class="itemsdiv" class="items">
         <li style="width: 90% !important;">
             <div class="inner-item" (click)="onSelect(mod.thing)">
-                <div *ngIf="thingType === 'event'">
+                <div *ngIf="mod.type === 'event'">
                     <div *ngIf="mod.itemName && item">
                         When <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> is <i> <span *ngIf="item.type === 'Number'"> equal to</span> <span *ngIf="item.type === 'Switch'">turned to </span> {{parseState(mod.state)}}
                         </i> <span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
@@ -16,7 +16,7 @@
                         When the time is <i>{{mod.tempTime}}</i> on <i>{{parseDays(mod.days)}}</i>
                     </div>
                 </div>
-                <div *ngIf="thingType === 'condition'">
+                <div *ngIf="mod.type === 'condition'">
                     <div *ngIf="mod.itemName && item">
                         When <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> is <i> <span *ngIf="item.type === 'Number'">{{getOperator(mod.operator)}} </span> <span *ngIf="item.type === 'Switch'">turned to </span> {{parseState(mod.state)}}
                         </i> <span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
@@ -25,7 +25,7 @@
                         When the time is <i>{{mod.tempTime}}</i> on <i>{{parseDays(mod.days)}}</i>
                     </div>
                 </div>
-                <div *ngIf="thingType === 'action'">
+                <div *ngIf="mod.type === 'action'">
                     <div *ngIf="item">
                        Set <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> to <i>{{mod.command}}</i> <span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
                     </div>

@@ -8,7 +8,7 @@ export class RuleHelper {
     
     if (!mod.id) {
       mod.id = maxId;
-       modules.push(mod);
+      modules.push(mod);
     } else {
       const index = this.searhArray(modules, mod.id);
       if (index !== -1) {
@@ -38,9 +38,8 @@ export class RuleHelper {
     return -1;
   }
 
-  private static getModules(moduleType: string, rule: Rule): RuleModule[] {
+  static getModules(moduleType: string, rule: Rule): RuleModule[] {
     if (moduleType === EVENT_TYPE) {
-      console.log('hej');
       return rule.events;
     } else if (moduleType === CONDITION_TYPE) {
       return rule.conditions;

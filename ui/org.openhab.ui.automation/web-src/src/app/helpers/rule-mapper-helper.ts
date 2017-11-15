@@ -69,6 +69,7 @@ export class RuleMapperHelper {
     rule.enabled = ruleDTO.enabled;
     rule.name = ruleDTO.name;
     rule.description = ruleDTO.description;
+    ruleDTO.triggers.forEach(t => rule.events.push(this.mapModuleToEvent(t)));
     ruleDTO.conditions.forEach(c => rule.conditions.push(this.mapModuleToCondition(c)));
     ruleDTO.actions.forEach(a => rule.actions.push(this.mapModuleToAction(a)));
 
