@@ -1,5 +1,5 @@
 import {Item} from '../../models/item';
-import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE, EVENT_TYPE } from '../../models/rule';
+import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE, EVENT_TYPE, EVENT_OPERATORS } from '../../models/rule';
 import {Thing} from '../../models/thing';
 import {SharedPropertiesService} from '../../services/shared-properties.service';
 import {DatePipe, PercentPipe } from '@angular/common';
@@ -38,6 +38,10 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
       this.selectedItem = this.thing.items[0];
       if (this.selectedItem.type === 'CustomTime') {
          this.daysChosen = false; 
+      }
+      if (this.modalType) {
+        this.operators = EVENT_OPERATORS;
+        this.selectedOperator = this.operators[0];
       }
     } else if (this.thing.editableItems) {
       this.selectedItem = this.thing.editableItems[0];
@@ -138,11 +142,11 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
        if (!this.selectedItem.stateDescription) {
           let index = 0;
           for (const item of this.thing.editableItems){
-          if (item.name === this.selectedItem.name) {
-            index = this.thing.editableItems.indexOf(item);
+            if (item.name === this.selectedItem.name) {
+              index = this.thing.editableItems.indexOf(item);
             }            
-          this.thing.editableItems.splice(index, 1);
-        } 
+            this.thing.editableItems.splice(index, 1);
+          } 
         }
         if (this.selectedItem.type !== 'CustomTime') {
           mod.itemName = this.selectedItem.name;
@@ -150,10 +154,13 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
             mod.operator = this.selectedOperator.value;
             mod.state = this.stateInput;
           } else if (this.selectedItem.type === 'Switch') {
-            mod.operator = '=';
-            mod.state = this.selectedSwitchState.value;
+            if (this.selectedSwitchState.value === '?') {
+              mod.operator = '?';
+            } else {
+              mod.operator = '=';
+              mod.state = this.selectedSwitchState.value;
+            }
           } else if (this.selectedItem.type === 'DateTime') {
-            
             mod.operator = '=';
             const date = new Date(this.datePicker.nativeElement.value);
             const time = this.stateInput;

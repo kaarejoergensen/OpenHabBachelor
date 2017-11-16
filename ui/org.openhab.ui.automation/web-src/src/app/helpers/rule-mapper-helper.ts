@@ -20,10 +20,20 @@ export class RuleMapperHelper {
     const mod = new Module();
     
     if (event.itemName) {
-      mod.type = 'core.ItemStateUpdateTrigger';
       Module.addConfiguration('itemName', event.itemName, mod);
-      mod.label = 'an item state is updated';
-      mod.description = 'This triggers the rule if an item state is updated (even if it does not change).';
+      if (event.operator) {
+        if (event.operator === '?') {
+          mod.type = 'core.ItemStateUpdateTrigger';
+          mod.label = 'an item state is updated';
+          mod.description = 'This triggers the rule if an item state is updated (even if it does not change).';
+        } else {
+          mod.type = 'ItemCommandAboveBelowTrigger';
+          Module.addConfiguration('operator', event.operator, mod);
+          Module.addConfiguration('state', event.state, mod);
+          mod.label = 'an item raises above/drops below a value';
+          mod.description = 'This triggers the rule if the item raises above/drops below a certain value.';  
+        }
+      }
     } else {
       mod.type = 'timer.TimeOfDayTrigger';
       mod.label = 'it is a fixed time of day';
