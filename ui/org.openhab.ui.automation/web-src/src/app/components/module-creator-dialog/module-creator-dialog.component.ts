@@ -26,6 +26,7 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
   selectedDays = [];
   stateInput = '';
   mod: RuleModule;
+  daysChosen = true;
   
   constructor(private sharedProperties: SharedPropertiesService, private cdRef: ChangeDetectorRef,
     public dialogRef: MatDialogRef<ModuleCreatorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -35,8 +36,12 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
     
     if ((this.modalType === CONDITION_TYPE || this.modalType === EVENT_TYPE) && this.thing.items) {
       this.selectedItem = this.thing.items[0];
+      if (this.selectedItem.type === 'CustomTime') {
+         this.daysChosen = false; 
+      }
     } else if (this.thing.editableItems) {
       this.selectedItem = this.thing.editableItems[0];
+       
     }
    if (this.selectedItem.type  && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
         this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
@@ -86,16 +91,17 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
               }
             }
           }
+        } 
+          } else if (this.selectedItem.type === 'CustomTime') {
+        this.stateInput = this.mod.time;
+        for (const dayString of this.mod.days) {
+          for (const day of this.days) {
+            if (dayString === day.value) {
+              this.selectedDays.push(day);
+            }
+          }
         }
-//      } else if (this.mod.tempTime) {
-//        this.stateInput = this.mod.tempTime;
-//        for (const dayString of this.mod.days) {
-//          for (const day of this.days) {
-//            if (dayString === day.value) {
-//              this.selectedDays.push(day);
-//            }
-//          }
-//        }
+      
       }
       this.cdRef.detectChanges();
     }
@@ -107,6 +113,7 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
       this.selectedDays.splice(index, 1);
     } else {
       this.selectedDays.push(day);
+      this.daysChosen = true;
     }
   }
 
@@ -122,12 +129,21 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
     return null;
   }
 
-  save(): void {
+   save(): void {
     if (this.isConditionValid()) {
       const mod = new RuleModule();
       if (this.modalType === 'event') {   
         mod.type = EVENT_TYPE;
         mod.thing = this.thing;
+       if (!this.selectedItem.stateDescription) {
+          let index = 0;
+          for (const item of this.thing.editableItems){
+          if (item.name === this.selectedItem.name) {
+            index = this.thing.editableItems.indexOf(item);
+            }            
+          this.thing.editableItems.splice(index, 1);
+        } 
+        }
         if (this.selectedItem.type !== 'CustomTime') {
           mod.itemName = this.selectedItem.name;
           if (this.selectedItem.type === 'Number') {
@@ -137,6 +153,7 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
             mod.operator = '=';
             mod.state = this.selectedSwitchState.value;
           } else if (this.selectedItem.type === 'DateTime') {
+            
             mod.operator = '=';
             const date = new Date(this.datePicker.nativeElement.value);
             const time = this.stateInput;
@@ -152,9 +169,11 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
           }
         
         } else {
+          mod.time = this.stateInput;
           mod.days = this.selectedDays.map(function(d) {return d.value; });
-        }
-        }else if (this.modalType === 'condition') {
+          
+        } 
+        } else if (this.modalType === 'condition') {
           mod.type = CONDITION_TYPE;
         mod.thing = this.thing;
         if (this.selectedItem.type !== 'CustomTime') {
@@ -166,6 +185,7 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
             mod.operator = '=';
             mod.state = this.selectedSwitchState.value;
           } else if (this.selectedItem.type === 'DateTime') {
+            
             mod.operator = '=';
             const date = new Date(this.datePicker.nativeElement.value);
             const time = this.stateInput;
@@ -178,7 +198,10 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
               formattedDate += this.selectedItem.state.slice(-5);
             }
             mod.state = formattedDate;
-          }
+          } 
+        } else {
+          mod.time = this.stateInput;
+          mod.days = this.selectedDays.map(function(d) {return d.value; });
           }
         } else if (this.modalType === 'action') {
         mod.type = ACTION_TYPE;
@@ -189,9 +212,6 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
         } else if (this.selectedItem.type === 'Switch') {
           mod.command = this.selectedSwitchState.value;
         }
-      }
-      if (this.mod.id) {
-        mod.id = this.mod.id;
       }
       this.mod = mod;
       this.dialogRef.close({thing: this.thing, mod: this.mod});
