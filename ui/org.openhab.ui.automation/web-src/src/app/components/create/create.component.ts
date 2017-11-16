@@ -42,8 +42,7 @@ export class CreateComponent implements OnInit {
   rule: Rule;
   requiredFormControl = new FormControl('', [Validators.required]);
   edit: boolean;
-  test = 0;
-
+  
   ngOnInit(): void {
     this.rule = new Rule();
     const editString = this.route.snapshot.queryParams['edit'] || undefined;
@@ -213,8 +212,6 @@ export class CreateComponent implements OnInit {
   cancel(): void {
     this.goToOverview(null);
   }
-  
-  
 
   isEventsZero(): boolean {
     return this.rule.events.length === 0;
@@ -226,7 +223,6 @@ export class CreateComponent implements OnInit {
 
   onRuleUpdated(mod: RuleModule) {
     RuleHelper.updateModule(mod, this.rule);
-    this.test++;
   }
   
   onModDeleted(mod: any) {

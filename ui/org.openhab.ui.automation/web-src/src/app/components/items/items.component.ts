@@ -21,25 +21,23 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
   ])
 ]
 })
-export class ItemsComponent implements OnChanges {
+export class ItemsComponent {
   @Output() modUpdated = new EventEmitter();
   @Output() modDeleted = new EventEmitter();
   @ViewChild('modal') conditionModal;
-  @Input() things: Thing[];
-  @Input() mod: any;
+  things: Thing[];
+  mod: any;
   item: Item;
   
-  constructor(private sharedProperties: SharedPropertiesService, private dialog: MatDialog) {
-        if (this.mod && this.mod.itemName && this.mod.thing) {
+  constructor(private sharedProperties: SharedPropertiesService, private dialog: MatDialog,
+    private injector: Injector) {
+    this.things = this.injector.get('things');
+    this.mod = this.injector.get('mod');
+    if (this.mod && this.mod.itemName && this.mod.thing) {
       this.item = this.getItem(this.mod.thing, this.mod.itemName);
     }
     
-  }
-  
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log('ITEMCHANGE');
-  }
-  
+  }  
 
   onSelect(thing: Thing): void {
     this.openDialog(thing);
@@ -144,7 +142,6 @@ export class DynamicComponent implements AfterViewInit, OnChanges {
   @Input() mods: RuleModule[];
   @Input() things: Thing[];
   @Input() moduleType: string;
-  @Input() changeDetected: number;
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef }) dynamicComponentContainer: ViewContainerRef;
   @Output() modUpdated = new EventEmitter();
   @Output() modDeleted = new EventEmitter();
@@ -156,8 +153,7 @@ export class DynamicComponent implements AfterViewInit, OnChanges {
   }
   
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Changes');
-//    this.loadComponents();
+    this.loadComponents();
   }
   
   newModule(): void {
@@ -174,17 +170,19 @@ export class DynamicComponent implements AfterViewInit, OnChanges {
       this.newModule();
       return;
     }
-//    for (const component of this.currentComponents) {
-//      const index = this.currentComponents.indexOf(component);
-//      this.currentComponents.splice(index, 1);
-//      component.destroy();
-//    }
     for (const mod of this.mods) {
+      if (this.currentComponents.filter(c => (<ItemsComponent>c.instance).mod === mod).length > 0) {
+        continue;
+      }
+      // Inputs need to be in the following format to be resolved properly
+      const data = {things: this.things, mod: mod};
+      const inputProviders = Object.keys(data).map((inputName) => ({provide: inputName, useValue: data[inputName]}));
+      const resolvedInputs = ReflectiveInjector.resolve(inputProviders);
+  
+      const injector = ReflectiveInjector.fromResolvedProviders(resolvedInputs, this.dynamicComponentContainer.parentInjector);
       const factory = this.resolver.resolveComponentFactory(ItemsComponent);
-      const componentRef = this.dynamicComponentContainer.createComponent(factory);
+      const componentRef = factory.create(injector);
       this.dynamicComponentContainer.insert(componentRef.hostView);
-      (<ItemsComponent>componentRef.instance).things = this.things;
-      (<ItemsComponent>componentRef.instance).mod = mod;
       (<ItemsComponent>componentRef.instance).modUpdated.subscribe(r => {
         if (!r.id && this.moduleType !== 'event') {
           this.buttonEnabled = true;
@@ -201,5 +199,6 @@ export class DynamicComponent implements AfterViewInit, OnChanges {
       });
       this.currentComponents.push(componentRef);
     }
+    this.buttonEnabled = this.currentComponents.filter(c => !(<ItemsComponent>c.instance).mod.id).length === 0 && this.moduleType !== 'event';
   }
 }

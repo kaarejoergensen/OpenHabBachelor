@@ -29,7 +29,7 @@
 	<div class="itemsdiv">
 		<h2>What should activate the rule?</h2>
 		<div class="events">
-			<app-dynamic-component [things]="things" [mods]="rule.events" [moduleType]="'event'" [changeDetected]="test" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
+			<app-dynamic-component [things]="things" [mods]="rule.events" [moduleType]="'event'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 		</div>
 	</div>
 	<div class="button-row" style="clear: both;">
@@ -41,7 +41,7 @@
 	<div class="itemsdiv">
 		<h2>What should happen when the rule activates?</h2>
 		<div class="actions">
-			<app-dynamic-component [things]="thingsWithEditableItems" [mods]="rule.actions" [moduleType]="'action'" [changeDetected]="test" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
+			<app-dynamic-component [things]="thingsWithEditableItems" [mods]="rule.actions" [moduleType]="'action'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
 		</div>
 	</div>
 	<div class="button-row">
