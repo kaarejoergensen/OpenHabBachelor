@@ -8,6 +8,8 @@
  */
 package org.openhab.automation.module.extension.internal.handler;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -100,7 +102,19 @@ public class AboveBelowTriggerHandler extends BaseTriggerModuleHandler implement
                     return;
                 }
 
-                State compareState = new DecimalType(this.state);
+                State compareState = null;
+                try {
+                    Method valueOf = itemState.getClass().getMethod("valueOf", String.class);
+                    compareState = (State) valueOf.invoke(itemState, this.state);
+                } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+                        | InvocationTargetException e) {
+                    logger.warn("CompareState could not be parsed.", e);
+                    return;
+                }
+                if (compareState == null) {
+                    logger.warn("CompareState null, exiting");
+                    return;
+                }
                 logger.debug("Itemstate --> {}, oldState --> {}, compareState -->{}", itemState, oldState,
                         compareState);
                 switch (operator) {
