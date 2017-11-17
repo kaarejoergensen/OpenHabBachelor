@@ -1,5 +1,5 @@
 import {Item} from '../../models/item';
-import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE, EVENT_TYPE, EVENT_OPERATORS } from '../../models/rule';
+import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE, EVENT_TYPE, SWITCH_STATES_EVENT, OPERATORS_EVENT } from '../../models/rule';
 import {Thing} from '../../models/thing';
 import {SharedPropertiesService} from '../../services/shared-properties.service';
 import {DatePipe, PercentPipe } from '@angular/common';
@@ -39,9 +39,11 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
       if (this.selectedItem.type === 'CustomTime') {
          this.daysChosen = false; 
       }
-      if (this.modalType) {
-        this.operators = EVENT_OPERATORS;
+      if (this.modalType === EVENT_TYPE) {
+        this.operators = OPERATORS_EVENT;
+        this.switchStates = SWITCH_STATES_EVENT;
         this.selectedOperator = this.operators[0];
+        this.selectedSwitchState = this.switchStates[0];
       }
     } else if (this.thing.editableItems) {
       this.selectedItem = this.thing.editableItems[0];
@@ -60,7 +62,6 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     if (this.mod) {
       if (this.mod.itemName && this.mod.thing) {
-        console.log('pixxa');
         this.selectedItem = this.getItem(this.mod.thing, this.mod.itemName);
         if (this.modalType === 'condition' || this.modalType ===  'event') {
           if (this.mod.operator) {
@@ -136,18 +137,9 @@ export class ModuleCreatorDialogComponent implements AfterViewInit {
    save(): void {
     if (this.isConditionValid()) {
       const mod = new RuleModule();
-      if (this.modalType === 'event') {   
+      if (this.modalType === 'event') {
         mod.type = EVENT_TYPE;
         mod.thing = this.thing;
-       if (!this.selectedItem.stateDescription) {
-          let index = 0;
-          for (const item of this.thing.editableItems){
-            if (item.name === this.selectedItem.name) {
-              index = this.thing.editableItems.indexOf(item);
-            }            
-            this.thing.editableItems.splice(index, 1);
-          } 
-        }
         if (this.selectedItem.type !== 'CustomTime') {
           mod.itemName = this.selectedItem.name;
           if (this.selectedItem.type === 'Number') {

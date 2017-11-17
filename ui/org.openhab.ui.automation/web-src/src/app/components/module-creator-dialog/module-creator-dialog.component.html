@@ -18,7 +18,7 @@
 				</div>
 
 				<div *ngIf="selectedItem.type==='Switch'" style="display: inline-block">
-					is changed to
+					is
 					<mat-form-field> <mat-select [(ngModel)]="selectedSwitchState"> <mat-option *ngFor="let s of switchStates" [value]="s">{{ s.name }} </mat-option> </mat-select> </mat-form-field>
 				</div>
 			</div>

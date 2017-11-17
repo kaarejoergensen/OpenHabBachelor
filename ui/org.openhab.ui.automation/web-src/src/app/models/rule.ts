@@ -1,8 +1,9 @@
 import { Thing } from './thing';
 export const OPERATORS = [{name: 'greater than', value: '>'}, {name: 'equal to', value: '='}, {name: 'less than', value: '<'}];
-export const EVENT_OPERATORS = [{name: 'raises above', value: '>'}, {name: 'changes to', value: '='}, {name: 'drops below', value: '<'}, 
+export const OPERATORS_EVENT = [{name: 'raises above', value: '>'}, {name: 'changes to', value: '='}, {name: 'drops below', value: '<'}, 
                                   {name: 'is updated', value: '?'}];
-export const SWITCH_STATES = [{name: 'turned off', value: 'OFF'}, {name: 'turned on', value: 'ON'}, {name: 'updated', value: '?'}];
+export const SWITCH_STATES = [{name: 'turned off', value: 'OFF'}, {name: 'turned on', value: 'ON'}];
+export const SWITCH_STATES_EVENT = [{name: 'turned off', value: 'OFF'}, {name: 'turned on', value: 'ON'}, {name: 'updated', value: '?'}];
 export const DAYS = [{name: 'M', value: 'MON'}, {name: 'T', value: 'TUE'}, {name: 'W', value: 'WED'},
   {name: 'T', value: 'THU'}, {name: 'F', value: 'FRI'}, {name: 'S', value: 'SAT'}, {name: 'S', value: 'SUN'}];
 
