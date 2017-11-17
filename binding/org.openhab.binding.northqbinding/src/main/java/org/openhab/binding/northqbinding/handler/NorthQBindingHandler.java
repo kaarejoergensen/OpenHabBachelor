@@ -91,7 +91,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
             case BINARY_SWITCH_SWITCH_CHANNEL:
                 if (command instanceof OnOffType) {
                     bridgeHandler.changeSwitchState((BinarySwitch) thing);
-                    updateState(channelUID, ((BinarySwitch) thing).isTurnedOn() ? OnOffType.OFF : OnOffType.ON);
+                    updateState(channelUID, ((BinarySwitch) thing).isTurnedOn() ? OnOffType.ON : OnOffType.OFF);
                 }
                 break;
             case BINARY_SENSOR_ARM_CHANNEL:
