@@ -89,9 +89,15 @@ export class RuleMapperHelper {
   static mapModuleToEvent(mod: Module): RuleModule {
     const event = new RuleModule();
     event.type = EVENT_TYPE;
+    event.id = mod.id;
     if (mod.type === 'core.ItemStateUpdateTrigger') {
       event.itemName = Module.getConfiguration('itemName', mod);
-    } else {
+      event.operator = '?';
+    } else if (mod.type === 'ItemCommandAboveBelowTrigger') {
+      event.itemName = Module.getConfiguration('itemName', mod);
+      event.operator = Module.getConfiguration('operator', mod);
+      event.state = Module.getConfiguration('state', mod);
+    } else if (mod.type === 'timer.TimeOfDayTrigger') {
       event.time = Module.getConfiguration('time', mod);
     }
     return event;
@@ -100,6 +106,7 @@ export class RuleMapperHelper {
   static mapModuleToCondition(mod: Module): RuleModule {
     const condition = new RuleModule();
     condition.type = CONDITION_TYPE;
+    condition.id = mod.id;
     if (mod.type === 'core.ItemStateCondition') {
       condition.itemName = Module.getConfiguration('itemName', mod);
       condition.operator = Module.getConfiguration('operator', mod);
@@ -113,6 +120,7 @@ export class RuleMapperHelper {
   static mapModuleToAction(mod: Module): RuleModule {
     const action = new RuleModule();
     action.type = ACTION_TYPE;
+    action.id = mod.id;
     action.itemName = Module.getConfiguration('itemName', mod);
     action.command = Module.getConfiguration('command', mod);
     return action;

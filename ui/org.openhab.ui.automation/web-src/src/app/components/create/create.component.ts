@@ -133,31 +133,17 @@ export class CreateComponent implements OnInit {
   }
 
   addThingToRule(): void {
-    console.log(this.rule);
-    for (const event of this.rule.events) {
-      const things = this.thingsWithEditableItems.filter(t => t.editableItems.filter(i => i.name === event.itemName).length > 0);
+    const modules = this.rule.events.concat(this.rule.actions, this.rule.conditions);
+    for (const mod of modules) {
+      if (!mod.itemName) {
+        console.log('addThingToRule mod itemName null: ' + JSON.stringify(mod));
+        continue;
+      } 
+      const things = this.things.filter(t => t.items.filter(i => i.name === mod.itemName).length > 0);
       if (things.length > 0) {
-        event.thing = things[0];
+        mod.thing = things[0];
       } else {
-        console.log('No thing found for action ' + event.id);
-      }
-    }
-    for (const action of this.rule.actions) {
-      const things = this.thingsWithEditableItems.filter(t => t.editableItems.filter(i => i.name === action.itemName).length > 0);
-      if (things.length > 0) {
-        action.thing = things[0];
-      } else {
-        console.log('No thing found for action ' + action.id);
-      }
-    }
-    for (const condition of this.rule.conditions) {
-      
-      const things = this.things.filter(t => t.items.filter(i => i.name === condition.itemName).length > 0);
-      if (things.length > 0) {
-        condition.thing = things[0];
-        
-      } else {
-        console.log('No thing found for action ' + condition.id);
+        console.log('no thing found for module ' + JSON.stringify(mod));
       }
     }
   }

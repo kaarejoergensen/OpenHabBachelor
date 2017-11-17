@@ -1,5 +1,5 @@
 import { Item } from '../../models/item';
-import { Rule, OPERATORS, RuleModule } from '../../models/rule';
+import { Rule, OPERATORS, RuleModule, EVENT_TYPE, OPERATORS_EVENT } from '../../models/rule';
 import { Thing } from '../../models/thing';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
 import { ModuleCreatorDialogComponent } from '../module-creator-dialog/module-creator-dialog.component';
@@ -26,7 +26,7 @@ export class ItemsComponent {
   @Output() modDeleted = new EventEmitter();
   @ViewChild('modal') conditionModal;
   things: Thing[];
-  mod: any;
+  mod: RuleModule;
   item: Item;
   
   constructor(private sharedProperties: SharedPropertiesService, private dialog: MatDialog,
@@ -112,6 +112,15 @@ export class ItemsComponent {
   
   capitalize(s: string): string {
       return s.length > 0 ? (s.length > 1 ? s.charAt(0) + s.slice(1).toLowerCase() : s.charAt(0)) : s;
+  }
+  
+  getNumerText(): string {
+    for (const operator of OPERATORS_EVENT) {
+      if (operator.value === this.mod.operator) {
+        return operator.name;
+      }
+    }
+    return '';
   }
 }
 
