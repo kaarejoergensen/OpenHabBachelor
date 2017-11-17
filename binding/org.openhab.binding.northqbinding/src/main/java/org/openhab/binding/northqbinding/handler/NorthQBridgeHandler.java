@@ -212,10 +212,13 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
 
     @SuppressWarnings("null")
     private synchronized <T> T bridgeCallWithErrorHandling(Callable<T> methodCall) {
+        logger.debug("bridgeCallWithErrorHandling: {}", methodCall.toString());
         if (qStickBridge != null) {
             try {
                 try {
-                    return methodCall.call();
+                    T ret = methodCall.call();
+                    logger.debug("Call successfull: {}", ret);
+                    return ret;
                 } catch (GatewayOfflineException e) {
                     logger.debug("Bridge offline");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
