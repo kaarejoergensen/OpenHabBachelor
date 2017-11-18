@@ -28,8 +28,8 @@
 						</i>
 						<span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
 					</div>
-					<div *ngIf="mod.time">
-						the time is <i>{{mod.time}}</i> on <i>{{parseDays(mod.days)}}</i>
+					<div *ngIf="mod.time && mod.time.split('/').length > 1">
+						The time is between <i>{{mod.time.split('/')[0]}}</i> and <i>{{mod.time.split('/')[1]}}</i>
 					</div>
 				</div>
 				<div *ngIf="mod.type === 'action'">

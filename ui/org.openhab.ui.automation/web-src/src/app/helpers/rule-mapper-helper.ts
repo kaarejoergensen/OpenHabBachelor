@@ -150,6 +150,8 @@ export class RuleMapperHelper {
       condition.itemName = Module.getConfiguration('itemName', mod);
       condition.operator = Module.getConfiguration('operator', mod);
       condition.state = Module.getConfiguration('state', mod);
+    } else if (mod.type === 'script.ScriptCondition') {
+      condition.time = Module.getConfiguration('time', mod);
     }
     return condition;
   }

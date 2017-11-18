@@ -95,15 +95,22 @@ export class ModuleCreatorDialogComponent implements OnInit {
           }
         }
       } else if (this.selectedItem.type === 'CustomTime') {
-        this.stateInput = this.mod.time;
-        for (const dayString of this.mod.days) {
-          for (const day of this.days) {
-            if (dayString === day.value) {
-              this.selectedDays.push(day);
+        if (this.modalType === 'event') {
+          this.stateInput = this.mod.time;
+          for (const dayString of this.mod.days) {
+            for (const day of this.days) {
+              if (dayString === day.value) {
+                this.selectedDays.push(day);
+              }
             }
           }
+        } else if (this.modalType === 'condition') {
+          const split = this.mod.time.split('/');
+          if (split.length > 1) {
+            this.stateInput = split[0];
+            this.secondTimeInput = split[1];
+          }
         }
-
       }
     }
   }
