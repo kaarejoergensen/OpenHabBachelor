@@ -176,8 +176,13 @@ export class DynamicComponent implements AfterViewInit, OnChanges {
   
   loadComponents(): void {
     if (this.mods.length === 0) {
-      this.newModule();
-      return;
+      if (this.moduleType === 'condition') {
+        this.buttonEnabled = true;
+        return;
+      } else {
+        this.newModule();
+        return;
+      }
     }
     for (const mod of this.mods) {
       if (this.currentComponents.filter(c => (<ItemsComponent>c.instance).mod === mod).length > 0) {
