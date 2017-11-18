@@ -58,14 +58,10 @@
 			</div>
 			<div *ngIf="selectedItem.type === 'CustomTime'">
 				<div>
-					When the time is
+					When the time is between
 					<mat-form-field style="width: 75px"> <input matInput [(ngModel)]="stateInput" type="time" [(formControl)]="rateControl"></mat-form-field>
-				</div>
-				<div>
-					On these days
-					<div class="button-row">
-						<button mat-mini-fab *ngFor="let day of days" class="date-button" [class.selectedday]="selectedDays.indexOf(day) > -1" (click)="onSelectDay(day)">{{day.name}}</button>
-					</div>
+					and
+					<mat-form-field style="width: 75px"> <input matInput [(ngModel)]="secondTimeInput" type="time" [(formControl)]="rateControl"></mat-form-field>
 				</div>
 			</div>
 			<div *ngIf="selectedItem.type === 'DateTime'">
@@ -96,7 +92,7 @@
 		<div class="dialog-buttons" mat-dialog-actions style="float: right">
 			<button mat-button (click)="onNoClick()" tabindex="2">Cancel</button>
 			<!-- <div *ngIf="selectedItem.type === 'Number' else noStateDescription">  <button mat-button [disabled]="!rateControl.valid &&  selectedItem.type === 'Number'" (click)="save()" tabindex="-1">Save</button> </div>  -->
-			<button mat-button [disabled]="!daysChosen || (!rateControl.valid && selectedItem.type !== 'Switch' && selectedOperator.value !=='?')" (click)="save()" tabindex="-1">Save</button>
+			<button mat-button [disabled]="(!daysChosen && modalType !== 'condition') || (!rateControl.valid && selectedItem.type !== 'Switch' && selectedOperator.value !=='?')" (click)="save()" tabindex="-1">Save</button>
 		</div>
 	</div>
 </section>

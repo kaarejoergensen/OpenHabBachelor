@@ -25,6 +25,7 @@ export class ModuleCreatorDialogComponent implements OnInit {
   days = DAYS;
   selectedDays = [];
   stateInput;
+  secondTimeInput;
   mod: RuleModule;
   daysChosen = true;
 
@@ -196,8 +197,7 @@ export class ModuleCreatorDialogComponent implements OnInit {
           mod.state = formattedDate;
         }
       } else {
-        mod.time = this.stateInput;
-        mod.days = this.selectedDays.map(function(d) {return d.value; });
+        mod.time = this.stateInput + '/' + this.secondTimeInput;
       }
     } else if (this.modalType === 'action') {
       mod.type = ACTION_TYPE;
