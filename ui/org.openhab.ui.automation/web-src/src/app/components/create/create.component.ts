@@ -136,8 +136,7 @@ export class CreateComponent implements OnInit {
     const modules = this.rule.events.concat(this.rule.actions, this.rule.conditions);
     for (const mod of modules) {
       if (!mod.itemName) {
-        console.log('addThingToRule mod itemName null: ' + JSON.stringify(mod));
-        continue;
+        console.log('addThingToRule mod itemName null, adding CustomTime: ' + JSON.stringify(mod));
       } 
       const things = this.things.filter(t => t.items.filter(i => i.name === mod.itemName).length > 0);
       if (things.length > 0) {

@@ -9,14 +9,14 @@ export class RuleMapperHelper {
     ruleDTO.uid = rule.uid;
     ruleDTO.name = rule.name;
     ruleDTO.description = rule.description;
-    rule.events.forEach(e => RuleDTOHelper.updateModule('trigger', this.mapEventToModule(e), ruleDTO));
+    rule.events.forEach(e => RuleDTOHelper.updateModule('trigger', this.mapEventToModule(e, ruleDTO), ruleDTO));
     rule.conditions.forEach(c => RuleDTOHelper.updateModule('condition', this.mapConditionToModule(c), ruleDTO));
     rule.actions.forEach(a => RuleDTOHelper.updateModule('action', this.mapActionToModule(a), ruleDTO));
 
     return ruleDTO;
   }
   
-  static mapEventToModule(event: RuleModule): Module {
+  static mapEventToModule(event: RuleModule, ruleDTO: RuleDTO): Module {
     const mod = new Module();
     
     if (event.itemName) {
@@ -39,6 +39,14 @@ export class RuleMapperHelper {
       mod.label = 'it is a fixed time of day';
       mod.description = 'Triggers at a specified time';
       Module.addConfiguration('time', event.time, mod);
+      Module.addConfiguration('days', event.days, mod);
+      
+      const dayOfWeek = new Module();
+      dayOfWeek.type = 'timer.DayOfWeekCondition';
+      dayOfWeek.label = 'it is a certain day of the week';
+      dayOfWeek.description = 'checks for the current day of the week';
+      Module.addConfiguration('days', event.days, dayOfWeek);
+      RuleDTOHelper.updateModule('condition', dayOfWeek, ruleDTO);
     }
     
     return mod;
@@ -53,11 +61,6 @@ export class RuleMapperHelper {
       Module.addConfiguration('itemName', condition.itemName, mod);
       Module.addConfiguration('operator', condition.operator, mod);
       Module.addConfiguration('state', condition.state, mod);
-    } else {
-      mod.type = 'timer.DayOfWeekCondition';
-      mod.label = 'it is a certain day of the week';
-      mod.description = 'checks for the current day of the week';
-      Module.addConfiguration('days', condition.days, mod);
     }
     return mod;
   }
@@ -80,7 +83,7 @@ export class RuleMapperHelper {
     rule.name = ruleDTO.name;
     rule.description = ruleDTO.description;
     ruleDTO.triggers.forEach(t => rule.events.push(this.mapModuleToEvent(t)));
-    ruleDTO.conditions.forEach(c => rule.conditions.push(this.mapModuleToCondition(c)));
+    ruleDTO.conditions.filter(c => c.type !== 'timer.DayOfWeekCondition').forEach(c => rule.conditions.push(this.mapModuleToCondition(c)));
     ruleDTO.actions.forEach(a => rule.actions.push(this.mapModuleToAction(a)));
 
     return rule;
@@ -99,6 +102,7 @@ export class RuleMapperHelper {
       event.state = Module.getConfiguration('state', mod);
     } else if (mod.type === 'timer.TimeOfDayTrigger') {
       event.time = Module.getConfiguration('time', mod);
+      event.days = Module.getConfiguration('days', mod);
     }
     return event;
   }
@@ -111,8 +115,6 @@ export class RuleMapperHelper {
       condition.itemName = Module.getConfiguration('itemName', mod);
       condition.operator = Module.getConfiguration('operator', mod);
       condition.state = Module.getConfiguration('state', mod);
-    } else if (mod.type === 'timer.DayOfWeekCondition') {
-      condition.days = Module.getConfiguration('days', mod);
     }
     return condition;
   }
