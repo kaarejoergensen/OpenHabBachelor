@@ -111,6 +111,9 @@ export class ModuleCreatorDialogComponent implements OnInit {
     const index = this.selectedDays.indexOf(day);
     if (index > -1) {
       this.selectedDays.splice(index, 1);
+      if (this.selectedDays.length === 0) {
+      this.daysChosen = false; 
+      }
     } else {
       this.selectedDays.push(day);
       this.daysChosen = true;
