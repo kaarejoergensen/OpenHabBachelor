@@ -216,6 +216,9 @@ export class ModuleCreatorDialogComponent implements OnInit {
         mod.command = this.selectedSwitchState.value;
       }
     }
+    if (this.mod.id) {
+      mod.id = this.mod.id;
+    }
     this.mod = mod;
     this.dialogRef.close({thing: this.thing, mod: this.mod});
   }
