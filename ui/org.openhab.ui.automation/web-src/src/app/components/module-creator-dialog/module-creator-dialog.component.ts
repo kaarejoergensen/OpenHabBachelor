@@ -14,6 +14,7 @@ import {Validators, FormControl} from '@angular/forms';
 })
 export class ModuleCreatorDialogComponent implements OnInit {
   rateControl = new FormControl('', Validators.required);
+  requireControl = new FormControl('', Validators.required);
   thing: Thing;
   selectedItem: Item;
   modalType: string;
@@ -57,7 +58,7 @@ export class ModuleCreatorDialogComponent implements OnInit {
   }
 
   initializeExistingMod(): void {
-    if (this.mod) {
+    if (this.mod && this.mod.id) {
       if (this.mod.itemName && this.mod.thing) {
         this.selectedItem = this.getItem(this.mod.thing, this.mod.itemName);
         if (this.modalType === 'condition' || this.modalType === 'event') {

@@ -91,7 +91,7 @@
                     </mat-form-field>
                     and
                     <mat-form-field style="width: 75px">
-                        <input matInput [(ngModel)]="secondTimeInput" type="time">
+                        <input matInput [(ngModel)]="secondTimeInput" type="time" [(formControl)]="requireControl">
                     </mat-form-field>
                 </div>
             </div>
@@ -142,7 +142,10 @@
         <div class="dialog-buttons" mat-dialog-actions style="float: right">
             <button mat-button (click)="onNoClick()" tabindex="2">Cancel</button>
             <!-- <div *ngIf="selectedItem.type === 'Number' else noStateDescription">  <button mat-button [disabled]="!rateControl.valid &&  selectedItem.type === 'Number'" (click)="save()" tabindex="-1">Save</button> </div>  -->
-            <button mat-button [disabled]="(!daysChosen && modalType !== 'condition') || (!rateControl.valid && selectedItem.type !== 'Switch' && selectedOperator.value !=='?')" (click)="save()" tabindex="-1">Save</button>
+            <button mat-button 
+                [disabled]="(!daysChosen && modalType !== 'condition')
+                || (!rateControl.valid && selectedItem.type !== 'Switch' && selectedOperator.value !=='?')
+                || (modalType === 'condition' && selectedItem.type === 'CustomTime' && !requireControl.valid)" (click)="save()" tabindex="-1">Save</button>
         </div>
     </div>
 </section>
