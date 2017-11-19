@@ -1,45 +1,45 @@
 <div class="itemsdiv">
-	<ul *ngIf="things && (!mod || !mod.id)" class="items">
-		<li *ngFor="let thing of things">
-			<div class="inner-item" (click)="onSelect(thing)">{{thing.label}}</div>
-		</li>
-	</ul>
-	<ul *ngIf="mod && mod.id" [@fadeIn] class="itemsdiv" class="items">
-		<li style="width: 90% !important;">
-			<div class="inner-item" (click)="onSelect(mod.thing)">
-				<div *ngIf="mod.type === 'event'">
-					<div *ngIf="mod.itemName && item">
-						<div *ngIf="mod.operator && mod.operator === '?'">
-							<i>{{item.label}}</i> of <i>{{mod.thing.label}} is updated</i>
-						</div>
-						<div *ngIf="mod.operator && mod.operator !== '?'">
-							<i>{{item.label}}</i> of <i>{{mod.thing.label}}<span *ngIf="item.type === 'Number'"> {{getNumerText()}}</span> <span *ngIf="item.type === 'Switch'">is turned to </span> {{parseState(mod.state)}}
-							</i>
-							<span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
-						</div>
-					</div>
-					<div *ngIf="mod.time">
-						When the time is <i>{{mod.time}}</i> on <i>{{parseDays(mod.days)}}</i>
-					</div>
-				</div>
-				<div *ngIf="mod.type === 'condition'">
-					<div *ngIf="mod.itemName && item">
-						<i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> is <i> <span *ngIf="item.type === 'Number'">{{getOperator(mod.operator)}} </span> <span *ngIf="item.type === 'Switch'">turned to </span> {{parseState(mod.state)}}
-						</i>
-						<span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
-					</div>
-					<div *ngIf="mod.time && mod.time.split('/').length > 1">
-						The time is between <i>{{mod.time.split('/')[0]}}</i> and <i>{{mod.time.split('/')[1]}}</i>
-					</div>
-				</div>
-				<div *ngIf="mod.type === 'action'">
-					<div *ngIf="item">
-						Set <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> to <i>{{mod.command}}</i>
-						<span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
-					</div>
-				</div>
-			</div>
-			<button mat-raised-button color="warn" (click)="onDeleteMod()">Delete</button>
-		</li>
-	</ul>
+    <ul *ngIf="things && (!mod || !mod.id)" class="items">
+        <li *ngFor="let thing of things">
+            <div class="inner-item" (click)="onSelect(thing)">{{thing.label}}</div>
+        </li>
+    </ul>
+    <ul *ngIf="mod && mod.id" [@fadeIn] class="itemsdiv" class="items">
+        <li style="width: 90% !important;">
+            <div class="inner-item" (click)="onSelect(mod.thing)">
+                <div *ngIf="mod.type === 'event'">
+                    <div *ngIf="mod.itemName && item">
+                        <div *ngIf="mod.operator && mod.operator === '?'">
+                            <i>{{item.label}}</i> of <i>{{mod.thing.label}} is updated</i>
+                        </div>
+                        <div *ngIf="mod.operator && mod.operator !== '?'">
+                            <i>{{item.label}}</i> of <i>{{mod.thing.label}}<span *ngIf="item.type === 'Number'"> {{getNumerText()}}</span> <span *ngIf="item.type === 'Switch'">is turned to </span> {{parseState(mod.state)}}
+                            </i>
+                            <span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="mod.time">
+                        When the time is <i>{{mod.time}}</i> on <i>{{parseDays(mod.days)}}</i>
+                    </div>
+                </div>
+                <div *ngIf="mod.type === 'condition'">
+                    <div *ngIf="mod.itemName && item">
+                        <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> is <i> <span *ngIf="item.type === 'Number'">{{getOperator(mod.operator)}} </span> <span *ngIf="item.type === 'Switch'">turned to </span> {{parseState(mod.state)}}
+                        </i>
+                        <span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
+                    </div>
+                    <div *ngIf="mod.time && mod.time.split('/').length > 1">
+                        The time is between <i>{{mod.time.split('/')[0]}}</i> and <i>{{mod.time.split('/')[1]}}</i>
+                    </div>
+                </div>
+                <div *ngIf="mod.type === 'action'">
+                    <div *ngIf="item">
+                        Set <i>{{item.label}}</i> of <i>{{mod.thing.label}}</i> to <i>{{mod.command}}</i>
+                        <span *ngIf="item.stateDescription && item.stateDescription.pattern && !item.stateDescription.pattern.split(' ').pop().startsWith('%')">{{item.stateDescription.pattern.split(' ').pop()}}</span>
+                    </div>
+                </div>
+            </div>
+            <button mat-raised-button color="warn" (click)="onDeleteMod()">Delete</button>
+        </li>
+    </ul>
 </div>

@@ -1,98 +1,148 @@
 <section class="mat-typography">
-	<h1 mat-dialog-title>{{(modalType.charAt(0) | uppercase) + modalType.slice(1)}}</h1>
-	<div mat-dialog-content>
-		<div *ngIf="modalType=='event'">
-			<div *ngIf="selectedItem.type !== 'CustomTime'">
-				When
-				<mat-form-field> <mat-select [(ngModel)]="selectedItem" (ngModelChange)="onChange($event)"> <mat-option *ngFor="let item of thing.items" [value]="item">{{ item.label }}</mat-option> </mat-select> </mat-form-field>
-
-				<div *ngIf="selectedItem.type==='Number'" style="display: inline-block">
-					<mat-form-field> <mat-select [(ngModel)]="selectedOperator"> <mat-option *ngFor="let o of operators" [value]="o">{{ o.name }}</mat-option> </mat-select> </mat-form-field>
-					<div *ngIf="selectedOperator.value !== '?'" style="display: inline-block">
-						<mat-form-field> <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number"> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()[0]}}</span></mat-form-field>
-					</div>
-				</div>
-
-				<div *ngIf="selectedItem.type==='Number' && selectedItem.stateDescription.minimum && selectedItem.stateDescription.maximum && selectedOperator.value !== '?'">
-					<md-error class="error"> Please enter a value between {{selectedItem.stateDescription.minimum}} and {{selectedItem.stateDescription.maximum}}</md-error>
-				</div>
-
-				<div *ngIf="selectedItem.type==='Switch'" style="display: inline-block">
-					is
-					<mat-form-field> <mat-select [(ngModel)]="selectedSwitchState"> <mat-option *ngFor="let s of switchStates" [value]="s">{{ s.name }} </mat-option> </mat-select> </mat-form-field>
-				</div>
-			</div>
-			<div *ngIf="selectedItem.type === 'CustomTime'">
-				<div>
-					When the time is
-					<mat-form-field style="width: 75px"> <input matInput [(ngModel)]="stateInput" type="time" [(formControl)]="rateControl"></mat-form-field>
-				</div>
-				<div>
-					On these days
-					<div class="button-row">
-						<button mat-mini-fab *ngFor="let day of days" class="date-button" [class.selectedday]="selectedDays.indexOf(day) > -1" (click)="onSelectDay(day)">{{day.name}}</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div *ngIf="modalType=='condition'">
-			<div *ngIf="selectedItem.type !== 'CustomTime'">
-				When
-				<mat-form-field> <mat-select [(ngModel)]="selectedItem"> <mat-option *ngFor="let item of thing.items" [value]="item">{{ item.label }}</mat-option> </mat-select> </mat-form-field>
-
-
-				<div *ngIf="selectedItem.type==='Number'" style="display: inline-block">
-					is
-					<mat-form-field> <mat-select [(ngModel)]="selectedOperator"> <mat-option *ngFor="let o of operators" [value]="o">{{ o.name }}</mat-option> </mat-select> </mat-form-field>
-					<mat-form-field> <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()[0]}}</span></mat-form-field>
-				</div>
-				<div *ngIf="selectedItem.type==='Number' && selectedItem.stateDescription.minimum && selectedItem.stateDescription.maximum ">
-					<md-error class="error"> Please enter a value between {{selectedItem.stateDescription.minimum}} and {{selectedItem.stateDescription.maximum}}</md-error>
-				</div>
-
-				<div *ngIf="selectedItem.type==='Switch'" style="display: inline-block">
-					is
-					<mat-form-field> <mat-select [(ngModel)]="selectedSwitchState"> <mat-option *ngFor="let s of switchStates" [value]="s">{{ s.name }}</mat-option> </mat-select> </mat-form-field>
-				</div>
-			</div>
-			<div *ngIf="selectedItem.type === 'CustomTime'">
-				<div>
-					When the time is between
-					<mat-form-field style="width: 75px"> <input matInput [(ngModel)]="stateInput" type="time" [(formControl)]="rateControl"></mat-form-field>
-					and
-					<mat-form-field style="width: 75px"> <input matInput [(ngModel)]="secondTimeInput" type="time"></mat-form-field>
-				</div>
-			</div>
-			<div *ngIf="selectedItem.type === 'DateTime'">
-				is
-				<mat-form-field> <input #datePicker matInput [matDatepicker]="picker" placeholder="Choose a date"> <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle> <mat-datepicker #picker></mat-datepicker> </mat-form-field>
-				at
-				<mat-form-field style="width: 75px"> <input matInput [(ngModel)]="stateInput" type="time"></mat-form-field>
-			</div>
-		</div>
-
-		<div *ngIf="modalType==='action'">
-			Set
-			<mat-form-field> <mat-select [(ngModel)]="selectedItem"> <mat-option *ngFor="let item of thing.editableItems" [value]="item">{{ item.label }}</mat-option> </mat-select> </mat-form-field>
-			to
-			<div *ngIf="selectedItem.type === 'Number'" style="display: inline-block">
-				<mat-form-field> <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}> <ng-template #noStateDescription> <input matInput [ngModel]="stateInput" type="number"></ng-template> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()[0]}}</span></mat-form-field>
-
-			</div>
-			<div *ngIf="selectedItem.type==='Number' && selectedItem.stateDescription.minimum && selectedItem.stateDescription.maximum ">
-				<md-error class="error"> Please enter a value between {{selectedItem.stateDescription.minimum}} and {{selectedItem.stateDescription.maximum}}</md-error>
-			</div>
-
-			<div *ngIf="selectedItem.type === 'Switch'" style="display: inline-block">
-				<mat-form-field> <mat-select [(ngModel)]="selectedSwitchState"> <mat-option *ngFor="let s of switchStates" [value]="s">{{ s.value | lowercase}}</mat-option> </mat-select> </mat-form-field>
-			</div>
-		</div>
-
-		<div class="dialog-buttons" mat-dialog-actions style="float: right">
-			<button mat-button (click)="onNoClick()" tabindex="2">Cancel</button>
-			<!-- <div *ngIf="selectedItem.type === 'Number' else noStateDescription">  <button mat-button [disabled]="!rateControl.valid &&  selectedItem.type === 'Number'" (click)="save()" tabindex="-1">Save</button> </div>  -->
-			<button mat-button [disabled]="(!daysChosen && modalType !== 'condition') || (!rateControl.valid && selectedItem.type !== 'Switch' && selectedOperator.value !=='?')" (click)="save()" tabindex="-1">Save</button>
-		</div>
-	</div>
+    <h1 mat-dialog-title>{{(modalType.charAt(0) | uppercase) + modalType.slice(1)}}</h1>
+    <div mat-dialog-content>
+        <div *ngIf="modalType=='event'">
+            <div *ngIf="selectedItem.type !== 'CustomTime'">
+                When
+                <mat-form-field *ngIf="thing.items.length > 1 else onlyOneItem">
+                    <mat-select [(ngModel)]="selectedItem" (ngModelChange)="onChange($event)">
+                        <mat-option *ngFor="let item of thing.items" [value]="item">{{ item.label }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <ng-template #onlyOneItem>
+                    <span>{{selectedItem.label}}</span>
+                </ng-template>
+                <div *ngIf="selectedItem.type==='Number'" style="display: inline-block">
+                    <mat-form-field>
+                        <mat-select [(ngModel)]="selectedOperator">
+                            <mat-option *ngFor="let o of operators" [value]="o">{{ o.name }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div *ngIf="selectedOperator.value !== '?'" style="display: inline-block">
+                        <mat-form-field>
+                            <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number"> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()[0]}}</span></mat-form-field>
+                    </div>
+                </div>
+                <div *ngIf="selectedItem.type==='Number' && selectedItem.stateDescription.minimum && selectedItem.stateDescription.maximum && selectedOperator.value !== '?'">
+                    <md-error class="error"> Please enter a value between {{selectedItem.stateDescription.minimum}} and {{selectedItem.stateDescription.maximum}}</md-error>
+                </div>
+                <div *ngIf="selectedItem.type==='Switch'" style="display: inline-block">
+                    is
+                    <mat-form-field>
+                        <mat-select [(ngModel)]="selectedSwitchState">
+                            <mat-option *ngFor="let s of switchStates" [value]="s">{{ s.name }} </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div *ngIf="selectedItem.type === 'CustomTime'">
+                <div>
+                    When the time is
+                    <mat-form-field style="width: 75px">
+                        <input matInput [(ngModel)]="stateInput" type="time" [(formControl)]="rateControl">
+                    </mat-form-field>
+                </div>
+                <div>
+                    On these days
+                    <div class="button-row">
+                        <button mat-mini-fab *ngFor="let day of days" class="date-button" [class.selectedday]="selectedDays.indexOf(day) > -1" (click)="onSelectDay(day)">{{day.name}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="modalType=='condition'">
+            <div *ngIf="selectedItem.type !== 'CustomTime'">
+                When
+                <mat-form-field *ngIf="thing.items.length > 1 else onlyOneItem">
+                    <mat-select [(ngModel)]="selectedItem">
+                        <mat-option *ngFor="let item of thing.items" [value]="item">{{ item.label }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <ng-template #onlyOneItem>
+                    <span>{{selectedItem.label}}</span>
+                </ng-template>
+                <div *ngIf="selectedItem.type==='Number'" style="display: inline-block">
+                    is
+                    <mat-form-field>
+                        <mat-select [(ngModel)]="selectedOperator">
+                            <mat-option *ngFor="let o of operators" [value]="o">{{ o.name }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()[0]}}</span></mat-form-field>
+                </div>
+                <div *ngIf="selectedItem.type==='Number' && selectedItem.stateDescription.minimum && selectedItem.stateDescription.maximum ">
+                    <md-error class="error"> Please enter a value between {{selectedItem.stateDescription.minimum}} and {{selectedItem.stateDescription.maximum}}</md-error>
+                </div>
+                <div *ngIf="selectedItem.type==='Switch'" style="display: inline-block">
+                    is
+                    <mat-form-field>
+                        <mat-select [(ngModel)]="selectedSwitchState">
+                            <mat-option *ngFor="let s of switchStates" [value]="s">{{ s.name }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div *ngIf="selectedItem.type === 'CustomTime'">
+                <div>
+                    When the time is between
+                    <mat-form-field style="width: 75px">
+                        <input matInput [(ngModel)]="stateInput" type="time" [(formControl)]="rateControl">
+                    </mat-form-field>
+                    and
+                    <mat-form-field style="width: 75px">
+                        <input matInput [(ngModel)]="secondTimeInput" type="time">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div *ngIf="selectedItem.type === 'DateTime'">
+                is
+                <mat-form-field>
+                    <input #datePicker matInput [matDatepicker]="picker" placeholder="Choose a date">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                at
+                <mat-form-field style="width: 75px">
+                    <input matInput [(ngModel)]="stateInput" type="time">
+                </mat-form-field>
+            </div>
+        </div>
+        <div *ngIf="modalType==='action'">
+            Set
+            <mat-form-field *ngIf="thing.items.length > 1 else onlyOneItem">
+                <mat-select [(ngModel)]="selectedItem">
+                    <mat-option *ngFor="let item of thing.editableItems" [value]="item">{{ item.label }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <ng-template #onlyOneItem>
+                <span>{{selectedItem.label}}</span>
+            </ng-template>
+            to
+            <div *ngIf="selectedItem.type === 'Number'" style="display: inline-block">
+                <mat-form-field>
+                    <input matInput *ngIf="selectedItem.stateDescription else noStateDescription" [(formControl)]="rateControl" [(ngModel)]="stateInput" type="number" min={{selectedItem.stateDescription.minimum}} max={{selectedItem.stateDescription.maximum}}>
+                    <ng-template #noStateDescription>
+                        <input matInput [ngModel]="stateInput" type="number">
+                    </ng-template>
+                    <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && !selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()}}</span> <span matSuffix *ngIf="selectedItem.stateDescription && selectedItem.stateDescription.pattern && selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')">{{selectedItem.stateDescription.pattern.split(' ').pop()[0]}}</span>
+                </mat-form-field>
+            </div>
+            <div *ngIf="selectedItem.type==='Number' && selectedItem.stateDescription.minimum && selectedItem.stateDescription.maximum ">
+                <md-error class="error"> Please enter a value between {{selectedItem.stateDescription.minimum}} and {{selectedItem.stateDescription.maximum}}</md-error>
+            </div>
+            <div *ngIf="selectedItem.type === 'Switch'" style="display: inline-block">
+                <mat-form-field>
+                    <mat-select [(ngModel)]="selectedSwitchState">
+                        <mat-option *ngFor="let s of switchStates" [value]="s">{{ s.value | lowercase}} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="dialog-buttons" mat-dialog-actions style="float: right">
+            <button mat-button (click)="onNoClick()" tabindex="2">Cancel</button>
+            <!-- <div *ngIf="selectedItem.type === 'Number' else noStateDescription">  <button mat-button [disabled]="!rateControl.valid &&  selectedItem.type === 'Number'" (click)="save()" tabindex="-1">Save</button> </div>  -->
+            <button mat-button [disabled]="(!daysChosen && modalType !== 'condition') || (!rateControl.valid && selectedItem.type !== 'Switch' && selectedOperator.value !=='?')" (click)="save()" tabindex="-1">Save</button>
+        </div>
+    </div>
 </section>
