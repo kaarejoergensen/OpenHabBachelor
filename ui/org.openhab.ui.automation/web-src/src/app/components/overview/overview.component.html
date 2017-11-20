@@ -13,7 +13,6 @@
 		<div style="width: 50%" (click)="openCreate(rule)">
 			<h3 matLine><b>{{rule.name}}</b></h3>
 			<span matLine>{{rule.description}}</span>
-			<span matLine>{{rule.uid}}</span>
 		</div>
 		
 		<mat-slide-toggle [checked]="rule.enabled" (change)="enableDisableRule(rule)" style="width: 15%; height: auto;"></mat-slide-toggle>
