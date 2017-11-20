@@ -19,13 +19,12 @@ public class AutomationUIDashboardTile implements DashboardTile {
 
     @Override
     public String getImageUrl() {
-        // TODO Get image
-        return "";
+        return "../automation/assets/dashboardpic.png";
     }
 
     @Override
     public String getName() {
-        return "Automation UI";
+        return "Intelligent Home";
     }
 
     @Override
