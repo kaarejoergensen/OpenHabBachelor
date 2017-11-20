@@ -110,7 +110,7 @@
         </div>
         <div *ngIf="modalType==='action'">
             Set
-            <mat-form-field *ngIf="thing.items.length > 1 else onlyOneItem">
+            <mat-form-field *ngIf="thing.editableItems.length > 1 else onlyOneItem">
                 <mat-select [(ngModel)]="selectedItem">
                     <mat-option *ngFor="let item of thing.editableItems" [value]="item">{{ item.label }}</mat-option>
                 </mat-select>
