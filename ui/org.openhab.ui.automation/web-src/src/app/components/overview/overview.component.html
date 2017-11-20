@@ -6,6 +6,9 @@
         <button mat-fab color="primary" (click)="openCreate(null)"><mat-icon>add</mat-icon></button>
     </div>
      <div class="headers"><h2> Existing rules</h2></div>
+     <div *ngIf="rules.length === 0">
+        No existing rules.
+     </div>
 	<mat-list class="rules"> <mat-list-item *ngFor="let rule of rules" class="inner-rule">
 		<div style="width: 50%" (click)="openCreate(rule)">
 			<h3 matLine><b>{{rule.name}}</b></h3>

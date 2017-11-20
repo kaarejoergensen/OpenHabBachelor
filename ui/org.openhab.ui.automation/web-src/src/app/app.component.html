@@ -1,16 +1,10 @@
-
-  <div layout="column" layout-fill style="text-align: center">
-  <md-toolbar>
-<section class="mat-typography">
-    <div class="md-toolbar-tools, md-medium-tall">
-      <h1 md-truncate flex class="title" [routerLink]="['/overview']">{{titleText}}</h1>
-
-    </div>
-
-        <router-outlet></router-outlet>
-    </section>
-  </md-toolbar>
-  
-  </div>
-  
-
+<div layout="column" layout-fill style="text-align: center">
+	<md-toolbar>
+	<section class="mat-typography">
+		<div class="md-toolbar-tools, md-medium-tall">
+			<h1 md-truncate flex class="title" [routerLink]="['/overview']">{{titleText}}</h1>
+		</div>
+		<router-outlet></router-outlet>
+	</section>
+	</md-toolbar>
+</div>

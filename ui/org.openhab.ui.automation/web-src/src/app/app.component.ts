@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { SharedPropertiesService } from './services/shared-properties.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {SharedPropertiesService} from './services/shared-properties.service';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,16 +9,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   router: any;
-  titleText = 'Control your intelligent home';
+  titleText = 'Control Your Intelligent Home';
 
   ngOnInit(): void {
   }
-  constructor(private sharedProperties: SharedPropertiesService) { }
-  
-  
+  constructor(private sharedProperties: SharedPropertiesService) {}
+
   onHeaderClick(): void {
-   // this.sharedProperties.setResult(result);
-   this.router.navigate(['/overview']);
-}
+    this.router.navigate(['/overview']);
+  }
 }
 
