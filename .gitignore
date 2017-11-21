@@ -97,4 +97,3 @@ org.openhab.binding.northqbinding/target/
 !/ui/org.openhab.ui.automation
 /voice/
 archetype-settings.xml
-pom.xml
