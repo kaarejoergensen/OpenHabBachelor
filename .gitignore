@@ -91,6 +91,7 @@ hs_err_pid*
 org.openhab.binding.northqbinding/target/
 /binding/*
 !/binding/org.openhab.binding.northqbinding/
+!/binding/org.openhab.binding.northqbinding.test/
 /io/
 /ui/*
 !/ui/org.openhab.ui.automation
