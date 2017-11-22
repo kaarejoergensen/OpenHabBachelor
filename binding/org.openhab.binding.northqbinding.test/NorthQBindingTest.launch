@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.pde.ui.JunitLaunchConfig">
+<booleanAttribute key="append.args" value="true"/>
+<stringAttribute key="application" value="org.eclipse.pde.junit.runtime.coretestapplication"/>
+<booleanAttribute key="askclear" value="false"/>
+<booleanAttribute key="automaticAdd" value="true"/>
+<booleanAttribute key="automaticValidate" value="true"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="true"/>
+<booleanAttribute key="clearws" value="true"/>
+<booleanAttribute key="clearwslog" value="false"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/pde-junit"/>
+<booleanAttribute key="default" value="false"/>
+<booleanAttribute key="default_auto_start" value="true"/>
+<stringAttribute key="deselected_workspace_plugins" value="org.openhab.automation.module.extension,org.openhab.binding.airquality,org.openhab.binding.allplay,org.openhab.binding.amazondashbutton,org.openhab.binding.atlona,org.openhab.binding.autelis,org.openhab.binding.avmfritz,org.openhab.binding.bigassfan,org.openhab.binding.boschindego,org.openhab.binding.chromecast,org.openhab.binding.cm11a,org.openhab.binding.coolmasternet,org.openhab.binding.dlinksmarthome,org.openhab.binding.dscalarm,org.openhab.binding.exec,org.openhab.binding.feed,org.openhab.binding.feed.test,org.openhab.binding.folding,org.openhab.binding.freebox,org.openhab.binding.gardena,org.openhab.binding.globalcache,org.openhab.binding.harmonyhub,org.openhab.binding.hdanywhere,org.openhab.binding.hdpowerview,org.openhab.binding.homematic,org.openhab.binding.ipp,org.openhab.binding.jeelink,org.openhab.binding.keba,org.openhab.binding.kodi,org.openhab.binding.kostalinverter,org.openhab.binding.lgtvserial,org.openhab.binding.loxone,org.openhab.binding.lutron,org.openhab.binding.max,org.openhab.binding.max.test,org.openhab.binding.meteostick,org.openhab.binding.miele,org.openhab.binding.mihome,org.openhab.binding.milight,org.openhab.binding.minecraft,org.openhab.binding.nest,org.openhab.binding.nest.test,org.openhab.binding.netatmo,org.openhab.binding.network,org.openhab.binding.network.test,org.openhab.binding.nikohomecontrol,org.openhab.binding.oceanic,org.openhab.binding.onebusaway,org.openhab.binding.onkyo,org.openhab.binding.opensprinkler,org.openhab.binding.orvibo,org.openhab.binding.pioneeravr,org.openhab.binding.plugwise,org.openhab.binding.pulseaudio,org.openhab.binding.regoheatpump,org.openhab.binding.rfxcom,org.openhab.binding.rme,org.openhab.binding.russound,org.openhab.binding.samsungtv,org.openhab.binding.sensebox,org.openhab.binding.silvercrestwifisocket,org.openhab.binding.sleepiq,org.openhab.binding.smaenergymeter,org.openhab.binding.squeezebox,org.openhab.binding.synopanalyzer,org.openhab.binding.systeminfo,org.openhab.binding.systeminfo.test,org.openhab.binding.tankerkoenig,org.openhab.binding.tellstick,org.openhab.binding.tesla,org.openhab.binding.toon,org.openhab.binding.urtsi,org.openhab.binding.vitotronic,org.openhab.binding.wifiled,org.openhab.binding.windcentrale,org.openhab.binding.yamahareceiver,org.openhab.binding.zoneminder,org.openhab.binding.zway,org.openhab.io.homekit,org.openhab.io.hueemulation,org.openhab.io.imperihome,org.openhab.io.openhabcloud,org.openhab.io.transport.feed,org.openhab.ui.cometvisu,org.openhab.voice.kaldi,org.openhab.voice.marytts,org.openhab.voice.voicerss"/>
+<booleanAttribute key="includeOptional" value="true"/>
+<stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/org.openhab.binding.northqbinding.test"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="4"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=org.openhab.binding.northqbinding.test"/>
+<booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.openhab.binding.northqbinding.test"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<stringAttribute key="product" value=""/>
+<booleanAttribute key="run_in_ui_thread" value="true"/>
+<stringAttribute key="selected_target_plugins" value="ch.qos.logback.classic@default:default,ch.qos.logback.core@default:default,ch.qos.logback.slf4j@default:false,com.eclipsesource.jaxrs.jersey-min@default:default,com.google.gson*2.7.0.v20170129-0911@default:default,com.google.guava@default:default,javax.activation@default:default,javax.inject@default:default,javax.mail@default:default,javax.servlet*3.1.0.v201410161800@default:default,javax.transaction@default:false,javax.xml.bind@default:default,javax.xml@default:default,org.apache.ant@default:default,org.apache.commons.collections@default:default,org.apache.commons.io@default:default,org.apache.commons.lang@default:default,org.apache.commons.logging@default:default,org.apache.commons.net@default:default,org.apache.felix.gogo.command@default:default,org.apache.felix.gogo.runtime@default:default,org.apache.felix.scr@default:default,org.codehaus.groovy@default:default,org.eclipse.core.contenttype@default:default,org.eclipse.core.jobs@default:default,org.eclipse.core.runtime@default:true,org.eclipse.equinox.app@default:default,org.eclipse.equinox.common@2:true,org.eclipse.equinox.ds@1:true,org.eclipse.equinox.event@default:default,org.eclipse.equinox.http.servlet@default:default,org.eclipse.equinox.preferences@default:default,org.eclipse.equinox.region@default:false,org.eclipse.equinox.registry@default:default,org.eclipse.equinox.transforms.hook@default:false,org.eclipse.equinox.util@default:default,org.eclipse.equinox.weaving.hook@default:false,org.eclipse.jdt.annotation@default:default,org.eclipse.jetty.client@default:default,org.eclipse.jetty.http*9.4.5.v20170502@default:default,org.eclipse.jetty.io*9.4.5.v20170502@default:default,org.eclipse.jetty.osgi.alpn.fragment@default:false,org.eclipse.jetty.security*9.4.5.v20170502@default:default,org.eclipse.jetty.server*9.4.5.v20170502@default:default,org.eclipse.jetty.servlet*9.4.5.v20170502@default:default,org.eclipse.jetty.util*9.4.5.v20170502@default:default,org.eclipse.osgi.compatibility.state@default:false,org.eclipse.osgi.services@default:default,org.eclipse.osgi.util@default:default,org.eclipse.osgi@-1:true,org.eclipse.smarthome.config.core@default:default,org.eclipse.smarthome.config.discovery@default:default,org.eclipse.smarthome.config.xml@default:default,org.eclipse.smarthome.core.autoupdate@default:default,org.eclipse.smarthome.core.binding.xml@default:default,org.eclipse.smarthome.core.thing.xml@default:default,org.eclipse.smarthome.core.thing@default:default,org.eclipse.smarthome.core@default:default,org.eclipse.smarthome.io.console@default:default,org.eclipse.smarthome.test@default:default,org.hamcrest.core@default:default,org.hamcrest.integration@default:default,org.hamcrest.library@default:default,org.hamcrest.text@default:default,org.hamcrest@default:default,org.junit@default:default,org.jupnp@default:default,org.mockito@default:default,org.objenesis@default:default,org.slf4j.api@default:default,org.slf4j.log4j@default:default"/>
+<stringAttribute key="selected_workspace_plugins" value="org.openhab.binding.northqbinding.test@default:false,org.openhab.binding.northqbinding@1:true"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useCustomFeatures" value="false"/>
+<booleanAttribute key="useDefaultConfig" value="true"/>
+<booleanAttribute key="useDefaultConfigArea" value="false"/>
+<booleanAttribute key="useProduct" value="false"/>
+</launchConfiguration>
