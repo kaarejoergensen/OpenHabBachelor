@@ -11,13 +11,15 @@ package org.openhab.binding.northqbinding;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ManagedThingProvider;
 import org.eclipse.smarthome.core.thing.ThingProvider;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
@@ -31,9 +33,6 @@ import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
  * @author Kaare Joergensen - Initial contribution
  */
 public class NorthQBindingOSGiTest extends JavaOSGiTest {
-
-    private static final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID("northqbinding", "bridge");
-
     private ManagedThingProvider managedThingProvider;
     private final VolatileStorageService volatileStorageService = new VolatileStorageService();
     private Bridge bridge;
@@ -44,10 +43,24 @@ public class NorthQBindingOSGiTest extends JavaOSGiTest {
         registerService(volatileStorageService);
         managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
         assertThat(managedThingProvider, is(notNullValue()));
-        bridge = BridgeBuilder.create(BRIDGE_THING_TYPE_UID, "1").withLabel("My Bridge").build();
         thingRegistry = getService(ThingRegistry.class, ThingRegistry.class);
         assertThat(thingRegistry, is(notNullValue()));
+        createBridge();
+    }
 
+    public void createBridge() {
+        Configuration configuration = new Configuration();
+        configuration.put(EMAIL, "testemail@test.com");
+        configuration.put(PASSWORD, "testPassword");
+        this.bridge = BridgeBuilder.create(THING_TYPE_BRIDGE, "1").withConfiguration(configuration).build();
+    }
+
+    public void createThing() {
+        Configuration configuration = new Configuration();
+        configuration.put(UNIQUE_ID, "2");
+        configuration.put(ROOM_ID, "1" + ROOM_ID_SEPERATOR + "Living Room");
+        ThingBuilder.create(BINARY_SWITCH, "2").withConfiguration(configuration).withBridge(bridge.getBridgeUID())
+                .build();
     }
 
     @After
@@ -62,5 +75,4 @@ public class NorthQBindingOSGiTest extends JavaOSGiTest {
         managedThingProvider.add(bridge);
         waitForAssert(() -> assertThat(bridge.getHandler(), is(notNullValue())));
     }
-
 }
