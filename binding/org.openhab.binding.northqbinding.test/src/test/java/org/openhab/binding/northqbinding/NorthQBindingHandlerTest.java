@@ -44,6 +44,9 @@ public class NorthQBindingHandlerTest {
     private Thing thing;
 
     @Mock
+    private Configuration thingConfiguration;
+
+    @Mock
     private Bridge bridge;
 
     @Mock
@@ -59,10 +62,9 @@ public class NorthQBindingHandlerTest {
     }
 
     private void initializeThing() {
-        Configuration configuration = new Configuration();
-        configuration.put(ROOM_ID, "1" + ROOM_ID_SEPERATOR + "Test Room");
-        configuration.put(UNIQUE_ID, "testID");
-        when(thing.getConfiguration()).thenReturn(configuration);
+        thingConfiguration.put(ROOM_ID, "1" + ROOM_ID_SEPERATOR + "Test Room");
+        thingConfiguration.put(UNIQUE_ID, "testID");
+        when(thing.getConfiguration()).thenReturn(thingConfiguration);
     }
 
     private void initializeBridge() {
