@@ -186,7 +186,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
         }
     }
 
-    private synchronized NorthQBridgeHandler getBridgeHandler() {
+    public synchronized NorthQBridgeHandler getBridgeHandler() {
         if (this.bridgeHandler == null) {
             Bridge bridge = getBridge();
             if (bridge == null) {
@@ -311,5 +311,10 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
             updateStatus(ThingStatus.ONLINE);
             onThingStateChanged(thing);
         }
+    }
+
+    @Override
+    public Bridge getBridge() {
+        return super.getBridge();
     }
 }

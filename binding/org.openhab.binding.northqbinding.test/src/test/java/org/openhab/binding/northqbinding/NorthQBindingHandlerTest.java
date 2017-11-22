@@ -11,19 +11,22 @@ package org.openhab.binding.northqbinding;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.openhab.binding.northqbinding.NorthQBindingBindingConstants.*;
 
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
+import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
 
 /**
  * Tests cases for {@link NorthQBindingHandler}. The tests provide mocks for supporting entities using Mockito.
@@ -32,7 +35,7 @@ import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
  */
 public class NorthQBindingHandlerTest {
 
-    private ThingHandler handler;
+    private NorthQBindingHandler handler;
 
     @Mock
     private ThingHandlerCallback callback;
@@ -40,11 +43,32 @@ public class NorthQBindingHandlerTest {
     @Mock
     private Thing thing;
 
+    @Mock
+    private Bridge bridge;
+
+    @Mock
+    private NorthQBridgeHandler northQBridgeHandler;
+
     @Before
     public void setUp() {
         initMocks(this);
-        handler = new NorthQBindingHandler(thing);
+        handler = spy(new NorthQBindingHandler(thing));
         handler.setCallback(callback);
+        initializeBridge();
+        initializeThing();
+    }
+
+    private void initializeThing() {
+        Configuration configuration = new Configuration();
+        configuration.put(ROOM_ID, "1" + ROOM_ID_SEPERATOR + "Test Room");
+        configuration.put(UNIQUE_ID, "testID");
+        when(thing.getConfiguration()).thenReturn(configuration);
+    }
+
+    private void initializeBridge() {
+        doReturn(ThingStatus.ONLINE).when(bridge).getStatus();
+        doReturn(bridge).when(handler).getBridge();
+        doReturn(northQBridgeHandler).when(handler).getBridgeHandler();
     }
 
     @Test
