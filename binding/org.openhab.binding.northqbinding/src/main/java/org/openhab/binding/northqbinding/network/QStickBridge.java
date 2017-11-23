@@ -70,6 +70,11 @@ public class QStickBridge {
     private List<House> houses;
     private List<Gateway> gateways;
 
+    public QStickBridge() {
+        this.httpClient = new HttpClient();
+        this.gson = new Gson();
+    }
+
     public QStickBridge(String user, String pass) throws APIException, IOException {
         this.httpClient = new HttpClient();
         this.gson = new Gson();
@@ -78,7 +83,7 @@ public class QStickBridge {
     }
 
     @SuppressWarnings("null")
-    private void authenticate(String user, String pass) throws APIException, IOException {
+    public void authenticate(String user, String pass) throws APIException, IOException {
         String url = BASE_URL + AUTHENTICATE_URL;
         String post = "username=" + user + "&password=" + pass;
         Result result = httpClient.post(url, post);

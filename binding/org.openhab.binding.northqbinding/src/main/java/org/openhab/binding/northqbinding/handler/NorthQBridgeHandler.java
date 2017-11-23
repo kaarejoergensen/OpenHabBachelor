@@ -233,11 +233,18 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
-    private boolean onAuthenticationError() {
+    public boolean onAuthenticationError() {
         logger.debug("Try to log user in again (token might be too old");
         if (getConfig().get(EMAIL) != null && getConfig().get(PASSWORD) != null) {
             try {
-                qStickBridge = new QStickBridge((String) getConfig().get(EMAIL), (String) getConfig().get(PASSWORD));
+                if (qStickBridge == null) {
+                    qStickBridge = new QStickBridge((String) getConfig().get(EMAIL),
+                            (String) getConfig().get(PASSWORD));
+                } else {
+                    qStickBridge.authenticate((String) getConfig().get(EMAIL), (String) getConfig().get(PASSWORD));
+                    qStickBridge.updateHousesAndGateways();
+                }
+                updateStatus(ThingStatus.ONLINE);
                 return true;
             } catch (APIException | IOException e) {
                 logger.warn("User not authenticated");

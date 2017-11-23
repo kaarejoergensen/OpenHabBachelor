@@ -22,7 +22,7 @@ import java.util.Scanner;
  * @author Q42, standalone Jue library (https://github.com/Q42/Jue)
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
-class HttpClient {
+public class HttpClient {
     private static final String GET = "GET";
     private static final String POST = "POST";
     private static final String PUT = "PUT";

@@ -62,7 +62,7 @@ public class NorthQDiscovery extends AbstractDiscoveryService implements Binding
     }
 
     @Override
-    protected void startScan() {
+    public void startScan() {
         bridgeHandler.updateHousesAndGateways();
         roomMap = bridgeHandler.getAllRooms().stream().collect(Collectors.toMap(Room::getId, Function.identity()));
         List<NorthQThing> things = bridgeHandler.getAllNorthQThings();
