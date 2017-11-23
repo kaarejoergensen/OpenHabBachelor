@@ -8,6 +8,7 @@ Bundle-Version: 2.2.0.qualifier
 Export-Package: org.openhab.binding.northqbinding;uses:="org.eclipse.smarthome.test"
 Fragment-Host: org.openhab.binding.northqbinding
 Import-Package: 
+ groovy.lang,
  org.openhab.binding.northqbinding,
  org.openhab.binding.northqbinding.handler,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -17,6 +18,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.java,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.northqbinding;
+package org.openhab.binding.northqbinding.osgi;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
