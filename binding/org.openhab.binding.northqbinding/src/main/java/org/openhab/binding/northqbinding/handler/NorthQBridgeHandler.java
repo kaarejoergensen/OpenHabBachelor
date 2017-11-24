@@ -284,6 +284,10 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
             qStickBridge.setRoomTemperature(roomId, gatewaySerial, newTemperature);
             return null;
         });
+        List<Thermostat> thermostats = getThermostatsByRoomId(roomId);
+        for (Thermostat thermostat : thermostats) {
+            thermostat.setTemperature((int) newTemperature);
+        }
     }
 
     @Override
