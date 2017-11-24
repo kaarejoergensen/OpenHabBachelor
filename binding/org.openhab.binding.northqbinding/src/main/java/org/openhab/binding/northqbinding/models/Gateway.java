@@ -24,6 +24,12 @@ public class Gateway {
     private String serial_nr;
     private int house;
 
+    public Gateway(int id, String serial_nr, int house) {
+        this.id = id;
+        this.serial_nr = serial_nr;
+        this.house = house;
+    }
+
     public int getId() {
         return id;
     }

@@ -26,6 +26,11 @@ public class BinarySwitch extends NorthQThing {
     private int pos;
     private double wattage;
 
+    public BinarySwitch(int pos, double wattage) {
+        this.pos = pos;
+        this.wattage = wattage;
+    }
+
     public boolean isTurnedOn() {
         return pos == 255;
     }

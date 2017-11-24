@@ -28,6 +28,13 @@ public class BinarySensor extends NorthQThing {
     private int armed;
     private List<Sensor> sensors;
 
+    public BinarySensor(int battery, int pos, int armed, List<Sensor> sensors) {
+        this.battery = battery;
+        this.pos = pos;
+        this.armed = armed;
+        this.sensors = sensors;
+    }
+
     public int getBattery() {
         return battery;
     }
@@ -86,6 +93,12 @@ public class BinarySensor extends NorthQThing {
         private int scale;
         private int type;
         private double value;
+
+        public Sensor(int scale, int type, double value) {
+            this.scale = scale;
+            this.type = type;
+            this.value = value;
+        }
 
         public int getScale() {
             return scale;

@@ -26,6 +26,13 @@ public class Room {
     private double temperature;
     private String gateway;
 
+    public Room(int id, String name, double temperature, String gateway) {
+        this.id = id;
+        this.name = name;
+        this.temperature = temperature;
+        this.gateway = gateway;
+    }
+
     public int getId() {
         return id;
     }

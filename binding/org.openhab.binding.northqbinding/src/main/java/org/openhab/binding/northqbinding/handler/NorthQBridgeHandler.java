@@ -126,11 +126,11 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
                 startAutomaticRefresh();
             } catch (APIException | IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                 logger.warn("Authentication error: {}", e.getMessage());
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-ip-address");
             logger.warn("Configuration error. Lacking user or password.");
         }
@@ -244,6 +244,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
                     qStickBridge.authenticate((String) getConfig().get(EMAIL), (String) getConfig().get(PASSWORD));
                     qStickBridge.updateHousesAndGateways();
                 }
+                startAutomaticRefresh();
                 updateStatus(ThingStatus.ONLINE);
                 return true;
             } catch (APIException | IOException e) {

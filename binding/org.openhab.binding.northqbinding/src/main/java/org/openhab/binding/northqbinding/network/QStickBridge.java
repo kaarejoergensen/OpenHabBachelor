@@ -10,6 +10,7 @@ package org.openhab.binding.northqbinding.network;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -187,11 +188,15 @@ public class QStickBridge {
         List<BinarySwitch> binarySwitchs = gson.fromJson(jsonObject.getAsJsonArray(BINARY_SWITCHES),
                 BinarySwitch.gsonType);
         JsonObject dongle = jsonObject.getAsJsonObject(DONGLE);
-        String gatewaySerial = dongle.get(SERIAL).isJsonNull() ? "" : dongle.get(SERIAL).getAsString();
-        for (BinarySwitch binarySwitch : binarySwitchs) {
-            binarySwitch.setGateway(gatewaySerial);
+        if (binarySwitchs != null && dongle != null) {
+            String gatewaySerial = dongle.get(SERIAL).isJsonNull() ? "" : dongle.get(SERIAL).getAsString();
+            for (BinarySwitch binarySwitch : binarySwitchs) {
+                binarySwitch.setGateway(gatewaySerial);
+            }
+            return binarySwitchs;
+        } else {
+            return Collections.emptyList();
         }
-        return binarySwitchs;
     }
 
     public List<Thermostat> getAllThermostats(List<String> gatewayStatuses) {
@@ -204,11 +209,15 @@ public class QStickBridge {
         JsonObject jsonObject = (JsonObject) new JsonParser().parse(gatewayStatus);
         List<Thermostat> thermostats = gson.fromJson(jsonObject.getAsJsonArray(THERMOSTATS), Thermostat.gsonType);
         JsonObject dongle = jsonObject.getAsJsonObject(DONGLE);
-        String gatewaySerial = dongle.get(SERIAL).isJsonNull() ? "" : dongle.get(SERIAL).getAsString();
-        thermostats.stream().forEach(th -> th.setGateway(gatewaySerial));
-        // Sort the list with the most recently read thermostats first
-        return thermostats.stream().sorted(Comparator.comparing(Thermostat::getRead).reversed())
-                .collect(Collectors.toList());
+        if (thermostats != null && dongle != null) {
+            String gatewaySerial = dongle.get(SERIAL).isJsonNull() ? "" : dongle.get(SERIAL).getAsString();
+            thermostats.stream().forEach(th -> th.setGateway(gatewaySerial));
+            // Sort the list with the most recently read thermostats first
+            return thermostats.stream().sorted(Comparator.comparing(Thermostat::getRead).reversed())
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {
@@ -241,11 +250,15 @@ public class QStickBridge {
         List<BinarySensor> binarySensors = gson.fromJson(jsonObject.getAsJsonArray(BINARY_SENSORS),
                 BinarySensor.gsonType);
         JsonObject dongle = jsonObject.getAsJsonObject(DONGLE);
-        String gatewaySerial = dongle.get(SERIAL).isJsonNull() ? "" : dongle.get(SERIAL).getAsString();
-        for (BinarySensor binarySensor : binarySensors) {
-            binarySensor.setGateway(gatewaySerial);
+        if (binarySensors != null && dongle != null) {
+            String gatewaySerial = dongle.get(SERIAL).isJsonNull() ? "" : dongle.get(SERIAL).getAsString();
+            for (BinarySensor binarySensor : binarySensors) {
+                binarySensor.setGateway(gatewaySerial);
+            }
+            return binarySensors;
+        } else {
+            return Collections.emptyList();
         }
-        return binarySensors;
     }
 
     public void disArmSensor(BinarySensor binarySensor) throws IOException, APIException {
@@ -263,6 +276,9 @@ public class QStickBridge {
     }
 
     private void handleErrors(HttpClient.Result result) throws IOException, APIException {
+        if (result == null) {
+            throw new APIException("Result null");
+        }
         if (result.getResponseCode() != 200) {
             if (result.getResponseCode() == 401 || result.getResponseCode() == 403) {
                 throw new UnauthorizedException(result.getBody());

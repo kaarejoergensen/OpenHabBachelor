@@ -27,6 +27,11 @@ public class Thermostat extends NorthQThing {
     private int battery;
     private int temperature;
 
+    public Thermostat(int battery, int temperature) {
+        this.battery = battery;
+        this.temperature = temperature;
+    }
+
     public int getBattery() {
         return battery;
     }

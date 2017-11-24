@@ -16,6 +16,11 @@ public class Token {
     private String token;
     private Integer user;
 
+    public Token(String token, Integer user) {
+        this.token = token;
+        this.user = user;
+    }
+
     public String getToken() {
         return token;
     }

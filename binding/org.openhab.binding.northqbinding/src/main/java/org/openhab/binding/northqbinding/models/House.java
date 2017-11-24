@@ -26,6 +26,13 @@ public class House {
     private String type;
     private String country;
 
+    public House(int id, String name, String type, String country) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.country = country;
+    }
+
     public int getId() {
         return id;
     }
