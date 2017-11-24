@@ -17,7 +17,6 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ManagedThingProvider;
 import org.eclipse.smarthome.core.thing.ThingProvider;
-import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.test.java.JavaOSGiTest;
@@ -26,25 +25,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
+import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
+import org.openhab.binding.northqbinding.osgi.helper.MockedHttpClient;
+import org.openhab.binding.northqbinding.osgi.helper.ReflectionHelper;
 
 /**
  * Tests cases for {@link NorthQBindingHandler}.
  *
  * @author Kaare Joergensen - Initial contribution
  */
-public class NorthQBindingOSGiTest extends JavaOSGiTest {
+public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     private ManagedThingProvider managedThingProvider;
     private final VolatileStorageService volatileStorageService = new VolatileStorageService();
     private Bridge bridge;
-    private ThingRegistry thingRegistry;
+    private MockedHttpClient mockedHttpClient;
 
     @Before
     public void setUp() {
         registerService(volatileStorageService);
         managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
         assertThat(managedThingProvider, is(notNullValue()));
-        thingRegistry = getService(ThingRegistry.class, ThingRegistry.class);
-        assertThat(thingRegistry, is(notNullValue()));
         createBridge();
     }
 
@@ -74,5 +74,8 @@ public class NorthQBindingOSGiTest extends JavaOSGiTest {
         assertThat(bridge.getHandler(), is(nullValue()));
         managedThingProvider.add(bridge);
         waitForAssert(() -> assertThat(bridge.getHandler(), is(notNullValue())));
+        mockedHttpClient = new MockedHttpClient();
+        waitForAssert(() -> ReflectionHelper
+                .installHttpClientMock((NorthQBridgeHandler) bridge.getHandler(), mockedHttpClient));
     }
 }

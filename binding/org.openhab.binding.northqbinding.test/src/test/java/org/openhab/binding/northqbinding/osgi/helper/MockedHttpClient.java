@@ -9,24 +9,33 @@
 package org.openhab.binding.northqbinding.osgi.helper;
 
 import java.io.IOException;
+import java.util.Collections;
 
+import org.openhab.binding.northqbinding.models.BinarySensor;
+import org.openhab.binding.northqbinding.models.BinarySwitch;
+import org.openhab.binding.northqbinding.models.Gateway;
+import org.openhab.binding.northqbinding.models.House;
+import org.openhab.binding.northqbinding.models.NorthQThing;
+import org.openhab.binding.northqbinding.models.Room;
+import org.openhab.binding.northqbinding.models.Thermostat;
+import org.openhab.binding.northqbinding.models.Token;
 import org.openhab.binding.northqbinding.network.HttpClient;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class MockedHttpClient extends HttpClient {
-    private static final String VALID_TOKEN_RESULT = "{\n" + "    \"token\": \"testToken\",\n" + "    \"user\": 1,\n"
-            + "    \"success\": true\n" + "}";
-    private static final String VALID_HOUSES_RESULT = "[\n" + "    {\n" + "        \"UTC_offset\": 60,\n"
-            + "        \"name\": \"Test house\",\n" + "        \"country\": \"Denmark\",\n"
-            + "        \"region\": \"Europe/Copenhagen\",\n" + "        \"DST\": false,\n"
-            + "        \"type\": \"Apartment\",\n" + "        \"id\": 1\n" + "    }\n" + "]";
-    private static final String VALID_GATEWAYS_RESULT = "[\n" + "    {\n" + "        \"id\": 1,\n"
-            + "        \"serial_nr\": \"0000000001\"\n" + "    }\n" + "]";
-    private static final String VALID_ROOMS_RESULT = "[ ]";
+    protected Gson gson;
+
+    public MockedHttpClient() {
+        this.gson = new Gson();
+    }
 
     @Override
     public Result post(String address, String body) throws IOException {
         if (address.endsWith("/token/new.json")) {
-            return new Result(VALID_TOKEN_RESULT, 200);
+            return new Result(gson.toJson(new Token("testToken", 1), Token.class), 200);
         } else {
             return null;
         }
@@ -35,14 +44,40 @@ public class MockedHttpClient extends HttpClient {
     @Override
     public Result get(String address) throws IOException {
         if (address.contains("getCurrentUserHouses")) {
-            return new Result(VALID_HOUSES_RESULT, 200);
+            return new Result(gson.toJson(Collections.singletonList(new House(1, "Test house", "Apartment", "Denmark")),
+                    House.gsonType), 200);
         } else if (address.contains("getHouseGateways")) {
-            return new Result(VALID_GATEWAYS_RESULT, 200);
-
+            return new Result(gson.toJson(Collections.singletonList(new Gateway(1, "0000000001", 1)), Gateway.gsonType),
+                    200);
         } else if (address.contains("getRoomsStatus")) {
-            return new Result(VALID_ROOMS_RESULT, 200);
+            return new Result(
+                    gson.toJson(Collections.singletonList(new Room(1, "Test room", 0, "0000000001")), Room.gsonType),
+                    200);
+        } else if (address.contains("getGatewayStatus")) {
+            return new Result("{ }", 200);
         } else {
             return null;
         }
+    }
+
+    protected String createGatewayStatus(NorthQThing thing) {
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = new JsonObject();
+
+        if (thing instanceof BinarySensor) {
+            jsonObject.add("BinarySensors",
+                    jsonParser.parse(gson.toJson(Collections.singletonList(thing), BinarySensor.gsonType)));
+        } else if (thing instanceof BinarySwitch) {
+            jsonObject.add("BinarySwitches",
+                    jsonParser.parse(gson.toJson(Collections.singletonList(thing), BinarySwitch.gsonType)));
+        } else if (thing instanceof Thermostat) {
+            jsonObject.add("Thermostats",
+                    jsonParser.parse(gson.toJson(Collections.singletonList(thing), Thermostat.gsonType)));
+        }
+        JsonObject dongle = new JsonObject();
+        dongle.addProperty("serial", "0000000001");
+        jsonObject.add("dongle", dongle);
+
+        return jsonObject.toString();
     }
 }

@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -96,9 +95,9 @@ public class NorthQDiscoveryOSGITest extends JavaOSGiTest {
 
     @Test
     public void northQThingRegistration() {
-        NorthQThing thing = new BinarySwitch();
+        NorthQThing thing = new BinarySwitch(0, 0);
         thing.setNode_id(1);
-        thing.setGateway("testGateway");
+        thing.setGateway("0000000001");
         thing.setName("TestThing");
         thing.setRead(System.currentTimeMillis());
         thing.setRoom(1);
@@ -122,12 +121,8 @@ public class NorthQDiscoveryOSGITest extends JavaOSGiTest {
             }
         });
 
-        Room room = new Room();
-        room.setId(1);
-        room.setName("Test room");
-        Map<Integer, Room> roomMap = new HashMap<>();
-        roomMap.put(room.getId(), room);
-        installRoomMap(discoveryService, roomMap);
+        Room room = new Room(1, "Test room", 0, "0000000001");
+        installRoomMap(discoveryService, Collections.singletonMap(room.getId(), room));
 
         discoveryService.onThingAdded(thing);
         waitForAssert(() -> assertThat(resultWrapper.isSet(), is(true)));
@@ -156,8 +151,9 @@ public class NorthQDiscoveryOSGITest extends JavaOSGiTest {
                 return super.get(address);
             }
         };
-        waitForAssert(() -> ReflectionHelper.installHttpClientMockAndAuthenticate((NorthQBridgeHandler) bridge.getHandler(),
+        waitForAssert(() -> ReflectionHelper.installHttpClientMock((NorthQBridgeHandler) bridge.getHandler(),
                 mockedHttpClient));
+        assertTrue(((NorthQBridgeHandler) bridge.getHandler()).onAuthenticationError());
         assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
         discoveryService.startScan();
         assertTrue(searchHasBeenTriggered.get());
