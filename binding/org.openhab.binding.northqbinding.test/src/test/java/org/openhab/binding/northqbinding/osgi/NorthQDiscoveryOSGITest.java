@@ -45,7 +45,8 @@ import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.NorthQThing;
 import org.openhab.binding.northqbinding.models.Room;
-import org.openhab.binding.northqbinding.network.QStickBridge;
+import org.openhab.binding.northqbinding.osgi.helper.MockedHttpClient;
+import org.openhab.binding.northqbinding.osgi.helper.ReflectionHelper;
 
 public class NorthQDiscoveryOSGITest extends JavaOSGiTest {
     private ManagedThingProvider managedThingProvider;
@@ -155,7 +156,8 @@ public class NorthQDiscoveryOSGITest extends JavaOSGiTest {
                 return super.get(address);
             }
         };
-        installHttpClientMock((NorthQBridgeHandler) bridge.getHandler(), mockedHttpClient);
+        waitForAssert(() -> ReflectionHelper.installHttpClientMockAndAuthenticate((NorthQBridgeHandler) bridge.getHandler(),
+                mockedHttpClient));
         assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
         discoveryService.startScan();
         assertTrue(searchHasBeenTriggered.get());
@@ -168,29 +170,6 @@ public class NorthQDiscoveryOSGITest extends JavaOSGiTest {
                 Field roomMapField = NorthQDiscovery.class.getDeclaredField("roomMap");
                 roomMapField.setAccessible(true);
                 roomMapField.set(discoveryService, roomMap);
-            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
-                Assert.fail("Reflection error: " + e.getMessage());
-            }
-        });
-    }
-
-    private void installHttpClientMock(NorthQBridgeHandler bridgeHandler, MockedHttpClient mockedHttpClient) {
-        waitForAssert(() -> {
-            try {
-                Field qStickBridgeField = NorthQBridgeHandler.class.getDeclaredField("qStickBridge");
-                qStickBridgeField.setAccessible(true);
-                Object qStickBridgeValue = qStickBridgeField.get(bridgeHandler);
-                if (qStickBridgeValue == null) {
-                    qStickBridgeField.set(bridgeHandler, new QStickBridge());
-                }
-                assertThat(qStickBridgeValue, is(notNullValue()));
-
-                Field httpClientField = QStickBridge.class.getDeclaredField("httpClient");
-                httpClientField.setAccessible(true);
-                httpClientField.set(qStickBridgeValue, mockedHttpClient);
-
-                assertTrue(bridgeHandler.onAuthenticationError());
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
                 Assert.fail("Reflection error: " + e.getMessage());
