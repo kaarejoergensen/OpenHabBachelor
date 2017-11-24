@@ -13,12 +13,20 @@ import java.io.IOException;
 import org.openhab.binding.northqbinding.network.HttpClient;
 
 public class MockedHttpClient extends HttpClient {
+    private static final String VALID_TOKEN_RESULT = "{\n" + "    \"token\": \"testToken\",\n" + "    \"user\": 1,\n"
+            + "    \"success\": true\n" + "}";
+    private static final String VALID_HOUSES_RESULT = "[\n" + "    {\n" + "        \"UTC_offset\": 60,\n"
+            + "        \"name\": \"Test house\",\n" + "        \"country\": \"Denmark\",\n"
+            + "        \"region\": \"Europe/Copenhagen\",\n" + "        \"DST\": false,\n"
+            + "        \"type\": \"Apartment\",\n" + "        \"id\": 1\n" + "    }\n" + "]";
+    private static final String VALID_GATEWAYS_RESULT = "[\n" + "    {\n" + "        \"id\": 1,\n"
+            + "        \"serial_nr\": \"0000000001\"\n" + "    }\n" + "]";
+    private static final String VALID_ROOMS_RESULT = "[ ]";
+
     @Override
     public Result post(String address, String body) throws IOException {
         if (address.endsWith("/token/new.json")) {
-            return new Result(
-                    "{\n" + "    \"token\": \"testToken\",\n" + "    \"user\": 1,\n" + "    \"success\": true\n" + "}",
-                    200);
+            return new Result(VALID_TOKEN_RESULT, 200);
         } else {
             return null;
         }
@@ -27,16 +35,12 @@ public class MockedHttpClient extends HttpClient {
     @Override
     public Result get(String address) throws IOException {
         if (address.contains("getCurrentUserHouses")) {
-            return new Result("[\n" + "    {\n" + "        \"UTC_offset\": 60,\n"
-                    + "        \"name\": \"Test house\",\n" + "        \"country\": \"Denmark\",\n"
-                    + "        \"region\": \"Europe/Copenhagen\",\n" + "        \"DST\": false,\n"
-                    + "        \"type\": \"Apartment\",\n" + "        \"id\": 1\n" + "    }\n" + "]", 200);
+            return new Result(VALID_HOUSES_RESULT, 200);
         } else if (address.contains("getHouseGateways")) {
-            return new Result("[\n" + "    {\n" + "        \"id\": 1,\n" + "        \"serial_nr\": \"0000000001\"\n"
-                    + "    }\n" + "]", 200);
+            return new Result(VALID_GATEWAYS_RESULT, 200);
 
         } else if (address.contains("getRoomsStatus")) {
-            return new Result("[ ]", 200);
+            return new Result(VALID_ROOMS_RESULT, 200);
         } else {
             return null;
         }
