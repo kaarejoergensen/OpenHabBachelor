@@ -88,12 +88,9 @@ fabric.properties
 hs_err_pid*
 
 # End of https://www.gitignore.io/api/java,intellij
-org.openhab.binding.northqbinding/target/
-/binding/*
+*
 !/binding/org.openhab.binding.northqbinding/
 !/binding/org.openhab.binding.northqbinding.test/
-/io/
-/ui/*
-!/ui/org.openhab.ui.automation
-/voice/
-archetype-settings.xml
+!/ui/org.openhab.ui.automation/
+!/misc/
+!/NorthQStandalone/
