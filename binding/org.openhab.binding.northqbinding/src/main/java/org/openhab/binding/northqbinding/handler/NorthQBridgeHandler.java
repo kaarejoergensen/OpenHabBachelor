@@ -64,7 +64,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
 
     private Set<BindingHandlerInterface> handlers = new HashSet<>();
     private ScheduledFuture<?> refreshJob;
-    private Runnable networkRunable = () -> {
+    public Runnable networkRunable = () -> {
         logger.debug("Running NorthQ refresh");
         List<String> gatewayStatuses = bridgeCallWithErrorHandling(() -> {
             return qStickBridge.getAllGatewayStatuses();
@@ -138,7 +138,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    private synchronized void startAutomaticRefresh() {
+    public synchronized void startAutomaticRefresh() {
         if (qStickBridge != null) {
             if (refreshJob == null || refreshJob.isCancelled()) {
                 refreshJob = scheduler.scheduleWithFixedDelay(networkRunable, 0, REFRESH, TimeUnit.SECONDS);
@@ -309,7 +309,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         updateStatus(ThingStatus.REMOVED);
     }
 
-    private void notifyHandlers(NorthQThing thing, int type) {
+    private synchronized void notifyHandlers(NorthQThing thing, int type) {
         if (type == CHANGED) {
             handlers.stream().forEach(h -> h.onThingStateChanged(thing));
         } else if (type == ADDED) {
