@@ -47,6 +47,11 @@ import org.openhab.binding.northqbinding.models.Room;
 import org.openhab.binding.northqbinding.osgi.helper.MockedHttpClient;
 import org.openhab.binding.northqbinding.osgi.helper.ReflectionHelper;
 
+/**
+ * Tests cases for {@link NorthQDiscovery}.
+ *
+ * @author Kaare Joergensen - Initial contribution
+ */
 public class NorthQDiscoveryOSGITest extends JavaOSGiTest {
     private ManagedThingProvider managedThingProvider;
     private final VolatileStorageService volatileStorageService = new VolatileStorageService();

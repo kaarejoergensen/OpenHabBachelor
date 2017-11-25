@@ -30,20 +30,22 @@ import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.northqbinding.handler.NorthQBindingHandler;
 import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
 import org.openhab.binding.northqbinding.models.ErrorResponse;
+import org.openhab.binding.northqbinding.models.Gateway;
+import org.openhab.binding.northqbinding.models.House;
 import org.openhab.binding.northqbinding.models.NorthQThing;
 import org.openhab.binding.northqbinding.models.Room;
 import org.openhab.binding.northqbinding.models.Thermostat;
+import org.openhab.binding.northqbinding.models.Token;
 import org.openhab.binding.northqbinding.osgi.helper.MockedHttpClient;
 import org.openhab.binding.northqbinding.osgi.helper.ReflectionHelper;
 
 /**
- * Tests cases for {@link NorthQBindingHandler}.
+ * Tests cases for {@link NorthQBridgeHandler}.
  *
  * @author Kaare Joergensen - Initial contribution
  */
@@ -242,25 +244,6 @@ public class NorthQBridgeHandlerOSGiTest extends JavaOSGiTest {
     }
 
     @Test
-    public void testGatewayOffline() {
-        mockedHttpClient = new MockedHttpClient() {
-            @Override
-            public Result get(String address) throws IOException {
-                if (address.contains("getGatewayStatus")) {
-                    return new Result(gson.toJson(new ErrorResponse(false, "Gateway offline", 1003)), 200);
-                }
-                return super.get(address);
-            }
-        };
-        createBridge();
-        assertThat(((NorthQBridgeHandler) bridge.getHandler()).onAuthenticationError(), is(true));
-        assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
-        ((NorthQBridgeHandler) bridge.getHandler()).getAllNorthQThings();
-        assertThat(bridge.getStatus(), is(ThingStatus.OFFLINE));
-        assertThat(bridge.getStatusInfo().getStatusDetail(), is(ThingStatusDetail.BRIDGE_OFFLINE));
-    }
-
-    @Test
     public void getRommByIdTest() {
         AtomicBoolean getRoomsCalled = new AtomicBoolean(false);
         final Room room = new Room(1, "Test room", 0, "0000000001");
@@ -286,6 +269,132 @@ public class NorthQBridgeHandlerOSGiTest extends JavaOSGiTest {
         assertThat(result.getName().equals(room.getName()), is(true));
         assertThat(result.getTemperature() == room.getTemperature(), is(true));
         assertThat(result.getGateway().equals(room.getGateway()), is(true));
+    }
+
+    @Test
+    public void unauthorizedExceptionTest() {
+        BinarySwitch binarySwitch = new BinarySwitch(0, 0);
+        testNorthQThing(binarySwitch);
+
+        AtomicBoolean authorizationCalled = new AtomicBoolean(false);
+        mockedHttpClient = new MockedHttpClient() {
+            @Override
+            public Result post(String address, String body) throws IOException {
+                if (address.contains("setBinaryValue")) {
+                    return new Result(gson.toJson(new ErrorResponse(false, "Unauthorized")), 401);
+                } else if (address.endsWith("/token/new.json")) {
+                    authorizationCalled.set(true);
+                    return new Result(gson.toJson(new Token("testToken", 1), Token.class), 200);
+                }
+                return super.get(address);
+            }
+        };
+        NorthQBridgeHandler bridgeHandler = (NorthQBridgeHandler) bridge.getHandler();
+        waitForAssert(() -> ReflectionHelper.installHttpClientMock(bridgeHandler, mockedHttpClient));
+
+        assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
+        bridgeHandler.changeSwitchState(binarySwitch);
+        assertThat(authorizationCalled.get(), is(true));
+        assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
+    }
+
+    @Test
+    public void noActiveHousesExceptionTest() {
+        mockedHttpClient = new MockedHttpClient() {
+            @Override
+            public Result get(String address) throws IOException {
+                if (address.contains("getCurrentUserHouses")) {
+                    return new Result(gson.toJson(new ErrorResponse(false, "No active houses", 1000)), 200);
+                }
+                return super.get(address);
+            }
+        };
+        createBridge();
+        assertThat(((NorthQBridgeHandler) bridge.getHandler()).onAuthenticationError(), is(true));
+        assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
+        List<House> houses = ((NorthQBridgeHandler) bridge.getHandler()).getAllHouses();
+        assertThat(houses, is(notNullValue()));
+        assertThat(houses.isEmpty(), is(true));
+    }
+
+    @Test
+    public void gatewayOfflineExceptionTest() {
+        mockedHttpClient = new MockedHttpClient() {
+            @Override
+            public Result get(String address) throws IOException {
+                if (address.contains("getGatewayStatus")) {
+                    return new Result(gson.toJson(new ErrorResponse(false, "Gateway offline", 1003)), 200);
+                }
+                return super.get(address);
+            }
+        };
+        createBridge();
+        assertThat(((NorthQBridgeHandler) bridge.getHandler()).onAuthenticationError(), is(true));
+        assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
+        ((NorthQBridgeHandler) bridge.getHandler()).getAllNorthQThings();
+        assertThat(bridge.getStatus(), is(ThingStatus.OFFLINE));
+        assertThat(bridge.getStatusInfo().getStatusDetail(), is(ThingStatusDetail.BRIDGE_OFFLINE));
+    }
+
+    @Test
+    public void noActiveGatewaysExceptionTest() {
+        mockedHttpClient = new MockedHttpClient() {
+            @Override
+            public Result get(String address) throws IOException {
+                if (address.contains("getHouseGateways")) {
+                    return new Result(gson.toJson(new ErrorResponse(false, "No active gateways", 1001)), 200);
+                }
+                return super.get(address);
+            }
+        };
+        createBridge();
+        assertThat(((NorthQBridgeHandler) bridge.getHandler()).onAuthenticationError(), is(true));
+        assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
+        List<Gateway> gateways = ((NorthQBridgeHandler) bridge.getHandler()).getAllGateways();
+        assertThat(gateways, is(notNullValue()));
+        assertThat(gateways.isEmpty(), is(true));
+    }
+
+    @Test
+    public void noActiveRoomsExceptionTest() {
+        mockedHttpClient = new MockedHttpClient() {
+            @Override
+            public Result get(String address) throws IOException {
+                if (address.contains("getRoomsStatus")) {
+                    return new Result(gson.toJson(new ErrorResponse(false, "No active rooms", 1004)), 200);
+                }
+                return super.get(address);
+            }
+        };
+        createBridge();
+        assertThat(((NorthQBridgeHandler) bridge.getHandler()).onAuthenticationError(), is(true));
+        assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
+        List<Room> rooms = ((NorthQBridgeHandler) bridge.getHandler()).getAllRooms();
+        assertThat(rooms, is(notNullValue()));
+        assertThat(rooms.isEmpty(), is(true));
+    }
+
+    @Test
+    public void invalidRequestExceptionTest() {
+        mockedHttpClient = new MockedHttpClient();
+        createBridge();
+        assertThat(((NorthQBridgeHandler) bridge.getHandler()).onAuthenticationError(), is(true));
+
+        mockedHttpClient = new MockedHttpClient() {
+            @Override
+            public Result get(String address) throws IOException {
+                if (address.contains("getGatewayStatus")) {
+                    return new Result(gson.toJson(new ErrorResponse(false, "Invalid request", 999)), 200);
+                }
+                return super.get(address);
+            }
+        };
+        NorthQBridgeHandler bridgeHandler = (NorthQBridgeHandler) bridge.getHandler();
+        waitForAssert(() -> ReflectionHelper.installHttpClientMock(bridgeHandler, mockedHttpClient));
+
+        bridgeHandler.getAllNorthQThings();
+        assertThat(bridge.getStatus(), is(ThingStatus.OFFLINE));
+        assertThat(bridge.getStatusInfo().getStatusDetail(), is(ThingStatusDetail.COMMUNICATION_ERROR));
     }
 
     private NorthQThing setNorthQAttributes(NorthQThing thing) {

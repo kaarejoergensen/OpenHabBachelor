@@ -83,7 +83,6 @@ public class QStickBridge {
         updateHousesAndGateways();
     }
 
-    @SuppressWarnings("null")
     public void authenticate(String user, String pass) throws APIException, IOException {
         String url = BASE_URL + AUTHENTICATE_URL;
         String post = "username=" + user + "&password=" + pass;
@@ -94,11 +93,7 @@ public class QStickBridge {
 
     public void updateHousesAndGateways() throws APIException, IOException {
         houses = getHouses();
-        gateways = new ArrayList<>();
-        gateways.clear();
-        for (House house : houses) {
-            gateways.addAll(getGateways(house.getId()));
-        }
+        gateways = getAllGateways();
     }
 
     public List<House> getHouses() throws APIException, IOException {
@@ -110,6 +105,14 @@ public class QStickBridge {
             return new ArrayList<>();
         }
         return gson.fromJson(result.getBody(), House.gsonType);
+    }
+
+    public List<Gateway> getAllGateways() throws APIException, IOException {
+        List<Gateway> gateways = new ArrayList<>();
+        for (House house : houses) {
+            gateways.addAll(getGateways(house.getId()));
+        }
+        return gateways;
     }
 
     public List<Gateway> getGateways(int houseId) throws APIException, IOException {

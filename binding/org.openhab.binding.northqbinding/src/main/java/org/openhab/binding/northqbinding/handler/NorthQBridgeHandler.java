@@ -37,6 +37,8 @@ import org.openhab.binding.northqbinding.exceptions.GatewayOfflineException;
 import org.openhab.binding.northqbinding.exceptions.UnauthorizedException;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySwitch;
+import org.openhab.binding.northqbinding.models.Gateway;
+import org.openhab.binding.northqbinding.models.House;
 import org.openhab.binding.northqbinding.models.NorthQThing;
 import org.openhab.binding.northqbinding.models.Room;
 import org.openhab.binding.northqbinding.models.Thermostat;
@@ -95,7 +97,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
         // Not needed
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -210,7 +212,18 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         });
     }
 
-    @SuppressWarnings("null")
+    public List<House> getAllHouses() {
+        return bridgeCallWithErrorHandling(() -> {
+            return qStickBridge.getHouses();
+        });
+    }
+
+    public List<Gateway> getAllGateways() {
+        return bridgeCallWithErrorHandling(() -> {
+            return qStickBridge.getAllGateways();
+        });
+    }
+
     private synchronized <T> T bridgeCallWithErrorHandling(Callable<T> methodCall) {
         if (qStickBridge != null) {
             try {

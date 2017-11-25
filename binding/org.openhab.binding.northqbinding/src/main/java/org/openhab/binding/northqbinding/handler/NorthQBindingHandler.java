@@ -64,6 +64,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
         super(thing);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         NorthQBridgeHandler bridgeHandler = getBridgeHandler();
@@ -129,7 +130,8 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
     @Override
     public void initialize() {
         logger.debug("Initializing NorthQBindingHandler");
-        initializeThing(getBridge() == null ? null : getBridge().getStatus());
+        Bridge bridge = getBridge();
+        initializeThing(bridge == null ? null : bridge.getStatus());
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {

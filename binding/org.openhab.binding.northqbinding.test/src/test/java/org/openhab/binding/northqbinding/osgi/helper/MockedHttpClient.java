@@ -25,6 +25,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * Class for mocking HttpClient in tests.
+ *
+ * @author Kaare Joergensen - Initial contribution
+ */
 public class MockedHttpClient extends HttpClient {
     protected Gson gson;
 
