@@ -19,16 +19,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ManagedThingProvider;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingProvider;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
-import org.eclipse.smarthome.core.thing.link.ItemChannelLink;
-import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
@@ -49,7 +48,6 @@ import org.openhab.binding.northqbinding.osgi.helper.ReflectionHelper;
 public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     private ManagedThingProvider managedThingProvider;
     private ThingRegistry thingRegistry;
-    private ItemChannelLinkRegistry itemChannelLinkRegistry;
     private ItemRegistry itemRegistry;
     private final VolatileStorageService volatileStorageService = new VolatileStorageService();
     private Bridge bridge;
@@ -59,12 +57,10 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     @Before
     public void setUp() {
         registerService(volatileStorageService);
-        // managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
-        // assertThat(managedThingProvider, is(notNullValue()));
+        managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
+        assertThat(managedThingProvider, is(notNullValue()));
         thingRegistry = getService(ThingRegistry.class, ThingRegistry.class);
         assertThat(thingRegistry, is(notNullValue()));
-        itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class, ItemChannelLinkRegistry.class);
-        assertThat(itemChannelLinkRegistry, is(notNullValue()));
         itemRegistry = getService(ItemRegistry.class, ItemRegistry.class);
         assertThat(itemRegistry, is(notNullValue()));
     }
@@ -88,7 +84,10 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
         Configuration configuration = new Configuration();
         configuration.put(EMAIL, "testemail@test.com");
         configuration.put(PASSWORD, "testPassword");
-        this.bridge = BridgeBuilder.create(THING_TYPE_BRIDGE, "1").withConfiguration(configuration).build();
+        // this.bridge = BridgeBuilder.create(THING_TYPE_BRIDGE, "1").withConfiguration(configuration).build();
+        ThingUID thingUID = new ThingUID(THING_TYPE_BRIDGE.getBindingId(), THING_TYPE_BRIDGE.getId(), "1");
+        this.bridge = (Bridge) thingRegistry.createThingOfType(THING_TYPE_BRIDGE, thingUID, null, "bridge",
+                configuration);
         assertThat(bridge.getHandler(), is(nullValue()));
         thingRegistry.add(bridge);
         waitForAssert(() -> assertThat(bridge.getHandler(), is(notNullValue())));
@@ -102,19 +101,12 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
         Configuration configuration = new Configuration();
         configuration.put(UNIQUE_ID, thing.getUniqueId());
         configuration.put(ROOM_ID, String.valueOf(thing.getRoom()));
-        this.thing = thingRegistry.createThingOfType(thing.getThingTypeUID(),
-                new ThingUID(thing.getThingTypeUID(), bridge.getUID(), thing.getUniqueId()), bridge.getUID(), "Thing1",
+        ThingUID thingUID = new ThingUID(thing.getThingTypeUID(), bridge.getUID(), thing.getUniqueId());
+        this.thing = thingRegistry.createThingOfType(thing.getThingTypeUID(), thingUID, bridge.getUID(), "Thing",
                 configuration);
         assertThat(this.thing.getHandler(), is(nullValue()));
         thingRegistry.add(this.thing);
         waitForAssert(() -> assertThat(this.thing.getHandler(), is(notNullValue())));
-
-        for (Channel c : this.thing.getChannels()) {
-            String item = this.thing.getUID().toString().replace(":", "_").replace("-", "_") + "_" + c.getUID().getId();
-            if (itemChannelLinkRegistry.getBoundChannels(item).size() == 0) {
-                itemChannelLinkRegistry.add(new ItemChannelLink(item, c.getUID()));
-            }
-        }
     }
 
     private NorthQThing setNorthQAttributes(NorthQThing thing) {
@@ -129,24 +121,35 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
 
     @After
     public void tearDown() {
-        thingRegistry.remove(bridge.getUID());
-        thingRegistry.remove(thing.getUID());
+        managedThingProvider.remove(bridge.getUID());
+        managedThingProvider.remove(thing.getUID());
+        waitForAssert(() -> {
+            assertThat(managedThingProvider.get(bridge.getUID()), is(nullValue()));
+            assertThat(managedThingProvider.get(thing.getUID()), is(nullValue()));
+        });
         unregisterService(volatileStorageService);
     }
 
     @Test
     public void initializationTest() {
-        initializeThingAndBridge(new BinarySwitch(1, 20));
+        initializeThingAndBridge(new BinarySwitch(255, 20));
         assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
+        waitForAssert(() -> {
+            assertThat(getItem(BINARY_SWITCH_SWITCH_CHANNEL).getState(), is(OnOffType.ON));
+            assertThat(getItem(BINARY_SWITCH_WATTAGE_CHANNEL).getState(), is(DecimalType.valueOf("20")));
+        });
     }
 
     @Test
     public void updateBinarySwitchTest() {
         AtomicBoolean getThingsCalled = new AtomicBoolean(false);
 
-        BinarySwitch binarySwitch = new BinarySwitch(1, 20);
+        BinarySwitch binarySwitch = new BinarySwitch(255, 20);
         initializeThingAndBridge(binarySwitch);
-
+        waitForAssert(() -> {
+            assertThat(getItem(BINARY_SWITCH_SWITCH_CHANNEL).getState(), is(OnOffType.ON));
+            assertThat(getItem(BINARY_SWITCH_WATTAGE_CHANNEL).getState(), is(DecimalType.valueOf("20")));
+        });
         binarySwitch.setTurnedOn(false);
         binarySwitch.setWattage(0);
         mockedHttpClient = new MockedHttpClient() {
@@ -162,14 +165,17 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
         NorthQBridgeHandler bridgeHandler = ((NorthQBridgeHandler) bridge.getHandler());
         waitForAssert(() -> ReflectionHelper.installHttpClientMock(bridgeHandler, mockedHttpClient));
 
-        Item powerState = getItem(BINARY_SWITCH_SWITCH_CHANNEL);
-        Item wattage = getItem(BINARY_SWITCH_WATTAGE_CHANNEL);
-        waitForAssert(() -> assertThat(getThingsCalled.get(), is(true)));
+        waitForAssert(() -> {
+            assertThat(getThingsCalled.get(), is(true));
+            assertThat(getItem(BINARY_SWITCH_SWITCH_CHANNEL).getState(), is(OnOffType.OFF));
+            assertThat(getItem(BINARY_SWITCH_WATTAGE_CHANNEL).getState(), is(DecimalType.valueOf("0")));
+        }, 20000, 50);
 
     }
 
     private Item getItem(String channel) {
         String item = thing.getUID().toString().replace(":", "_").replace("-", "_") + "_" + channel;
+        waitForAssert(() -> assertThat(itemRegistry.get(item), is(notNullValue())));
         return itemRegistry.get(item);
     }
 }
