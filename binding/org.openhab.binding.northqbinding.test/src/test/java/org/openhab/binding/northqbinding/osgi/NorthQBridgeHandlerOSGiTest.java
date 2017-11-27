@@ -121,7 +121,7 @@ public class NorthQBridgeHandlerOSGiTest extends JavaOSGiTest {
             @Override
             public Result post(String address, String body) throws IOException {
                 if (address.contains("setBinaryValue")) {
-                    return new Result("{ }", 200);
+                    return new Result(gson.toJson(new ErrorResponse(true)), 200);
                 }
                 return super.post(address, body);
             }
@@ -141,9 +141,9 @@ public class NorthQBridgeHandlerOSGiTest extends JavaOSGiTest {
     @Test
     public void binarySensorTest() {
         List<Sensor> sensors = new ArrayList<Sensor>();
-        sensors.add(new Sensor(0, Sensor.Type.HUMIDITY.ordinal(), 50));
-        sensors.add(new Sensor(0, Sensor.Type.lUMINANCE.ordinal(), 75));
-        sensors.add(new Sensor(0, Sensor.Type.TEMPERATURE.ordinal(), 100));
+        sensors.add(new Sensor(0, 1, 50));
+        sensors.add(new Sensor(0, 3, 75));
+        sensors.add(new Sensor(0, 5, 100));
         BinarySensor binarySensor = new BinarySensor(100, 1, 1, sensors);
         testNorthQThing(binarySensor);
     }
@@ -161,7 +161,7 @@ public class NorthQBridgeHandlerOSGiTest extends JavaOSGiTest {
             @Override
             public Result post(String address, String body) throws IOException {
                 if (address.contains("disArmUserComponent")) {
-                    return new Result("{ }", 200);
+                    return new Result(gson.toJson(new ErrorResponse(true)), 200);
                 }
                 return super.post(address, body);
             }
@@ -188,7 +188,7 @@ public class NorthQBridgeHandlerOSGiTest extends JavaOSGiTest {
             @Override
             public Result post(String address, String body) throws IOException {
                 if (address.contains("reArmUserComponent")) {
-                    return new Result("{ }", 200);
+                    return new Result(gson.toJson(new ErrorResponse(true)), 200);
                 }
                 return super.post(address, body);
             }
@@ -228,7 +228,7 @@ public class NorthQBridgeHandlerOSGiTest extends JavaOSGiTest {
             @Override
             public Result post(String address, String body) throws IOException {
                 if (address.contains("setRoomTemperature")) {
-                    return new Result("{ }", 200);
+                    return new Result(gson.toJson(new ErrorResponse(true)), 200);
                 }
                 return super.post(address, body);
             }
@@ -293,7 +293,7 @@ public class NorthQBridgeHandlerOSGiTest extends JavaOSGiTest {
         waitForAssert(() -> ReflectionHelper.installHttpClientMock(bridgeHandler, mockedHttpClient));
 
         assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
-        bridgeHandler.changeSwitchState(binarySwitch);
+        assertThat(bridgeHandler.changeSwitchState(binarySwitch), is(false));
         assertThat(authorizationCalled.get(), is(true));
         assertThat(bridge.getStatus(), is(ThingStatus.ONLINE));
     }
