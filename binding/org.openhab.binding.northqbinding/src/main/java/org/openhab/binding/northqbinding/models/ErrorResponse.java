@@ -23,6 +23,10 @@ public class ErrorResponse {
     private String errors;
     private int code;
 
+    public ErrorResponse(boolean success) {
+        this.success = success;
+    }
+
     public ErrorResponse(boolean success, String errors) {
         this.success = success;
         this.errors = errors;

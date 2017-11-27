@@ -64,7 +64,6 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
         super(thing);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         NorthQBridgeHandler bridgeHandler = getBridgeHandler();
@@ -100,26 +99,26 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                     BinarySensor binarySensor = (BinarySensor) thing;
                     if (binarySensor.isArmed()) {
                         bridgeHandler.disArmSensor(binarySensor);
-                        updateState(channelUID, OnOffType.OFF);
-                        updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
-                                OnOffType.OFF);
                     } else {
                         bridgeHandler.armSensor(binarySensor);
-                        updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
-                                binarySensor.isMotionDetected() ? OnOffType.ON : OnOffType.OFF);
-                        updateState(channelUID, OnOffType.ON);
                     }
+                    updateState(channelUID, binarySensor.isArmed() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
+                            binarySensor.isArmed() && binarySensor.isMotionDetected() ? OnOffType.ON : OnOffType.OFF);
                 }
                 break;
             case THERMOSTAT_TEMP_CHANNEL:
                 if (command instanceof DecimalType) {
                     if (((DecimalType) command).doubleValue() >= 4 && ((DecimalType) command).doubleValue() <= 28) {
-                        bridgeHandler.setRoomTemperature(thing.getRoom(), thing.getGateway(),
-                                ((DecimalType) command).doubleValue());
-                        lastThermostatTemperature = ((DecimalType) command).doubleValue();
-                        lastThermostatUpdateTime = System.currentTimeMillis();
+                        if (bridgeHandler.setRoomTemperature(thing.getRoom(), thing.getGateway(),
+                                ((DecimalType) command).doubleValue())) {
+                            lastThermostatTemperature = ((DecimalType) command).doubleValue();
+                            lastThermostatUpdateTime = System.currentTimeMillis();
+                        }
+                        Thermostat updatedThermostat = (Thermostat) bridgeHandler
+                                .getThingByUniqueId(thing.getUniqueId());
                         updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
-                                new DecimalType(((DecimalType) command).doubleValue()));
+                                new DecimalType(updatedThermostat.getTemperature()));
                     }
                 }
 
@@ -265,6 +264,9 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                         case HUMIDITY:
                             updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_HUMIDITY_CHANNEL),
                                     new DecimalType(s.getValue()));
+                            break;
+                        default:
+                            logger.warn("Type of sensor with no support added: {}", s.toString());
                             break;
                     }
                 }

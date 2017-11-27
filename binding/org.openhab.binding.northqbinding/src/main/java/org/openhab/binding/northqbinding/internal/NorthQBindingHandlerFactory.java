@@ -69,7 +69,7 @@ public class NorthQBindingHandlerFactory extends BaseThingHandlerFactory {
 
         if (NorthQBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             NorthQBridgeHandler bridgeHandler = new NorthQBridgeHandler((Bridge) thing);
-            // registerDiscoveryService(bridgeHandler);
+            registerDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (NorthQBindingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new NorthQBindingHandler(thing);

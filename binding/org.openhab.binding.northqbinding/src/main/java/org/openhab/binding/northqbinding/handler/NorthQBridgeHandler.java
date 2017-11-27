@@ -80,6 +80,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
                         notifyHandlers(thing, CHANGED);
                     }
                 } else {
+                    thingMap.put(thing.getUniqueId(), thing);
                     notifyHandlers(thing, ADDED);
                 }
                 thingMap.put(thing.getUniqueId(), thing);
@@ -140,7 +141,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
 
     public synchronized void startAutomaticRefresh() {
         if (qStickBridge != null) {
-            if (refreshJob == null || refreshJob.isCancelled()) {
+            if (refreshJob == null || refreshJob.isCancelled() || refreshJob.getDelay(TimeUnit.SECONDS) > 0) {
                 refreshJob = scheduler.scheduleWithFixedDelay(networkRunable, 0, REFRESH, TimeUnit.SECONDS);
             }
         }
@@ -267,39 +268,47 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         return false;
     }
 
-    public void changeSwitchState(BinarySwitch binarySwitch) {
-        bridgeCallWithErrorHandling(() -> {
-            qStickBridge.changeSwitchState(binarySwitch);
-            return null;
+    public boolean changeSwitchState(BinarySwitch binarySwitch) {
+        Boolean succes = bridgeCallWithErrorHandling(() -> {
+            return qStickBridge.changeSwitchState(binarySwitch);
         });
-        ((BinarySwitch) thingMap.get(binarySwitch.getUniqueId())).setTurnedOn(!binarySwitch.isTurnedOn());
-    }
-
-    public void armSensor(BinarySensor binarySensor) {
-        bridgeCallWithErrorHandling(() -> {
-            qStickBridge.armSensor(binarySensor);
-            return null;
-        });
-        ((BinarySensor) thingMap.get(binarySensor.getUniqueId())).setArmed(!binarySensor.isArmed());
-    }
-
-    public void disArmSensor(BinarySensor binarySensor) {
-        bridgeCallWithErrorHandling(() -> {
-            qStickBridge.disArmSensor(binarySensor);
-            return null;
-        });
-        ((BinarySensor) thingMap.get(binarySensor.getUniqueId())).setArmed(!binarySensor.isArmed());
-    }
-
-    public void setRoomTemperature(int roomId, String gatewaySerial, double newTemperature) {
-        bridgeCallWithErrorHandling(() -> {
-            qStickBridge.setRoomTemperature(roomId, gatewaySerial, newTemperature);
-            return null;
-        });
-        List<Thermostat> thermostats = getThermostatsByRoomId(roomId);
-        for (Thermostat thermostat : thermostats) {
-            thermostat.setTemperature((int) newTemperature);
+        if (succes != null && succes) {
+            ((BinarySwitch) thingMap.get(binarySwitch.getUniqueId())).setTurnedOn(!binarySwitch.isTurnedOn());
         }
+        return succes != null && succes;
+    }
+
+    public boolean armSensor(BinarySensor binarySensor) {
+        Boolean success = bridgeCallWithErrorHandling(() -> {
+            return qStickBridge.armSensor(binarySensor);
+        });
+        if (success != null && success) {
+            ((BinarySensor) thingMap.get(binarySensor.getUniqueId())).setArmed(!binarySensor.isArmed());
+        }
+        return success != null && success;
+    }
+
+    public boolean disArmSensor(BinarySensor binarySensor) {
+        Boolean success = bridgeCallWithErrorHandling(() -> {
+            return qStickBridge.disArmSensor(binarySensor);
+        });
+        if (success != null && success) {
+            ((BinarySensor) thingMap.get(binarySensor.getUniqueId())).setArmed(!binarySensor.isArmed());
+        }
+        return success != null && success;
+    }
+
+    public boolean setRoomTemperature(int roomId, String gatewaySerial, double newTemperature) {
+        Boolean success = bridgeCallWithErrorHandling(() -> {
+            return qStickBridge.setRoomTemperature(roomId, gatewaySerial, newTemperature);
+        });
+        if (success != null && success) {
+            List<Thermostat> thermostats = getThermostatsByRoomId(roomId);
+            for (Thermostat thermostat : thermostats) {
+                thermostat.setTemperature((int) newTemperature);
+            }
+        }
+        return success != null && success;
     }
 
     @Override

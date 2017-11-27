@@ -223,21 +223,25 @@ public class QStickBridge {
         }
     }
 
-    public void changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {
+    public Boolean changeSwitchState(BinarySwitch binarySwitch) throws IOException, APIException {
         boolean turnedOn = binarySwitch.isTurnedOn();
         String url = BASE_URL + String.format(SWITCH_STATE_URL, token.getToken(), token.getUser());
         String post = String.format(SWITCH_STATE_POST, binarySwitch.getGateway(), binarySwitch.getNode_id(),
                 (turnedOn ? 0 : 255));
         Result result = httpClient.post(url, post);
         handleErrors(result);
+        ErrorResponse errorResponse = gson.fromJson(result.getBody(), ErrorResponse.gsonType);
+        return errorResponse.isSuccess();
     }
 
-    public void setRoomTemperature(int roomId, String gatewaySerial, double newTemperature)
+    public Boolean setRoomTemperature(int roomId, String gatewaySerial, double newTemperature)
             throws IOException, APIException {
         String url = BASE_URL + String.format(SET_TEMPERATURE_URL, token.getToken(), token.getUser());
         String post = String.format(SET_TEMPERATURE_POST, gatewaySerial, roomId, newTemperature);
         Result result = httpClient.post(url, post);
         handleErrors(result);
+        ErrorResponse errorResponse = gson.fromJson(result.getBody(), ErrorResponse.gsonType);
+        return errorResponse.isSuccess();
     }
 
     public List<BinarySensor> getAllBinarySensors(List<String> gatewayStatuses) {
@@ -264,18 +268,22 @@ public class QStickBridge {
         }
     }
 
-    public void disArmSensor(BinarySensor binarySensor) throws IOException, APIException {
+    public Boolean disArmSensor(BinarySensor binarySensor) throws IOException, APIException {
         String url = BASE_URL + String.format(DISARM_SENSOR_URL, token.getToken(), token.getUser());
         String post = String.format(DISARM_SENSOR_POST, binarySensor.getGateway(), binarySensor.getNode_id());
         Result result = httpClient.post(url, post);
         handleErrors(result);
+        ErrorResponse errorResponse = gson.fromJson(result.getBody(), ErrorResponse.gsonType);
+        return errorResponse.isSuccess();
     }
 
-    public void armSensor(BinarySensor binarySensor) throws IOException, APIException {
+    public Boolean armSensor(BinarySensor binarySensor) throws IOException, APIException {
         String url = BASE_URL + String.format(ARM_SENSOR_URL, token.getToken(), token.getUser());
         String post = String.format(ARM_SENSOR_POST, binarySensor.getGateway(), binarySensor.getNode_id());
         Result result = httpClient.post(url, post);
         handleErrors(result);
+        ErrorResponse errorResponse = gson.fromJson(result.getBody(), ErrorResponse.gsonType);
+        return errorResponse.isSuccess();
     }
 
     private void handleErrors(HttpClient.Result result) throws IOException, APIException {

@@ -63,6 +63,10 @@ public class BinarySensor extends NorthQThing {
         return pos == 255;
     }
 
+    public void setMotionDetected(boolean motionDetected) {
+        this.pos = motionDetected ? 255 : 0;
+    }
+
     @Override
     public String toString() {
         return "BinarySensor{" + "node_id=" + node_id + ", room=" + room + ", battery=" + battery + ", name='" + name
@@ -74,7 +78,8 @@ public class BinarySensor extends NorthQThing {
         public enum Type {
             TEMPERATURE,
             lUMINANCE,
-            HUMIDITY;
+            HUMIDITY,
+            NOTYPE;
         }
 
         private Type getType(int type) {
@@ -86,7 +91,7 @@ public class BinarySensor extends NorthQThing {
                 case 5:
                     return Type.HUMIDITY;
                 default:
-                    return null;
+                    return Type.NOTYPE;
             }
         }
 
