@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -528,7 +528,7 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
         try {
             Field handlersField = NorthQBridgeHandler.class.getDeclaredField("handlers");
             handlersField.setAccessible(true);
-            handlersField.set(bridgeHandler, new CopyOnWriteArrayList<>());
+            handlersField.set(bridgeHandler, new HashSet<>());
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             e.printStackTrace();
             Assert.fail("Reflection error: " + e.getMessage());

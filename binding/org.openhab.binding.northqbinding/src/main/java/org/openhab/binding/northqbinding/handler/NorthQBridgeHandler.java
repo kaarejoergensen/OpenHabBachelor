@@ -14,12 +14,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +62,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     private List<NorthQThing> things = new ArrayList<>();
     private Map<String, NorthQThing> thingMap = new ConcurrentHashMap<>();
 
-    private List<BindingHandlerInterface> handlers = new CopyOnWriteArrayList<>();
+    private Set<BindingHandlerInterface> handlers = new HashSet<>();
     private ScheduledFuture<?> refreshJob;
     public Runnable networkRunable = () -> {
         logger.debug("Running NorthQ refresh");
@@ -333,8 +333,8 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
             throw new IllegalArgumentException("Null handler not allowed");
         }
         boolean result = handlers.add(handler);
-        startAutomaticRefresh();
         if (result) {
+            startAutomaticRefresh();
             for (NorthQThing thing : things) {
                 handler.onThingStateChanged(thing);
             }
