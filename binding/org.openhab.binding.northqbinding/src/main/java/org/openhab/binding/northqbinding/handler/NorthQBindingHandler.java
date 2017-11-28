@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -29,6 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.northqbinding.NorthQBindingBindingConstants;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
@@ -48,6 +50,8 @@ import com.google.common.collect.Sets;
  * @author Kaare Joergensen - Initial contribution
  */
 public class NorthQBindingHandler extends BaseThingHandler implements BindingHandlerInterface {
+    private static final int DEFAULT_DELAY = 3;
+
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(BINARY_SWITCH, BINARY_SENSOR,
             THERMOSTAT);
 
@@ -91,7 +95,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
             case BINARY_SWITCH_SWITCH_CHANNEL:
                 if (command instanceof OnOffType) {
                     bridgeHandler.changeSwitchState((BinarySwitch) thing);
-                    updateState(channelUID, ((BinarySwitch) thing).isTurnedOn() ? OnOffType.ON : OnOffType.OFF);
+                    sendUpdateDelayed(channelUID, ((BinarySwitch) thing).isTurnedOn() ? OnOffType.ON : OnOffType.OFF);
                 }
                 break;
             case BINARY_SENSOR_ARM_CHANNEL:
@@ -102,8 +106,8 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                     } else {
                         bridgeHandler.armSensor(binarySensor);
                     }
-                    updateState(channelUID, binarySensor.isArmed() ? OnOffType.ON : OnOffType.OFF);
-                    updateState(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
+                    sendUpdateDelayed(channelUID, binarySensor.isArmed() ? OnOffType.ON : OnOffType.OFF);
+                    sendUpdateDelayed(new ChannelUID(getThing().getUID(), BINARY_SENSOR_TRIGGERED_CHANNEL),
                             binarySensor.isArmed() && binarySensor.isMotionDetected() ? OnOffType.ON : OnOffType.OFF);
                 }
                 break;
@@ -117,7 +121,7 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                         }
                         Thermostat updatedThermostat = (Thermostat) bridgeHandler
                                 .getThingByUniqueId(thing.getUniqueId());
-                        updateState(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
+                        sendUpdateDelayed(new ChannelUID(getThing().getUID(), THERMOSTAT_TEMP_CHANNEL),
                                 new DecimalType(updatedThermostat.getTemperature()));
                     }
                 }
@@ -281,6 +285,16 @@ public class NorthQBindingHandler extends BaseThingHandler implements BindingHan
                 }
             }
         }
+    }
+
+    /*
+     * Due to HandleCommand updating the state regardless of update successful or not
+     * the updateState command is delayed until after the default update has been executed by openHAB.
+     */
+    private void sendUpdateDelayed(ChannelUID channelUID, State state) {
+        scheduler.schedule(() -> {
+            updateState(channelUID, state);
+        }, DEFAULT_DELAY, TimeUnit.SECONDS);
     }
 
     private boolean updateSentInLastTenMinutes() {
