@@ -29,7 +29,9 @@ import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openhab.binding.northqbinding.handler.NorthQBridgeHandler;
 import org.openhab.binding.northqbinding.models.BinarySensor;
 import org.openhab.binding.northqbinding.models.BinarySensor.Sensor;
@@ -49,6 +51,7 @@ import org.openhab.binding.northqbinding.osgi.helper.ReflectionHelper;
  *
  * @author Kaare Joergensen - Initial contribution
  */
+@FixMethodOrder(MethodSorters.JVM)
 public class NorthQBridgeHandlerOSGiTest extends JavaOSGiTest {
     private ManagedThingProvider managedThingProvider;
     private final VolatileStorageService volatileStorageService = new VolatileStorageService();
