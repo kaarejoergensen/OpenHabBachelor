@@ -50,7 +50,7 @@ import com.google.common.collect.Sets;
  * @author Kaare Joergensen - Initial contribution
  */
 public class NorthQBindingHandler extends BaseThingHandler implements BindingHandlerInterface {
-    private static final int DEFAULT_DELAY = 3;
+    private static final int DEFAULT_DELAY = 1;
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(BINARY_SWITCH, BINARY_SENSOR,
             THERMOSTAT);
