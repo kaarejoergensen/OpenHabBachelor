@@ -258,7 +258,7 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     @Test
-    public void sendCommandSuccessBinarySwitchTest() {
+    public void sendCommandSuccessfullyBinarySwitchTest() {
         AtomicBoolean changeSwitchStateCalled = new AtomicBoolean(false);
 
         BinarySwitch binarySwitch = new BinarySwitch(255, 20);
@@ -297,7 +297,7 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     @Test
-    public void sendCommandSuccessBinarySensorTest() {
+    public void sendCommandSuccessfullyBinarySensorTest() {
         AtomicBoolean disarmCalled = new AtomicBoolean(false);
         AtomicBoolean armCalled = new AtomicBoolean(false);
 
@@ -348,7 +348,7 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     @Test
-    public void sendCommandSuccessThermostatTest() {
+    public void sendCommandSuccessfullyThermostatTest() {
         AtomicBoolean changeTemperatureCalled = new AtomicBoolean(false);
 
         Thermostat thermostat = new Thermostat(100, 25);
@@ -379,7 +379,7 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     @Test
-    public void sendCommandUnSuccessBinarySwitchTest() {
+    public void sendCommandUnSuccessfullyBinarySwitchTest() {
         AtomicBoolean changeSwitchStateCalled = new AtomicBoolean(false);
 
         BinarySwitch binarySwitch = new BinarySwitch(255, 20);
@@ -412,7 +412,7 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     @Test
-    public void sendCommandUnSuccessBinarySensorTest() {
+    public void sendCommandUnSuccessfullyBinarySensorTest() {
         AtomicBoolean disarmCalled = new AtomicBoolean(false);
 
         List<Sensor> sensors = new ArrayList<Sensor>();
@@ -452,7 +452,7 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     @Test
-    public void sendCommandUnSuccessThermostatTest() {
+    public void sendCommandUnSuccessfullyThermostatTest() {
         AtomicBoolean changeTemperatureCalled = new AtomicBoolean(false);
 
         Thermostat thermostat = new Thermostat(100, 25);
