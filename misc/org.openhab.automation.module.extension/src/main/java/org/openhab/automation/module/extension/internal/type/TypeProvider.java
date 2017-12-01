@@ -35,6 +35,7 @@ public class TypeProvider implements ModuleTypeProvider {
     public TypeProvider() {
         providedModuleTypes = new HashMap<String, ModuleType>();
         providedModuleTypes.put(AboveBelowTriggerType.UID, AboveBelowTriggerType.initialize());
+        providedModuleTypes.put(BetweenTimesConditionType.UID, BetweenTimesConditionType.initialize());
     }
 
     @SuppressWarnings("unchecked")

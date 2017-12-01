@@ -15,12 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.smarthome.automation.Condition;
 import org.eclipse.smarthome.automation.Module;
 import org.eclipse.smarthome.automation.Trigger;
 import org.eclipse.smarthome.automation.handler.BaseModuleHandlerFactory;
 import org.eclipse.smarthome.automation.handler.ModuleHandler;
 import org.eclipse.smarthome.automation.handler.ModuleHandlerFactory;
 import org.openhab.automation.module.extension.internal.type.AboveBelowTriggerType;
+import org.openhab.automation.module.extension.internal.type.BetweenTimesConditionType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -40,6 +42,7 @@ public class AboveBelowModuleHandlerFactory extends BaseModuleHandlerFactory {
     static {
         List<String> temp = new ArrayList<String>();
         temp.add(AboveBelowTriggerType.UID);
+        temp.add(BetweenTimesConditionType.UID);
         TYPES = Collections.unmodifiableCollection(temp);
     }
 
@@ -73,10 +76,12 @@ public class AboveBelowModuleHandlerFactory extends BaseModuleHandlerFactory {
 
     @Override
     protected ModuleHandler internalCreate(Module module, String ruleUID) {
-        AboveBelowTriggerHandler moduleHandler = null;
+        ModuleHandler moduleHandler = null;
         if (AboveBelowTriggerType.UID.equals(module.getTypeUID())) {
             moduleHandler = new AboveBelowTriggerHandler((Trigger) module, this.bundleContext);
-            triggerHandlers.put(ruleUID, moduleHandler);
+            triggerHandlers.put(ruleUID, (AboveBelowTriggerHandler) moduleHandler);
+        } else if (BetweenTimesConditionType.UID.equals(module.getTypeUID())) {
+            moduleHandler = new BetweenTimesConditionHandler((Condition) module);
         } else {
             logger.error(MODULE_HANDLER_FACTORY_NAME + "Not supported moduleHandler: {}", module.getTypeUID());
         }
