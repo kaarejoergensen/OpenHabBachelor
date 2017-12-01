@@ -34,6 +34,18 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
+                <div *ngIf="selectedItem.type === 'DateTime'">
+                is
+                <mat-form-field>
+                    <input #datePicker matInput [matDatepicker]="picker" placeholder="Choose a date" [(formControl)]="rateControl">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                at
+                <mat-form-field style="width: 75px">
+                    <input matInput [(ngModel)]="stateInput" type="time">
+                </mat-form-field>
+            </div>
             </div>
             <div *ngIf="selectedItem.type === 'CustomTime'">
                 <div>
@@ -98,7 +110,7 @@
             <div *ngIf="selectedItem.type === 'DateTime'">
                 is
                 <mat-form-field>
-                    <input #datePicker matInput [matDatepicker]="picker" placeholder="Choose a date">
+                    <input #datePicker matInput [matDatepicker]="picker" placeholder="Choose a date" [(formControl)]="rateControl">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
