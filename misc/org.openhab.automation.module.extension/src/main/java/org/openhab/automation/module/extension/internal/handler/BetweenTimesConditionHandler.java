@@ -55,7 +55,6 @@ public class BetweenTimesConditionHandler extends BaseModuleHandler<Condition> i
 
             if (secondTimeString.compareTo(firstTimeString) < 0) {
                 secondCalendar.add(Calendar.DATE, 1);
-                currentCalendar.add(Calendar.DATE, 1);
             }
 
             Date actualTime = currentCalendar.getTime();
