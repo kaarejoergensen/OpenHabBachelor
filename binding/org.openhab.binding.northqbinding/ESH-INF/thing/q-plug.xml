@@ -46,7 +46,7 @@
        <item-type>Number</item-type>
        <label>Wattage</label>
        <description>Current usage of the switch in watt</description>
-       <state readOnly="true" pattern="%.1f Watts"/>
+       <state readOnly="true" pattern="%.1f Watt"/>
     </channel-type>
 
 </thing:thing-descriptions>
