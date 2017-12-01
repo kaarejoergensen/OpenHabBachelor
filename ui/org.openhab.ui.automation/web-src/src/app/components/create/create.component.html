@@ -70,7 +70,7 @@
 			</h3>
 		</div>
 		<div style="width: 70%">
-			<mat-form-field> <input matInput [(ngModel)]="rule.name"> </mat-form-field>
+			<mat-form-field> <input matInput [formControl]="requiredFormControl" [(ngModel)]="rule.name"> </mat-form-field>
 		</div>
 	</div>
 	<div style="display: flex; align-items: center;">
@@ -80,7 +80,7 @@
 			</h3>
 		</div>
 		<div style="width: 70%">
-			<mat-form-field> <textarea matInput [(ngModel)]="rule.description"></textarea> </mat-form-field>
+			<mat-form-field> <textarea matInput [formControl]="requiredFormControl"  [(ngModel)]="rule.description"></textarea> </mat-form-field>
 		</div>
 	</div>
 	<div style="display: flex">
@@ -118,8 +118,8 @@
 	<hr style="width:70%">
 	<div class="button-row">
 		<button mat-raised-button (click)="goBack()">Previous</button>
-		<button *ngIf="edit" mat-raised-button color="primary" (click)="updateRule()">Update</button>
-		<button *ngIf="!edit" mat-raised-button color="primary" (click)="createRule()">Create</button>
+		<button *ngIf="edit" mat-raised-button color="primary"  [disabled]="!requiredFormControl.valid || rule.events.length < 1 || rule.actions.length < 1" (click)="updateRule()">Update</button>
+		<button *ngIf="!edit" mat-raised-button color="primary" [disabled]="!requiredFormControl.valid || rule.events.length < 1 || rule.actions.length < 1" (click)="createRule()">Create</button>
 	</div>
 	<div #bodyJson></div>
 </div>
