@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Module Extension Tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.automation.module.extension.test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.2.0.qualifier
+Fragment-Host: org.openhab.automation.module.extension
+Import-Package: 
+ groovy.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.core.common.registry,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.items.events,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.java,
+ org.eclipse.smarthome.test.storage,
+ org.hamcrest;core=split,
+ org.junit;version="4.0.0",
+ org.mockito,
+ org.osgi.framework,
+ org.osgi.service.device,
+ org.slf4j
+Require-Bundle: 
+ org.hamcrest,
+ org.junit,
+ org.mockito
