@@ -1,29 +1,6 @@
 import { Rule, RuleModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE } from '../models/rule';
 import { RuleDTO, Module } from '../models/rule-dto';
 import { RuleDTOHelper } from './rule-dto-helper';
-export const BETWEEN_TIMES_SCRIPT = `(function () {
-    var fromString = "%dateFrom";
-    var toString = "%dateTo";
-    var now = new Date();
-    var from = parseDate(fromString);
-    var to = parseDate(toString);
-    if (to < from) {
-      var temp = to;
-      to = from;
-      from = temp;
-    }
-    return from < now && to > now;
-    
-    function parseDate(dateString) {
-      var result = new Date();
-      var split = dateString.split(":");
-      if (split.length > 1) {
-        result.setHours(split[0]);
-        result.setMinutes(split[1]);
-      }
-      return result;
-    }
-})();`;
 
 export class RuleMapperHelper {
 
@@ -86,15 +63,13 @@ export class RuleMapperHelper {
       Module.addConfiguration('operator', condition.operator, mod);
       Module.addConfiguration('state', condition.state, mod);
     } else {
-      mod.type = 'script.ScriptCondition';
-      mod.label = 'a given script evaluates to true';
-      mod.description = 'Allows the definition of a condition through a script.';
-      Module.addConfiguration('type', 'application/javascript', mod);
+      mod.type = 'BetweenTimesCondition';
+      mod.label = 'Between two points in time';
+      mod.description = 'checks if the current time is between two points in time.';
       const split = condition.time.split('/');
       if (split.length > 1) {
-        Module.addConfiguration('script', BETWEEN_TIMES_SCRIPT.replace('%dateFrom', split[0])
-          .replace('%dateTo', split[1]), mod);
-        Module.addConfiguration('time', condition.time, mod);
+        Module.addConfiguration('firstTime', split[0], mod);
+        Module.addConfiguration('secondTime', split[1], mod);
       }
     }
     return mod;
@@ -150,8 +125,8 @@ export class RuleMapperHelper {
       condition.itemName = Module.getConfiguration('itemName', mod);
       condition.operator = Module.getConfiguration('operator', mod);
       condition.state = Module.getConfiguration('state', mod);
-    } else if (mod.type === 'script.ScriptCondition') {
-      condition.time = Module.getConfiguration('time', mod);
+    } else if (mod.type === 'BetweenTimesCondition') {
+      condition.time = Module.getConfiguration('firstTime', mod) + '/' + Module.getConfiguration('secondTime', mod);
     }
     return condition;
   }
