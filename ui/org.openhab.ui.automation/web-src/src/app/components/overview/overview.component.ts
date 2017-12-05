@@ -1,24 +1,27 @@
-import { RuleMapperHelper } from '../../helpers/rule-mapper-helper';
-import { Rule } from '../../models/rule';
-import { RuleDTO } from '../../models/rule-dto';
-import { RuleService } from '../../services/rule.service';
-import { SharedPropertiesService } from '../../services/shared-properties.service';
-import { Component, OnInit, Inject } from '@angular/core';
-import { Location } from '@angular/common';
-import { MatSnackBar, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Router } from '@angular/router';
+import {RuleMapperHelper} from '../../helpers/rule-mapper-helper';
+import {Rule} from '../../models/rule';
+import {RuleDTO} from '../../models/rule-dto';
+import {ModuleTypeService} from '../../services/module-type.service';
+import {RuleService} from '../../services/rule.service';
+import {SharedPropertiesService} from '../../services/shared-properties.service';
+import {Component, OnInit, Inject} from '@angular/core';
+import {Location} from '@angular/common';
+import {MatSnackBar, MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css'],
-  providers: [RuleService]
+  providers: [RuleService, ModuleTypeService]
 })
 export class OverviewComponent implements OnInit {
   rules: Rule[];
   isLoading = true;
+  extensionMissing = false;
   constructor(private ruleService: RuleService, private sharedProperties: SharedPropertiesService,
-    private location: Location, private router: Router, public snackBar: MatSnackBar, private dialog: MatDialog) { }
+    private moduleTypeService: ModuleTypeService, private location: Location, private router: Router,
+    public snackBar: MatSnackBar, private dialog: MatDialog) {}
   ngOnInit() {
     this.updateRules(true);
   }
@@ -28,11 +31,37 @@ export class OverviewComponent implements OnInit {
     this.ruleService.getRules().
       subscribe(res => {
         this.rules = res.map(function(r) {return RuleMapperHelper.mapDTOtoRule(r); });
-        this.isLoading = false;
-        if (handleCreateResult) {
-          this.handleCreateResult(this.sharedProperties.getResult());
+        this.checkIfModuleExtensionExists(handleCreateResult);
+      },
+      error => {
+        if (error && error.status === 404) {
+          this.handleMissingExtensions();
         }
       });
+  }
+
+  checkIfModuleExtensionExists(handleCreateResult: boolean) {
+    this.moduleTypeService.getModules().
+      subscribe(res => {
+        if (res.filter(mt => mt.uid === 'ItemCommandAboveBelowTrigger' || mt.uid === 'BetweenTimesCondition').length === 2) {
+          this.isLoading = false;
+          if (handleCreateResult) {
+            this.handleCreateResult(this.sharedProperties.getResult());
+          }
+        } else {
+          this.handleMissingExtensions();
+        }
+      },
+      error => {
+        if (error && error.status === 404) {
+          this.handleMissingExtensions();
+        }
+      });
+  }
+
+  handleMissingExtensions() {
+    this.isLoading = false;
+    this.extensionMissing = true;
   }
 
   handleCreateResult(result: any) {
@@ -84,7 +113,8 @@ export class OverviewComponent implements OnInit {
             }
           },
           error => this.openSnackbar('Failed: ' + error.message));
-      }});
+      }
+    });
   }
 
   enableDisableRule(rule: any): void {
@@ -105,7 +135,7 @@ export class OverviewComponent implements OnInit {
 export class DialogDeleteRuleComponent {
   constructor(
     public dialogRef: MatDialogRef<DialogDeleteRuleComponent>,
-      @Inject(MAT_DIALOG_DATA) public data: any) { }
+    @Inject(MAT_DIALOG_DATA) public data: any) {}
 
   onNoClick(): void {
     this.dialogRef.close();

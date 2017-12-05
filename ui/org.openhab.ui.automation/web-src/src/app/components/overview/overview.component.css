@@ -8,6 +8,10 @@
 	float: middle;
 	clear: both;
 }
+
+.missingExtensionClass {
+	margin-top: 30px;
+}
 @media (max-width:800px) {
   .overviewdiv {
     width:100%;

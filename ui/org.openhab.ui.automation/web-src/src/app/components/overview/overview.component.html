@@ -1,12 +1,16 @@
 <div *ngIf="isLoading" class="loader">
 	<mat-progress-spinner color="primary" mode="indeterminate"> </mat-progress-spinner>
 </div>
-<div *ngIf="!isLoading" class="overviewdiv">
+<div *ngIf="extensionMissing" class="missingExtensionClass overviewdiv">
+	<h3>OpenHAB is not configured correctly for automation yet. <br>
+	Please follow the <a href="temp">guide</a> to finish the configuration.</h3>
+</div>
+<div *ngIf="!isLoading && !extensionMissing" class="overviewdiv">
 	<div class="button-row">
         <button mat-fab color="primary" (click)="openCreate(null)"><mat-icon>add</mat-icon></button>
     </div>
      <div class="headers"><h2> Existing rules</h2></div>
-     <div *ngIf="rules.length === 0">
+     <div *ngIf="!rules || rules.length === 0">
         No existing rules.
      </div>
 	<mat-list class="rules"> <mat-list-item *ngFor="let rule of rules" class="inner-rule">
