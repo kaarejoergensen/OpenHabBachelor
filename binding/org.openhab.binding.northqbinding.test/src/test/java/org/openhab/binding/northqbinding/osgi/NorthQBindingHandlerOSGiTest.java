@@ -134,7 +134,7 @@ public class NorthQBindingHandlerOSGiTest extends JavaOSGiTest {
     @After
     public void tearDown() {
         Collection<Thing> things = thingRegistry.getAll();
-        things.stream().forEach(t -> thingRegistry.remove(t.getUID()));
+        things.stream().forEach(t -> thingRegistry.forceRemove(t.getUID()));
         waitForAssert(() -> {
             things.stream().forEach(t -> assertThat(thingRegistry.get(t.getUID()), is(nullValue())));
         });

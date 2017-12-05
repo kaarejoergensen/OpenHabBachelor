@@ -68,7 +68,10 @@ public class NorthQDiscoveryOSGITest extends JavaOSGiTest {
         managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
         assertThat(managedThingProvider, is(notNullValue()));
         createBridge();
-        discoveryService = getService(DiscoveryService.class, NorthQDiscovery.class);
+        DiscoveryService discoveryServiceTemp = getService(DiscoveryService.class);
+        assertThat(discoveryServiceTemp, is(instanceOf(NorthQDiscovery.class)));
+        assertThat(discoveryServiceTemp, is(notNullValue()));
+        discoveryService = (NorthQDiscovery) discoveryServiceTemp;
         assertThat(discoveryService, is(notNullValue()));
     }
 
