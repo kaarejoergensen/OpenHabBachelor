@@ -42,6 +42,7 @@ export class CreateComponent implements OnInit {
   rule: Rule;
   requiredFormControl = new FormControl('', [Validators.required]);
   edit: boolean;
+  creatingRule = false;
   
   ngOnInit(): void {
     this.rule = new Rule();
@@ -166,6 +167,7 @@ export class CreateComponent implements OnInit {
   }
   
   updateRule(): void {
+    this.creatingRule = true;
     const ruleDTO = RuleMapperHelper.mapRuleToDTO(this.rule);
     const body = ruleDTO.getJSON();
     this.ruleService.updateRule(body)
@@ -174,6 +176,7 @@ export class CreateComponent implements OnInit {
   }
   
   createRule(): void {
+    this.creatingRule = true;
     const ruleDTO = RuleMapperHelper.mapRuleToDTO(this.rule);
     const body = ruleDTO.getJSON();
     this.ruleService.createRule(body)
@@ -182,6 +185,7 @@ export class CreateComponent implements OnInit {
   }
 
   goToOverview(result: any) {
+    this.creatingRule = false;
     this.sharedProperties.setResult(result);
     this.router.navigate(['/overview']);
   }

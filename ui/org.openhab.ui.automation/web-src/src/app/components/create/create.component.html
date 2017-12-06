@@ -124,8 +124,8 @@
 	<hr style="width:70%">
 	<div class="button-row">
 		<button mat-raised-button (click)="goBack()">Previous</button>
-		<button *ngIf="edit" mat-raised-button color="primary"  [disabled]="!requiredFormControl.valid || rule.events.length < 1 || rule.actions.length < 1" (click)="updateRule()">Update</button>
-		<button *ngIf="!edit" mat-raised-button color="primary" [disabled]="!requiredFormControl.valid || rule.events.length < 1 || rule.actions.length < 1" (click)="createRule()">Create</button>
+		<button *ngIf="edit" mat-raised-button color="primary"  [disabled]="!requiredFormControl.valid || rule.events.length < 1 || rule.actions.length < 1 || creatingRule" (click)="updateRule()">Update</button>
+		<button *ngIf="!edit" mat-raised-button color="primary" [disabled]="!requiredFormControl.valid || rule.events.length < 1 || rule.actions.length < 1 || creatingRule" (click)="createRule()">Create</button>
 	</div>
 	<div #bodyJson></div>
 </div>
