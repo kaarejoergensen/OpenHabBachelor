@@ -1,8 +1,14 @@
 <h1 class="headers">Create new rule</h1>
+<div *ngIf="step == -2" class="creatediv">
+    <h3>Devices could not be fetched. Please verify that openHAB is working correctly.</h3>
+</div>
+<div *ngIf="step == -1" class="creatediv">
+    <h3>No devices could be found. Please add 1 or more devices before creating rules.</h3>
+</div>
 <div *ngIf="step == 0" class="loader">
 	<mat-progress-spinner color="primary" mode="indeterminate"> </mat-progress-spinner>
 </div>
-<div *ngIf="step != 0" class="animate-from-right">
+<div *ngIf="step > 0" class="animate-from-right">
 	<section>
 		<div style="width: 60%; margin: auto; display: flex; align-items: center; justify-content: center">
 			<div style="flex: 1;">

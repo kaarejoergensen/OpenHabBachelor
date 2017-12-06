@@ -61,8 +61,8 @@ export class CreateComponent implements OnInit {
   private route: ActivatedRoute, private router: Router) { }
 
   getItemsAndThings(): void {
-    let items = [];
-    let things = [];
+    let items: Item[];
+    let things: Thing[];
     this.itemService.getItems()
     .concat(this.thingService.getThings())
     .subscribe(res => {
@@ -73,13 +73,13 @@ export class CreateComponent implements OnInit {
         console.log('Fetched ' + res.length + ' items');
         items = res;
       }
-      if (things.length > 0 && items.length > 0) {
-        // TODO: Fix this method. We assume length of things and length of items
+      if (things && things.length > 0 && items && items.length > 0) {
         this.initializeThingsAndItems(things, items);
+      } else if (things && items) {
+        this.step = -1;
       }
-      
     },
-    error => this.handleError(error));
+    error => this.step = -2);
   }
   
   initializeThingsAndItems(things: Thing[], items: Item[]): void {
@@ -93,11 +93,7 @@ export class CreateComponent implements OnInit {
       this.next();
     }
   }
-  
-  handleError(error: any): void {
-    console.log('Error! ', error);
-  }
-
+    
   addItemsToThings(items: Item[], things: Thing[]): Thing[] {
     const thingsWithItems = [];
     for (const thing of things) {
