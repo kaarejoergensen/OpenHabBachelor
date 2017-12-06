@@ -1,6 +1,6 @@
-import { Rule, RuleModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE } from '../models/rule';
-import { RuleDTO, Module } from '../models/rule-dto';
-import { RuleDTOHelper } from './rule-dto-helper';
+import {Rule, RuleModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE} from '../models/rule';
+import {RuleDTO, Module} from '../models/rule-dto';
+import {RuleDTOHelper} from './rule-dto-helper';
 
 export class RuleMapperHelper {
 
@@ -16,10 +16,13 @@ export class RuleMapperHelper {
 
     return ruleDTO;
   }
-  
+
   static mapEventToModule(event: RuleModule, ruleDTO: RuleDTO): Module {
+    if (event.unsupportedModule) {
+      return event.unsupportedModule;
+    }
     const mod = new Module();
-    
+    Module.addConfiguration('createdIn', 'AutomationUI', mod);
     if (event.itemName) {
       Module.addConfiguration('itemName', event.itemName, mod);
       if (event.operator) {
@@ -32,7 +35,7 @@ export class RuleMapperHelper {
           Module.addConfiguration('operator', event.operator, mod);
           Module.addConfiguration('state', event.state, mod);
           mod.label = 'an item raises above/drops below a value';
-          mod.description = 'This triggers the rule if the item raises above/drops below a certain value.';  
+          mod.description = 'This triggers the rule if the item raises above/drops below a certain value.';
         }
       }
     } else {
@@ -41,20 +44,25 @@ export class RuleMapperHelper {
       mod.description = 'Triggers at a specified time';
       Module.addConfiguration('time', event.time, mod);
       Module.addConfiguration('days', event.days, mod);
-      
+
       const dayOfWeek = new Module();
+      Module.addConfiguration('createdIn', 'AutomationUI', dayOfWeek);
       dayOfWeek.type = 'timer.DayOfWeekCondition';
       dayOfWeek.label = 'it is a certain day of the week';
       dayOfWeek.description = 'checks for the current day of the week';
       Module.addConfiguration('days', event.days, dayOfWeek);
       RuleDTOHelper.updateModule('condition', dayOfWeek, ruleDTO);
     }
-    
+
     return mod;
   }
 
   static mapConditionToModule(condition: RuleModule): Module {
+    if (condition.unsupportedModule) {
+      return condition.unsupportedModule;
+    }
     const mod = new Module();
+    Module.addConfiguration('createdIn', 'AutomationUI', mod);
     if (condition.itemName) {
       mod.type = 'core.ItemStateCondition';
       mod.label = 'an item has a given state';
@@ -76,7 +84,11 @@ export class RuleMapperHelper {
   }
 
   static mapActionToModule(action: RuleModule): Module {
+    if (action.unsupportedModule) {
+      return action.unsupportedModule;
+    }
     const mod = new Module();
+    Module.addConfiguration('createdIn', 'AutomationUI', mod);
     mod.type = 'core.ItemCommandAction';
     mod.label = 'send a command';
     mod.description = 'Sends a command to a specified item.';
@@ -98,12 +110,15 @@ export class RuleMapperHelper {
 
     return rule;
   }
-  
+
   static mapModuleToEvent(mod: Module): RuleModule {
     const event = new RuleModule();
     event.type = EVENT_TYPE;
     event.id = mod.id;
-    if (mod.type === 'core.ItemStateUpdateTrigger') {
+    event.label = mod.label;
+    if (Module.getConfiguration('createdIn', mod) !== 'AutomationUI') {
+      event.unsupportedModule = mod;
+    } else if (mod.type === 'core.ItemStateUpdateTrigger') {
       event.itemName = Module.getConfiguration('itemName', mod);
       event.operator = '?';
     } else if (mod.type === 'ItemCommandAboveBelowTrigger') {
@@ -121,7 +136,10 @@ export class RuleMapperHelper {
     const condition = new RuleModule();
     condition.type = CONDITION_TYPE;
     condition.id = mod.id;
-    if (mod.type === 'core.ItemStateCondition') {
+    condition.label = mod.label;
+    if (Module.getConfiguration('createdIn', mod) !== 'AutomationUI') {
+      condition.unsupportedModule = mod;
+    } else if (mod.type === 'core.ItemStateCondition') {
       condition.itemName = Module.getConfiguration('itemName', mod);
       condition.operator = Module.getConfiguration('operator', mod);
       condition.state = Module.getConfiguration('state', mod);
@@ -135,8 +153,13 @@ export class RuleMapperHelper {
     const action = new RuleModule();
     action.type = ACTION_TYPE;
     action.id = mod.id;
-    action.itemName = Module.getConfiguration('itemName', mod);
-    action.command = Module.getConfiguration('command', mod);
+    action.label = mod.label;
+    if (Module.getConfiguration('createdIn', mod) !== 'AutomationUI') {
+      action.unsupportedModule = mod;
+    } else if (mod.type === 'core.ItemCommandAction') {
+      action.itemName = Module.getConfiguration('itemName', mod);
+      action.command = Module.getConfiguration('command', mod);
+    }
     return action;
   }
 }

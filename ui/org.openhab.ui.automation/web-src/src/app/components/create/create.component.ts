@@ -131,6 +131,10 @@ export class CreateComponent implements OnInit {
   addThingToRule(): void {
     const modules = this.rule.events.concat(this.rule.actions, this.rule.conditions);
     for (const mod of modules) {
+      if (mod.unsupportedModule) {
+        console.log('addThingToRule mod unsupported, not adding thing: ' + mod.id + ' ' + mod.label);
+        continue;
+      }
       if (!mod.itemName) {
         console.log('addThingToRule mod itemName null, adding CustomTime: ' + JSON.stringify(mod));
       } 

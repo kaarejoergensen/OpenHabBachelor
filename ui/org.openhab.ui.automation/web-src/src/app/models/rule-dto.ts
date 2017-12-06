@@ -30,8 +30,6 @@ export class Module {
   description: string;
   type: string;
   configuration = {};
-  // Only used in triggers
-  correspondingConditionId: string;
 
   static addConfiguration(name: string, command: any, mod: Module): void {
     mod.configuration[name] = command;

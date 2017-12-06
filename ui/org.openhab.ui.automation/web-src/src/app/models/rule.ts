@@ -1,3 +1,4 @@
+import { Module } from './rule-dto';
 import { Thing } from './thing';
 export const OPERATORS = [{name: 'greater than', value: '>'}, {name: 'equal to', value: '='}, {name: 'less than', value: '<'}];
 export const OPERATORS_EVENT = [{name: 'raises above', value: '>'}, {name: 'changes to', value: '='}, {name: 'drops below', value: '<'}, 
@@ -24,6 +25,7 @@ export class Rule {
 export class RuleModule {
   id: string;
   type: string;
+  label: string;
   // Common
   itemName: string;
   thing: Thing;
@@ -35,4 +37,6 @@ export class RuleModule {
   days: string[] = [];
   // Action
   command: string;
+  // Unsupported
+  unsupportedModule: Module;
 }
