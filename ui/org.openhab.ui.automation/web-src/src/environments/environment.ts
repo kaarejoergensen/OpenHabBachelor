@@ -5,5 +5,5 @@
 
 export const environment = {
   production: false,
-  apiURL: 'http://127.0.0.1:8080'
+  apiURL: 'http://ec2-18-221-198-248.us-east-2.compute.amazonaws.com:8080'
 };
