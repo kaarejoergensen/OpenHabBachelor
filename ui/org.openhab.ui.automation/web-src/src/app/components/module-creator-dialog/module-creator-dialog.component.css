@@ -24,3 +24,18 @@ mat-form-field {
 	clear: both;
 	margin-bottom: 0;
 }
+
+.container {
+}
+
+@media (max-width:800px) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .container * {
+    width: 100%;
+  }
+}

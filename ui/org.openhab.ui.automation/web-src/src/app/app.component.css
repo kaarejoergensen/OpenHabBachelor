@@ -7,8 +7,8 @@
 
 .title {
 	color: white;
-	padding: 22px; 
 	font-size: 41px; 
-	margin-left: -47px;
-	
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%); 
 }

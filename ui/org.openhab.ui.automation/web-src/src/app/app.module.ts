@@ -13,7 +13,7 @@ import { OverviewComponent, DialogDeleteRuleComponent } from './components/overv
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule, MatInputModule, MatSelectModule, MatNativeDateModule, MatDatepickerModule } from '@angular/material';
 import { MatProgressBarModule, MatStepperModule, MatProgressSpinnerModule, MatDialogModule, MatListModule } from '@angular/material';
-import { MatIconModule, MatSlideToggleModule, MatSnackBarModule, MatTooltipModule } from '@angular/material';
+import { MatIconModule, MatSlideToggleModule, MatSnackBarModule, MatTooltipModule, MatToolbarModule } from '@angular/material';
 import 'hammerjs';
 
 
@@ -61,7 +61,8 @@ const routes: Routes = [
     MatIconModule,
     MatSlideToggleModule,
     MatSnackBarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatToolbarModule
   ],
   providers: [SharedPropertiesService],
   bootstrap: [AppComponent],

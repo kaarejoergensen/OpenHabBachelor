@@ -1,8 +1,13 @@
-<h1 class="headers">Create new recipe</h1>
-<div *ngIf="step == -2" class="creatediv">
+<div class="creatediv animate-from-right" *ngIf="step !== 0">
+    <h1 class="headers" *ngIf="step !== 5">Create new recipe</h1>
+    <button mat-icon-button (click)="cancel()" class="exit">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<div *ngIf="step == -2" class="creatediv animate-from-right">
     <h3>Devices could not be fetched. Please verify that openHAB is working correctly.</h3>
 </div>
-<div *ngIf="step == -1" class="creatediv">
+<div *ngIf="step == -1" class="creatediv animate-from-right">
     <h3>No devices could be found. Please add 1 or more devices before creating recipes.</h3>
 </div>
 <div *ngIf="step == 0" class="loader">
@@ -10,13 +15,11 @@
 </div>
 <div *ngIf="step > 0" class="animate-from-right">
 	<section>
-		<div style="width: 60%; margin: auto; display: flex; align-items: center; justify-content: center">
+		<div class="progress">
 			<div style="flex: 1;">
-				<mat-progress-bar style="max-width: 75%; margin: auto;" color="primary" mode="determinate" [value]="(step - 1)*25"> </mat-progress-bar>
+				<mat-progress-bar class="progress-bar" color="primary" mode="determinate" [value]="(step - 1)*25"> </mat-progress-bar>
 			</div>
-			<button mat-icon-button (click)="cancel()" style="align-self: flex-end;">
-				<mat-icon>close</mat-icon>
-			</button>
+			
 		</div>
 	</section>
 </div>
@@ -67,61 +70,61 @@
         <button mat-raised-button color="primary" (click)="next()">Next</button>
     </div>
 </div>
-<div *ngIf="step === 5" class="creatediv animate-from-right" style="text-align: left; width: 50%;">
+<div *ngIf="step === 5" class="creatediv animate-from-right" style="text-align: left">
 	<h2 style="text-align: center;">Overview</h2>
-	<div style="display: flex; align-items: center;">
-		<div style="width: 15%">
+	<div class="component">
+		<div class="component-text">
 			<h3>
-				<b>Name:</b>
+				<b>Name</b>
 			</h3>
 		</div>
-		<div style="width: 70%">
+		<div class="module">
 			<mat-form-field> <input matInput [formControl]="requiredFormControl" [(ngModel)]="rule.name"> </mat-form-field>
 		</div>
 	</div>
-	<div style="display: flex; align-items: center;">
-		<div style="width: 15%">
+	<div class="component">
+		<div class="component-text">
 			<h3>
-				<b>Description:</b>
+				<b>Description</b>
 			</h3>
 		</div>
-		<div style="width: 70%">
+		<div class="module">
 			<mat-form-field> <textarea matInput [(ngModel)]="rule.description"></textarea> </mat-form-field>
 		</div>
 	</div>
-	<div style="display: flex">
-		<div style="width: 15%">
-			<h3 style="margin: 16px 0 16px 0;">
+	<div class="component-module">
+		<div class="component-text">
+			<h3 class="module-text">
 				<b>When</b>
 			</h3>
 		</div>
-		<div style="width: 70%">
+		<div class="module">
 			<app-dynamic-component [things]="things" [mods]="rule.events" [moduleType]="'event'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)" style="text-align: center; width: 80%"></app-dynamic-component>
 		</div>
 	</div>
-	<hr style="width:70%">
-	<div style="display: flex">
-		<div style="width: 15%">
-			<h3 style="margin: 16px 0 16px 0;">
+	<hr class="module">
+	<div class="component-module">
+		<div class="component-text">
+			<h3 class="module-text">
 				<b>Then</b>
 			</h3>
 		</div>
-		<div style="width: 70%">
+		<div class="module">
 			<app-dynamic-component [things]="thingsWithEditableItems" [mods]="rule.actions" [moduleType]="'action'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)" style="text-align: center; width: 80%"></app-dynamic-component>
 		</div>
 	</div>
-	<hr style="width:70%">
-	<div style="display: flex">
-		<div style="width: 15%">
-			<h3 style="margin: 16px 0 16px 0;">
+	<hr class="module">
+	<div class="component-module">
+		<div class="component-text">
+			<h3 class="module-text">
 				<b>But only if</b>
 			</h3>
 		</div>
-		<div style="width: 70%">
+		<div class="module">
 			<app-dynamic-component [things]="things" [mods]="rule.conditions" [moduleType]="'condition'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)" style="text-align: center; width: 80%"></app-dynamic-component>
 		</div>
 	</div>
-	<hr style="width:70%">
+	<hr class="module">
 	<div class="button-row">
 		<button mat-raised-button (click)="goBack()">Previous</button>
 		<button *ngIf="edit" mat-raised-button color="primary"  [disabled]="!requiredFormControl.valid || rule.events.length < 1 || rule.actions.length < 1 || creatingRule" (click)="updateRule()">Update</button>

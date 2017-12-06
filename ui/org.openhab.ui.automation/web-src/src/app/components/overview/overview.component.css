@@ -47,7 +47,7 @@
 
 .inner-rule {
 	background-color: #EEE;
-	margin: .5em;
+	margin: .5em 0 .5em 0;
 	padding: .3em 0;
 	cursor: pointer;
 	border-radius: 25px; 

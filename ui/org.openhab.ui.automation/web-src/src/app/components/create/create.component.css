@@ -11,21 +11,77 @@
     *zoom: 1;
     float: middle;
     clear:both;
+    margin: .5em 0 .5em 0;
 }
+
+.progress {
+	width: 60%; 
+	margin: auto; 
+	display: flex; 
+	align-items: center; 
+	justify-content: center
+}
+
+.progress-bar {
+	max-width: 75%; 
+	margin: auto;
+}
+
 .headers{
-	margin-left: -580px;
-    margin-top: 30px;
     color: cadetblue;
+    float: left;
+    margin: 15px 0 15px 0;
+}
+
+.exit {
+	float: right;
+	margin: 15px 0 15px 0;
 }
 
 .itemsdiv .li{
 	background-color: red; 
 }
 
+.component {
+	display: flex; 
+	align-items: center;
+}
+
+.component-text {
+	width: 15%;
+}
+
+.component-module {
+    display: flex; 
+}
+
+.module {
+	width: 70%;
+}
+
+.module-text {
+	margin: 16px 0 16px 0;
+}
 
 @media (max-width:800px) {
   .creatediv {
-    width:100%;
+    width: 100%;
+  }
+  
+  .progress {
+    width: 100%;
+  }
+  
+  .progress-bar {
+    max-width: 100%
+  }
+  
+  .component-text {
+    width: 20%;
+  }
+  
+  .module {
+    width: 80%;
   }
 }
 
