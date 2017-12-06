@@ -143,16 +143,16 @@ export class ModuleCreatorDialogComponent implements OnInit {
 
   save(): void {
     const mod = new RuleModule();
-    if (this.modalType === 'event') {
-      mod.type = EVENT_TYPE;
-      mod.thing = this.thing;
+    mod.type = this.modalType;
+    mod.thing = this.thing;
+    if (this.modalType !== 'action') {
       if (this.selectedItem.type !== 'CustomTime') {
         mod.itemName = this.selectedItem.name;
         if (this.selectedItem.type === 'Number') {
           mod.operator = this.selectedOperator.value;
           mod.state = this.stateInput;
         } else if (this.selectedItem.type === 'Switch') {
-          if (this.selectedSwitchState.value === '?') {
+          if (this.selectedSwitchState.value === '?' && this.modalType === 'event') {
             mod.operator = '?';
           } else {
             mod.operator = '=';
@@ -172,44 +172,15 @@ export class ModuleCreatorDialogComponent implements OnInit {
           }
           mod.state = formattedDate;
         }
-
       } else {
+        if (this.modalType === 'event') {
         mod.time = this.stateInput;
-        mod.days = this.selectedDays.map(function(d) {return d.value; });
-
-      }
-    } else if (this.modalType === 'condition') {
-      mod.type = CONDITION_TYPE;
-      mod.thing = this.thing;
-      if (this.selectedItem.type !== 'CustomTime') {
-        mod.itemName = this.selectedItem.name;
-        if (this.selectedItem.type === 'Number') {
-          mod.operator = '=';
-          mod.state = this.stateInput;
-        } else if (this.selectedItem.type === 'Switch') {
-          mod.operator = '=';
-          mod.state = this.selectedSwitchState.value;
-        } else if (this.selectedItem.type === 'DateTime') {
-
-          mod.operator = '=';
-          const date = new Date(this.datePicker.nativeElement.value);
-          const time = this.stateInput;
-          const split = time.split(':');
-          if (split.length >= 2) {
-            date.setHours(Number(split[0]), Number(split[1]));
-          }
-          let formattedDate = new DatePipe('en-us').transform(date, 'yyyy-MM-ddTHH:mm:ss.000');
-          if (this.selectedItem.state) {
-            formattedDate += this.selectedItem.state.slice(-5);
-          }
-          mod.state = formattedDate;
+        mod.days = this.selectedDays.map(function(d) {return d.value; });          
+        } else {
+          mod.time = this.stateInput + '/' + this.secondTimeInput;
         }
-      } else {
-        mod.time = this.stateInput + '/' + this.secondTimeInput;
       }
     } else if (this.modalType === 'action') {
-      mod.type = ACTION_TYPE;
-      mod.thing = this.thing;
       mod.itemName = this.selectedItem.name;
       if (this.selectedItem.type === 'Number') {
         mod.command = this.stateInput;

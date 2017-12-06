@@ -57,7 +57,7 @@
 </div>
 <div *ngIf="step === 4" class="creatediv animate-from-right">
     <div class="itemsdiv">
-        <h2>Are there any conditions that needs to be met before your action should happen?</h2>
+        <h2>Should the recipe only activate under certain circumstances? (Optional)</h2>
         <div class="conditions">
             <app-dynamic-component [things]="things" [mods]="rule.conditions" [moduleType]="'condition'" (modUpdated)="onRuleUpdated($event)" (modDeleted)="onModDeleted($event)"></app-dynamic-component>
         </div>
