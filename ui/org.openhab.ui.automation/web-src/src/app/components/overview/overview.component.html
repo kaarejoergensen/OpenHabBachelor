@@ -5,7 +5,9 @@
 	<h3>OpenHAB is not configured correctly for automation yet. <br>
 	Please follow the <a href="temp">guide</a> to finish the configuration.</h3>
 </div>
-<div *ngIf="!isLoading && !extensionMissing" class="overviewdiv">
+<div *ngIf="loadError" class="missingExtensionClass overviewdiv">
+    <h3>Rules could not be fetched. Please verify that openHAB is working correctly.</h3>
+</div><div *ngIf="!isLoading && !extensionMissing && !loadError" class="overviewdiv">
 	<div class="button-row">
         <button mat-fab color="primary" (click)="openCreate(null)"><mat-icon>add</mat-icon></button>
     </div>

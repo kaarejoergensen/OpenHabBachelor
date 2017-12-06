@@ -19,6 +19,7 @@ export class OverviewComponent implements OnInit {
   rules: Rule[];
   isLoading = true;
   extensionMissing = false;
+  loadError = false;
   constructor(private ruleService: RuleService, private sharedProperties: SharedPropertiesService,
     private moduleTypeService: ModuleTypeService, private location: Location, private router: Router,
     public snackBar: MatSnackBar, private dialog: MatDialog) {}
@@ -36,6 +37,9 @@ export class OverviewComponent implements OnInit {
       error => {
         if (error && error.status === 404) {
           this.handleMissingExtensions();
+        } else {
+          this.isLoading = false;
+          this.loadError = true;
         }
       });
   }
@@ -55,6 +59,9 @@ export class OverviewComponent implements OnInit {
       error => {
         if (error && error.status === 404) {
           this.handleMissingExtensions();
+        } else {
+          this.isLoading = false;
+          this.loadError = true;
         }
       });
   }
@@ -112,14 +119,21 @@ export class OverviewComponent implements OnInit {
               this.openSnackbar('Rule removal failed');
             }
           },
-          error => this.openSnackbar('Failed: ' + error.message));
+          error => this.openSnackbar('Rule removal failed: ' + error.message));
       }
     });
   }
 
-  enableDisableRule(rule: any): void {
+  enableDisableRule(rule: Rule): void {
     this.ruleService.enableDisableRule(rule)
-      .subscribe(res => rule.enabled = res ? !rule.enabled : rule.enabled);
+      .subscribe(res => {
+        if (res) {
+          rule.enabled = !rule.enabled;
+        } else {
+          this.openSnackbar((rule.enabled ? 'Disable' : 'Enable') + ' rule failed.');
+        }
+      },
+      error => this.openSnackbar((rule.enabled ? 'Disable' : 'Enable') + ' rule failed.'));
   }
 }
 
