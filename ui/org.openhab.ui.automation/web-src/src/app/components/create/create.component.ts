@@ -169,7 +169,7 @@ export class CreateComponent implements OnInit {
     const ruleDTO = RuleMapperHelper.mapRuleToDTO(this.rule);
     const body = ruleDTO.getJSON();
     this.ruleService.updateRule(body)
-      .subscribe(res => res ? this.goToOverview('Rule updated') : this.goToOverview('Rule update failed'),
+      .subscribe(res => res ? this.goToOverview('Recipe updated') : this.goToOverview('Recipe update failed'),
                  error => this.goToOverview(error));
   }
   
@@ -177,7 +177,7 @@ export class CreateComponent implements OnInit {
     const ruleDTO = RuleMapperHelper.mapRuleToDTO(this.rule);
     const body = ruleDTO.getJSON();
     this.ruleService.createRule(body)
-      .subscribe(res => res ? this.goToOverview('Rule added') : this.goToOverview('Rule creation failed'),
+      .subscribe(res => res ? this.goToOverview('Recipe added') : this.goToOverview('Recipe creation failed'),
                  error => this.goToOverview(error));
   }
 

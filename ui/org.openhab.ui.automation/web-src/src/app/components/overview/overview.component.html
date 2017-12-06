@@ -6,15 +6,15 @@
 	Please follow the <a href="temp">guide</a> to finish the configuration.</h3>
 </div>
 <div *ngIf="loadError" class="missingExtensionClass overviewdiv">
-    <h3>Rules could not be fetched. Please verify that openHAB is working correctly.</h3>
+    <h3>Recipes could not be fetched. Please verify that openHAB is working correctly.</h3>
 </div>
 <div *ngIf="!isLoading && !extensionMissing && !loadError" class="overviewdiv">
 	<div class="button-row">
         <button mat-fab color="primary" (click)="openCreate(null)"><mat-icon>add</mat-icon></button>
     </div>
-     <div class="headers"><h2> Existing rules</h2></div>
+     <div class="headers"><h2> Existing recipes</h2></div>
      <div *ngIf="!rules || rules.length === 0">
-        No existing rules.
+        No existing recipes.
      </div>
 	<mat-list class="rules"> <mat-list-item *ngFor="let rule of rules" class="inner-rule">
 		<div style="width: 50%" (click)="openCreate(rule)">

@@ -108,7 +108,7 @@ export class OverviewComponent implements OnInit {
         this.ruleService.deleteRule(result.uid)
           .subscribe(res => {
             if (res) {
-              this.openSnackbar('Rule removed');
+              this.openSnackbar('Recipe removed');
               const index = this.rules.indexOf(result);
               if (index !== -1) {
                 this.rules.splice(index, 1);
@@ -116,10 +116,10 @@ export class OverviewComponent implements OnInit {
                 this.updateRules(false);
               }
             } else {
-              this.openSnackbar('Rule removal failed');
+              this.openSnackbar('Recipe removal failed');
             }
           },
-          error => this.openSnackbar('Rule removal failed: ' + error.message));
+          error => this.openSnackbar('Recipe removal failed: ' + error.message));
       }
     });
   }
@@ -130,10 +130,10 @@ export class OverviewComponent implements OnInit {
         if (res) {
           rule.enabled = !rule.enabled;
         } else {
-          this.openSnackbar((rule.enabled ? 'Disable' : 'Enable') + ' rule failed.');
+          this.openSnackbar((rule.enabled ? 'Disable' : 'Enable') + ' recipe failed.');
         }
       },
-      error => this.openSnackbar((rule.enabled ? 'Disable' : 'Enable') + ' rule failed.'));
+      error => this.openSnackbar((rule.enabled ? 'Disable' : 'Enable') + ' recipe failed.'));
   }
 }
 
