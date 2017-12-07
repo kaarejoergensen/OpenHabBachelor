@@ -17,13 +17,14 @@
         No existing recipes.
      </div>
 	<mat-list class="rules"> <mat-list-item *ngFor="let rule of rules" class="inner-rule">
-		<div style="width: 50%" (click)="openCreate(rule)">
+		<div style="width: 65%" (click)="openCreate(rule)">
 			<h3 matLine><b>{{rule.name}}</b></h3>
 			<span matLine>{{rule.description}}</span>
+			<span matLine *ngIf="rule.status.statusDetail !== 'NONE'">{{rule.status.statusDetail}}</span>
 		</div>
 		
 		<mat-slide-toggle [checked]="rule.enabled" (change)="enableDisableRule(rule)" style="width: 15%; height: auto;"></mat-slide-toggle>
-		<div style="width: 15%"><button mat-icon-button (click)="openCreate(rule)" matTooltip="Edit recipe" matTooltipPosition="below"><mat-icon>edit</mat-icon></button></div>
-		<div style="width: 15%"><button mat-icon-button (click)="deleteRule(rule)" matTooltip="Delete recipe" matTooltipPosition="below"><mat-icon>delete</mat-icon></button></div>
+		<div style="width: 10%"><button mat-icon-button (click)="openCreate(rule)" matTooltip="Edit recipe" matTooltipPosition="below"><mat-icon>edit</mat-icon></button></div>
+		<div style="width: 10%"><button mat-icon-button (click)="deleteRule(rule)" matTooltip="Delete recipe" matTooltipPosition="below"><mat-icon>delete</mat-icon></button></div>
 	</mat-list-item> </mat-list>
 </div>
