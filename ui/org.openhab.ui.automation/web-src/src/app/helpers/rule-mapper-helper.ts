@@ -103,6 +103,7 @@ export class RuleMapperHelper {
     rule.uid = ruleDTO.uid;
     rule.enabled = ruleDTO.enabled;
     rule.name = ruleDTO.name;
+    rule.status = ruleDTO.status;
     rule.description = ruleDTO.description;
     ruleDTO.triggers.forEach(t => rule.events.push(this.mapModuleToEvent(t)));
     ruleDTO.conditions.filter(c => c.type !== 'timer.DayOfWeekCondition').forEach(c => rule.conditions.push(this.mapModuleToCondition(c)));

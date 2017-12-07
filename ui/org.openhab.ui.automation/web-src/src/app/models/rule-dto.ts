@@ -2,6 +2,7 @@ export class RuleDTO {
   enabled: boolean;
   uid: string;
   name: string;
+  status: Status;
   description: string;
   triggers: Module[] = [];
   conditions: Module[] = [];
@@ -22,6 +23,12 @@ export class RuleDTO {
     }
     return body;
   }
+}
+
+export class Status {
+  status: string;
+  statusDetail: string;
+  description: string;
 }
 
 export class Module {

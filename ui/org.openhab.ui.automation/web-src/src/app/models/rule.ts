@@ -1,4 +1,4 @@
-import { Module } from './rule-dto';
+import { Module, Status } from './rule-dto';
 import { Thing } from './thing';
 export const OPERATORS = [{name: 'greater than', value: '>'}, {name: 'equal to', value: '='}, {name: 'less than', value: '<'}];
 export const OPERATORS_EVENT = [{name: 'raises above', value: '>'}, {name: 'changes to', value: '='}, {name: 'drops below', value: '<'}, 
@@ -16,6 +16,7 @@ export class Rule {
   uid: string;
   enabled: boolean;
   name: string = null;
+  status: Status;
   description: string = null;
   events: RuleModule[] = [];
   conditions: RuleModule[] = [];
