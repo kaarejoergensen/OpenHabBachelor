@@ -127,15 +127,16 @@ describe('Service: RuleMapperHelperService', () => {
     triggers: [openHABEvent],
     conditions: [openHABCondition],
     actions: [openHABAction],
-    getJSON: {name: 'testRule', description: 'testRule', configDescriptions: [], uid:'1.1',
+    getJSON: {tags: [], name: 'testRule', description: 'testRule', configDescriptions: [], uid:'1.1',
     conditions: [{
     type: 'core.ItemStateCondition',
     'description': 'Compares the item state with the given value',
     label: 'an item has a given state',
+    id: '2',
     configuration: {
     createdIn:'AutomationUI',
     itemName: 'testItem', 
-    state: '5',
+    state: '5.0',
     operator: '>'
       }
      }], 
@@ -153,9 +154,9 @@ describe('Service: RuleMapperHelperService', () => {
     }], 
     actions: [{
     id: '3',
-    type: 'ItemCommandAction',
+    type: 'core.ItemCommandAction',
     label: 'send a command',
-    'description':'This triggers the rule if the item raises above/drops below a certain value.',
+    'description':'Sends a command to a specified item.',
     configuration: {
     createdIn: 'AutomationUI',
     itemName: 'testItem', 
@@ -259,18 +260,34 @@ describe('Service: RuleMapperHelperService', () => {
         expect((ruleMod).conditions[0].id).toEqual(testRule.conditions[0].id);     
         expect((ruleMod).actions[0].id).toEqual(testRule.actions[0].id);     
     });
-
           
         it('ruletoDTO should make object equal to openHABRule', () => {
         let ruleMod = new RuleDTO();
+        let json = {};
+        let json2 = {}; 
         ruleMod = RuleMapperHelperService.mapRuleToDTO(testRule); 
+        json = ruleMod.getJSON();
+        json2 = openHABRule.getJSON;
+        console.log(json);
+        console.log(json2);
         expect((ruleMod).uid).toEqual(openHABRule.uid);
         expect((ruleMod).enabled).toEqual(openHABRule.enabled);
         expect((ruleMod).name).toEqual(openHABRule.name);
         expect((ruleMod).description).toEqual(openHABRule.description);
         expect((ruleMod).triggers[0].id).toEqual(openHABRule.triggers[0].id);        
         expect((ruleMod).conditions[0].id).toEqual(openHABRule.conditions[0].id);     
-        expect((ruleMod).actions[0].id).toEqual(openHABRule.actions[0].id);     
+        expect((ruleMod).actions[0].id).toEqual(openHABRule.actions[0].id);
+        expect(json).toEqual(json2);
+    });
+    
+      it('ruletoDTO should make JSON equal to openHABRule.getJSON', () => {
+        let ruleMod = new RuleDTO();
+        let json = {};
+        let testjson = {}; 
+        ruleMod = RuleMapperHelperService.mapRuleToDTO(testRule); 
+        json = ruleMod.getJSON();
+        testjson = openHABRule.getJSON;
+        expect(json).toEqual(testjson);
     });
 
   
