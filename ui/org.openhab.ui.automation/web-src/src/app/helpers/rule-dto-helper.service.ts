@@ -1,5 +1,6 @@
-import { Module, RuleDTO } from '../models/rule-dto';
+import { Module, RuleDTO } from '../models/rule-do.model';
 export class RuleDTOHelper {
+  
   static updateModule(moduleType: string, mod: Module, ruleDTO: RuleDTO): void {
     const modules = this.getModules(moduleType, ruleDTO);
     const maxId = this.getMaxId(ruleDTO);

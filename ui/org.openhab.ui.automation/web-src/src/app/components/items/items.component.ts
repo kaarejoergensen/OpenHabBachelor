@@ -1,12 +1,14 @@
-import {Item} from '../../models/item';
-import {Rule, OPERATORS, RuleModule, EVENT_TYPE, OPERATORS_EVENT} from '../../models/rule';
-import {Thing} from '../../models/thing';
+import {ItemModel} from '../../models/item.model';
+import {RuleModel, OPERATORS, RuleModelModule, EVENT_TYPE, OPERATORS_EVENT} from '../../models/rule.model';
+import {ThingModel} from '../../models/thing.model';
 import {SharedPropertiesService} from '../../services/shared-properties.service';
+import { CreateComponent } from '../create/create.component';
 import {ModuleCreatorDialogComponent} from '../module-creator-dialog/module-creator-dialog.component';
 import {Component, Input, ViewChild, Inject, ElementRef, EventEmitter, Output} from '@angular/core';
 import {ViewContainerRef, ReflectiveInjector, ComponentFactoryResolver} from '@angular/core';
-import {Injector, trigger, transition, style, animate, AfterViewInit, OnChanges, SimpleChanges} from '@angular/core';
+import {Injector, trigger, transition, style, animate, AfterViewInit, OnChanges, SimpleChanges, Injectable} from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+
 
 @Component({
   selector: 'app-items',
@@ -21,29 +23,35 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
     ])
   ]
 })
+  
+@Injectable()
 export class ItemsComponent {
+  
   @Output() modUpdated = new EventEmitter();
   @Output() modDeleted = new EventEmitter();
   @ViewChild('modal') conditionModal;
-  things: Thing[];
-  mod: RuleModule;
-  item: Item;
+  things: ThingModel[];
+  mod: RuleModelModule;
+  item: ItemModel;
 
   constructor(private sharedProperties: SharedPropertiesService, private dialog: MatDialog,
     private injector: Injector) {
     this.things = this.injector.get('things');
     this.mod = this.injector.get('mod');
+    
+    
     if (this.mod && this.mod.itemName && this.mod.thing) {
       this.item = this.getItem(this.mod.thing, this.mod.itemName);
     }
+    
 
   }
 
-  onSelect(thing: Thing): void {
+  onSelect(thing: ThingModel): void {
     this.openDialog(thing);
   }
 
-  openDialog(selectedThing: Thing): void {
+  openDialog(selectedThing: ThingModel): void {
     const dialogRef = this.dialog.open(ModuleCreatorDialogComponent, {
       data: {thing: selectedThing, mod: this.mod}
     });
@@ -59,7 +67,7 @@ export class ItemsComponent {
     });
   }
 
-  getItem(thing: Thing, itemName: string): Item {
+  getItem(thing: ThingModel, itemName: string): ItemModel {
     if (!thing.items || thing.items.length === 0) {
       return null;
     }
@@ -81,7 +89,7 @@ export class ItemsComponent {
 
   onDeleteMod(): void {
     this.modDeleted.emit(this.mod);
-    const newMod = new RuleModule();
+    const newMod = new RuleModelModule();
     newMod.type = this.mod.type;
     this.mod = newMod;
   }
@@ -124,6 +132,7 @@ export class ItemsComponent {
   }
 }
 
+@Injectable()
 @Component({
   selector: 'app-dynamic-component',
   entryComponents: [ItemsComponent],
@@ -145,11 +154,12 @@ export class ItemsComponent {
     ])
   ]
 })
+@Injectable()
 export class DynamicComponent implements AfterViewInit, OnChanges {
   currentComponents = [];
 
-  @Input() mods: RuleModule[];
-  @Input() things: Thing[];
+  @Input() mods: RuleModelModule[] = [];
+  @Input() things: ThingModel[] = [];
   @Input() moduleType: string;
   @ViewChild('dynamicComponentContainer', {read: ViewContainerRef}) dynamicComponentContainer: ViewContainerRef;
   @Output() modUpdated = new EventEmitter();
@@ -167,7 +177,7 @@ export class DynamicComponent implements AfterViewInit, OnChanges {
 
   newModule(): void {
     this.mods = this.mods.filter(m => m.id);
-    const mod = new RuleModule();
+    const mod = new RuleModelModule();
     mod.type = this.moduleType;
     this.mods.push(mod);
     this.buttonEnabled = false;
@@ -183,7 +193,7 @@ export class DynamicComponent implements AfterViewInit, OnChanges {
         this.newModule();
         return;
       }
-    }
+    }   
     for (const mod of this.mods) {
       if (this.currentComponents.filter(c => (<ItemsComponent>c.instance).mod === mod ||
         (mod.id && (<ItemsComponent>c.instance).mod.id === mod.id)).length > 0) {
@@ -193,7 +203,6 @@ export class DynamicComponent implements AfterViewInit, OnChanges {
       const data = {things: this.things, mod: mod};
       const inputProviders = Object.keys(data).map((inputName) => ({provide: inputName, useValue: data[inputName]}));
       const resolvedInputs = ReflectiveInjector.resolve(inputProviders);
-
       const injector = ReflectiveInjector.fromResolvedProviders(resolvedInputs, this.dynamicComponentContainer.parentInjector);
       const factory = this.resolver.resolveComponentFactory(ItemsComponent);
       const componentRef = factory.create(injector);

@@ -1,8 +1,8 @@
-import { RuleHelper } from '../../helpers/rule-helper';
-import { RuleMapperHelper } from '../../helpers/rule-mapper-helper';
-import { Item } from '../../models/item';
-import { Rule, RuleModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE } from '../../models/rule';
-import { Thing } from '../../models/thing';
+import { RuleHelperService } from '../../helpers/rule-helper.service';
+import { RuleMapperHelperService } from '../../helpers/rule-mapper-helper.service';
+import { ItemModel } from '../../models/item.model';
+import { RuleModel, RuleModelModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE } from '../../models/rule.model';
+import { ThingModel } from '../../models/thing.model';
 import { ItemService } from '../../services/item.service';
 import { RuleService } from '../../services/rule.service';
 import { SharedPropertiesService } from '../../services/shared-properties.service';
@@ -36,16 +36,16 @@ import 'rxjs/add/operator/concat';
 })
 export class CreateComponent implements OnInit {
   @ViewChild('bodyJson') jsonChild: ElementRef;
-  things: Thing[];
-  thingsWithEditableItems: Thing[];
+  things: ThingModel[];
+  thingsWithEditableItems: ThingModel[];
   step = 0;
-  rule: Rule;
+  rule: RuleModel;
   requiredFormControl = new FormControl('', [Validators.required]);
   edit: boolean;
   creatingRule = false;
   
   ngOnInit(): void {
-    this.rule = new Rule();
+    this.rule = new RuleModel();
     const editString = this.route.snapshot.queryParams['edit'] || undefined;
     if (editString && editString === 'true'
         && this.sharedProperties.getRule() !== undefined && this.sharedProperties.getRule() !== null) {
@@ -62,8 +62,8 @@ export class CreateComponent implements OnInit {
   private route: ActivatedRoute, private router: Router) { }
 
   getItemsAndThings(): void {
-    let items: Item[];
-    let things: Thing[];
+    let items: ItemModel[];
+    let things: ThingModel[];
     this.itemService.getItems()
     .concat(this.thingService.getThings())
     .subscribe(res => {
@@ -83,7 +83,7 @@ export class CreateComponent implements OnInit {
     error => this.step = -2);
   }
   
-  initializeThingsAndItems(things: Thing[], items: Item[]): void {
+  initializeThingsAndItems(things: ThingModel[], items: ItemModel[]): void {
     this.things = this.addItemsToThings(items, things);
     this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
     this.things.push(this.createTimeThing());
@@ -95,7 +95,7 @@ export class CreateComponent implements OnInit {
     }
   }
     
-  addItemsToThings(items: Item[], things: Thing[]): Thing[] {
+  addItemsToThings(items: ItemModel[], things: ThingModel[]): ThingModel[] {
     const thingsWithItems = [];
     for (const thing of things) {
       if (thing.channels && thing.channels.length > 0) {
@@ -148,10 +148,10 @@ export class CreateComponent implements OnInit {
     }
   }
 
-  createTimeThing(): Thing {
-    const thing = new Thing();
+  createTimeThing(): ThingModel {
+    const thing = new ThingModel();
     thing.label = 'Time';
-    const item = new Item();
+    const item = new ItemModel();
     item.type = 'CustomTime';
     item.label = 'time';
     thing.items = [item];
@@ -168,7 +168,7 @@ export class CreateComponent implements OnInit {
   
   updateRule(): void {
     this.creatingRule = true;
-    const ruleDTO = RuleMapperHelper.mapRuleToDTO(this.rule);
+    const ruleDTO = RuleMapperHelperService.mapRuleToDTO(this.rule);
     const body = ruleDTO.getJSON();
     this.ruleService.updateRule(body)
       .subscribe(res => res ? this.goToOverview('Recipe updated') : this.goToOverview('Recipe update failed'),
@@ -177,7 +177,7 @@ export class CreateComponent implements OnInit {
   
   createRule(): void {
     this.creatingRule = true;
-    const ruleDTO = RuleMapperHelper.mapRuleToDTO(this.rule);
+    const ruleDTO = RuleMapperHelperService.mapRuleToDTO(this.rule);
     const body = ruleDTO.getJSON();
     this.ruleService.createRule(body)
       .subscribe(res => res ? this.goToOverview('Recipe added') : this.goToOverview('Recipe creation failed'),
@@ -190,12 +190,12 @@ export class CreateComponent implements OnInit {
     this.router.navigate(['/overview']);
   }
 
-  isThingArray(arr: Thing[] | Item[]): arr is Thing[] {
-    return arr.length > 0 && (<Thing>arr[0]).statusInfo !== undefined;
+  isThingArray(arr: ThingModel[] | ItemModel[]): arr is ThingModel[] {
+    return arr.length > 0 && (<ThingModel>arr[0]).statusInfo !== undefined;
   }
 
-  isItemArray(arr: Thing[] | Item[]): arr is Item[] {
-    return arr.length > 0 && (<Item>arr[0]).link !== undefined;
+  isItemArray(arr: ThingModel[] | ItemModel[]): arr is ItemModel[] {
+    return arr.length > 0 && (<ItemModel>arr[0]).link !== undefined;
   }
 
   cancel(): void {
@@ -210,11 +210,11 @@ export class CreateComponent implements OnInit {
     return this.rule.actions.length === 0;
   }
 
-  onRuleUpdated(mod: RuleModule) {
-    RuleHelper.updateModule(mod, this.rule);
+  onRuleUpdated(mod: RuleModelModule) {
+    RuleHelperService.updateModule(mod, this.rule);
   }
   
   onModDeleted(mod: any) {
-    RuleHelper.removeModule(mod, this.rule);
+    RuleHelperService.removeModule(mod, this.rule);
   }
 }

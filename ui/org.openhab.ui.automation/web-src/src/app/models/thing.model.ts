@@ -1,5 +1,6 @@
-import { Item } from './item';
-export class Thing {
+import { ItemModel } from './item.model';
+
+export class ThingModel {
   statusInfo: StatusInfo;
   label: string;
   bridgeUID: string;

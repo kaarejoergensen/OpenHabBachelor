@@ -1,4 +1,4 @@
-export class Item {
+export class ItemModel {
   link: string;
   state: string;
   stateDescription: StateDescription;

@@ -1,6 +1,6 @@
-import {RuleMapperHelper} from '../../helpers/rule-mapper-helper';
-import {Rule} from '../../models/rule';
-import {RuleDTO} from '../../models/rule-dto';
+import {RuleMapperHelperService} from '../../helpers/rule-mapper-helper.service';
+import {RuleModel} from '../../models/rule.model';
+import {RuleDTO} from '../../models/rule-do.model';
 import {ModuleTypeService} from '../../services/module-type.service';
 import {RuleService} from '../../services/rule.service';
 import {SharedPropertiesService} from '../../services/shared-properties.service';
@@ -16,7 +16,7 @@ import {Router} from '@angular/router';
   providers: [RuleService, ModuleTypeService]
 })
 export class OverviewComponent implements OnInit {
-  rules: Rule[];
+  rules: RuleModel[];
   isLoading = true;
   extensionMissing = false;
   loadError = false;
@@ -31,7 +31,7 @@ export class OverviewComponent implements OnInit {
     this.isLoading = true;
     this.ruleService.getRules().
       subscribe(res => {
-        this.rules = res.map(function(r) {return RuleMapperHelper.mapDTOtoRule(r); });
+        this.rules = res.map(function(r) {return RuleMapperHelperService.mapDTOtoRule(r); });
         this.checkIfModuleExtensionExists(handleCreateResult);
       },
       error => {
@@ -89,7 +89,7 @@ export class OverviewComponent implements OnInit {
     });
   }
 
-  openCreate(rule: Rule) {
+  openCreate(rule: RuleModel) {
     if (rule !== undefined && rule !== null) {
       this.sharedProperties.setRule(rule);
       this.router.navigate(['/create'], {queryParams: {edit: true}});
@@ -124,7 +124,7 @@ export class OverviewComponent implements OnInit {
     });
   }
 
-  enableDisableRule(rule: Rule): void {
+  enableDisableRule(rule: RuleModel): void {
     this.ruleService.enableDisableRule(rule)
       .subscribe(res => {
         if (res) {

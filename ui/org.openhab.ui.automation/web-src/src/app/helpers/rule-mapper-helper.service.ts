@@ -1,28 +1,31 @@
-import {Rule, RuleModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE} from '../models/rule';
-import {RuleDTO, Module} from '../models/rule-dto';
-import {RuleDTOHelper} from './rule-dto-helper';
+import {RuleModel, RuleModelModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE} from '../models/rule.model';
+import {RuleDTO, Module} from '../models/rule-do.model';
+import {RuleDTOHelper} from './rule-dto-helper.service';
 
-export class RuleMapperHelper {
 
-  static mapRuleToDTO(rule: Rule): RuleDTO {
+
+export class RuleMapperHelperService {
+  static mapRuleToDTO(rule: RuleModel): RuleDTO {
+    
     const ruleDTO = new RuleDTO();
-
+    ruleDTO.enabled = rule.enabled;
     ruleDTO.uid = rule.uid;
     ruleDTO.name = rule.name;
     ruleDTO.description = rule.description;
     rule.events.forEach(e => RuleDTOHelper.updateModule('trigger', this.mapEventToModule(e, ruleDTO), ruleDTO));
     rule.conditions.forEach(c => RuleDTOHelper.updateModule('condition', this.mapConditionToModule(c), ruleDTO));
     rule.actions.forEach(a => RuleDTOHelper.updateModule('action', this.mapActionToModule(a), ruleDTO));
-
+  
     return ruleDTO;
   }
 
-  static mapEventToModule(event: RuleModule, ruleDTO: RuleDTO): Module {
+  static mapEventToModule(event: RuleModelModule, ruleDTO: RuleDTO): Module {
     if (event.unsupportedModule) {
       return event.unsupportedModule;
     }
     const mod = new Module();
     Module.addConfiguration('createdIn', 'AutomationUI', mod);
+    mod.id = event.id;
     if (event.itemName) {
       Module.addConfiguration('itemName', event.itemName, mod);
       if (event.operator) {
@@ -53,15 +56,15 @@ export class RuleMapperHelper {
       Module.addConfiguration('days', event.days, dayOfWeek);
       RuleDTOHelper.updateModule('condition', dayOfWeek, ruleDTO);
     }
-
     return mod;
   }
 
-  static mapConditionToModule(condition: RuleModule): Module {
+  static mapConditionToModule(condition: RuleModelModule): Module {
     if (condition.unsupportedModule) {
       return condition.unsupportedModule;
     }
     const mod = new Module();
+    mod.id = condition.id; 
     Module.addConfiguration('createdIn', 'AutomationUI', mod);
     if (condition.itemName) {
       mod.type = 'core.ItemStateCondition';
@@ -83,11 +86,12 @@ export class RuleMapperHelper {
     return mod;
   }
 
-  static mapActionToModule(action: RuleModule): Module {
+  static mapActionToModule(action: RuleModelModule): Module {
     if (action.unsupportedModule) {
       return action.unsupportedModule;
     }
     const mod = new Module();
+    mod.id = action.id; 
     Module.addConfiguration('createdIn', 'AutomationUI', mod);
     mod.type = 'core.ItemCommandAction';
     mod.label = 'send a command';
@@ -97,8 +101,8 @@ export class RuleMapperHelper {
     return mod;
   }
 
-  static mapDTOtoRule(ruleDTO: RuleDTO): Rule {
-    const rule = new Rule();
+  static mapDTOtoRule(ruleDTO: RuleDTO): RuleModel {
+    const rule = new RuleModel();
 
     rule.uid = ruleDTO.uid;
     rule.enabled = ruleDTO.enabled;
@@ -111,8 +115,8 @@ export class RuleMapperHelper {
     return rule;
   }
 
-  static mapModuleToEvent(mod: Module): RuleModule {
-    const event = new RuleModule();
+  static mapModuleToEvent(mod: Module): RuleModelModule {
+    const event = new RuleModelModule();
     event.type = EVENT_TYPE;
     event.id = mod.id;
     event.label = mod.label;
@@ -132,8 +136,8 @@ export class RuleMapperHelper {
     return event;
   }
 
-  static mapModuleToCondition(mod: Module): RuleModule {
-    const condition = new RuleModule();
+  static mapModuleToCondition(mod: Module): RuleModelModule {
+    const condition = new RuleModelModule();
     condition.type = CONDITION_TYPE;
     condition.id = mod.id;
     condition.label = mod.label;
@@ -149,8 +153,8 @@ export class RuleMapperHelper {
     return condition;
   }
 
-  static mapModuleToAction(mod: Module): RuleModule {
-    const action = new RuleModule();
+  static mapModuleToAction(mod: Module): RuleModelModule {
+    const action = new RuleModelModule();
     action.type = ACTION_TYPE;
     action.id = mod.id;
     action.label = mod.label;

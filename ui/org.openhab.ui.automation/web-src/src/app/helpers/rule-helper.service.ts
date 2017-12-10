@@ -1,8 +1,8 @@
-import { RuleModule, Rule, ACTION_TYPE, CONDITION_TYPE, EVENT_TYPE } from '../models/rule';
+import { RuleModelModule, RuleModel, ACTION_TYPE, CONDITION_TYPE, EVENT_TYPE } from '../models/rule.model';
 
-export class RuleHelper {
+export class RuleHelperService {
   
-  static updateModule(mod: RuleModule, rule: Rule): void {
+  static updateModule(mod: RuleModelModule, rule: RuleModel): void {
     const modules = this.getModules(mod.type, rule);
     const maxId = this.getMaxId(rule);
     
@@ -19,7 +19,7 @@ export class RuleHelper {
     }
   }
   
-  static removeModule(mod: RuleModule, rule: Rule): void {
+  static removeModule(mod: RuleModelModule, rule: RuleModel): void {
     const modules = this.getModules(mod.type, rule);
     if (mod.id) {
       const index = this.searhArray(modules, mod.id);
@@ -29,7 +29,7 @@ export class RuleHelper {
     }
   }
 
-  private static searhArray(modules: RuleModule[], id: string): number {
+  private static searhArray(modules: RuleModelModule[], id: string): number {
     for (let i = 0; modules != null && i < modules.length; i++) {
       if (modules[i].id === id) {
         return i;
@@ -38,7 +38,7 @@ export class RuleHelper {
     return -1;
   }
 
-  static getModules(moduleType: string, rule: Rule): RuleModule[] {
+  static getModules(moduleType: string, rule: RuleModel): RuleModelModule[] {
     if (moduleType === EVENT_TYPE) {
       return rule.events;
     } else if (moduleType === CONDITION_TYPE) {
@@ -48,7 +48,7 @@ export class RuleHelper {
     }
   }
 
-  private static getMaxId(rule: Rule): string {
+  private static getMaxId(rule: RuleModel): string {
     let maxId = 0;
     const modules = [EVENT_TYPE, ACTION_TYPE, CONDITION_TYPE];
     for (let i = 0; i < modules.length; i++) {

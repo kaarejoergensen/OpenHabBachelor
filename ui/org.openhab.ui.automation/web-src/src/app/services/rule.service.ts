@@ -1,5 +1,5 @@
 import { environment } from '../../environments/environment';
-import { RuleDTO } from '../models/rule-dto';
+import { RuleDTO } from '../models/rule-do.model';
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';

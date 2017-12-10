@@ -1,10 +1,12 @@
-import { Rule } from '../models/rule';
+import { RuleModel } from '../models/rule.model';
+import { ThingModel } from '../models/thing.model';
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class SharedPropertiesService {
   private result: any;
-  private rule: Rule;
+  private rule: RuleModel;
+
 
   constructor() {
   }
@@ -17,11 +19,11 @@ export class SharedPropertiesService {
     this.result = result;
   }
 
-  getRule(): Rule {
+  getRule(): RuleModel {
     return this.rule;
   }
 
-  setRule(rule: Rule): void {
+  setRule(rule: RuleModel): void {
     this.rule = rule;
   }
 
@@ -29,4 +31,5 @@ export class SharedPropertiesService {
     this.result = null;
     this.rule = null;
   }
+ 
 }

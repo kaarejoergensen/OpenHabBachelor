@@ -22,6 +22,7 @@ export class RuleDTO {
     }
     return body;
   }
+  
 }
 
 export class Module {

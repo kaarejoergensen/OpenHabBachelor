@@ -1,6 +1,6 @@
-import {Item} from '../../models/item';
-import {OPERATORS, SWITCH_STATES, DAYS, Rule, RuleModule, CONDITION_TYPE, ACTION_TYPE, EVENT_TYPE, SWITCH_STATES_EVENT, OPERATORS_EVENT} from '../../models/rule';
-import {Thing} from '../../models/thing';
+import {ItemModel} from '../../models/item.model';
+import {OPERATORS, SWITCH_STATES, DAYS, RuleModel, RuleModelModule, CONDITION_TYPE, ACTION_TYPE, EVENT_TYPE, SWITCH_STATES_EVENT, OPERATORS_EVENT} from '../../models/rule.model';
+import {ThingModel} from '../../models/thing.model';
 import {SharedPropertiesService} from '../../services/shared-properties.service';
 import {DatePipe, PercentPipe} from '@angular/common';
 import {Component, ViewChild, ElementRef, Inject, AfterViewInit, ChangeDetectorRef, AfterContentInit, OnInit} from '@angular/core';
@@ -15,8 +15,8 @@ import {Validators, FormControl} from '@angular/forms';
 export class ModuleCreatorDialogComponent implements OnInit {
   rateControl = new FormControl('', Validators.required);
   requireControl = new FormControl('', Validators.required);
-  thing: Thing;
-  selectedItem: Item;
+  thing: ThingModel;
+  selectedItem: ItemModel;
   modalType: string;
   @ViewChild('datePicker') datePicker: ElementRef;
   operators = OPERATORS;
@@ -27,7 +27,7 @@ export class ModuleCreatorDialogComponent implements OnInit {
   selectedDays = [];
   stateInput;
   secondTimeInput;
-  mod: RuleModule;
+  mod: RuleModelModule;
   daysChosen = true;
 
   constructor(private sharedProperties: SharedPropertiesService, private cdRef: ChangeDetectorRef,
@@ -129,7 +129,7 @@ export class ModuleCreatorDialogComponent implements OnInit {
     }
   }
 
-  getItem(thing: Thing, itemName: string): Item {
+  getItem(thing: ThingModel, itemName: string): ItemModel {
     if (!thing.items || thing.items.length === 0) {
       return null;
     }
@@ -142,7 +142,7 @@ export class ModuleCreatorDialogComponent implements OnInit {
   }
 
   save(): void {
-    const mod = new RuleModule();
+    const mod = new RuleModelModule();
     mod.type = this.modalType;
     mod.thing = this.thing;
     if (this.modalType !== 'action') {
