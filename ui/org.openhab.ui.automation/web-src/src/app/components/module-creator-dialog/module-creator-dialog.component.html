@@ -4,7 +4,7 @@
         <div class="container">
 	        <div *ngIf="modalType=='event'">
 	            <div *ngIf="selectedItem.type !== 'CustomTime'">
-	                <div>
+	                <div style="display: inline-block;">
 	                    When
 	                </div>
 	                <mat-form-field *ngIf="thing.items.length > 1 else onlyOneItem">
