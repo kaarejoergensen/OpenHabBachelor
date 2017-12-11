@@ -37,7 +37,7 @@
 	                        </mat-select>
 	                    </mat-form-field>
 	                </div>
-	                <div *ngIf="selectedItem.type === 'DateTime'">
+	                <div *ngIf="selectedItem.type === 'DateTime'" style="display: inline-block">
 	                is
 	                <mat-form-field>
 	                    <input #datePicker matInput [matDatepicker]="picker" placeholder="Choose a date" [(formControl)]="rateControl">
@@ -49,6 +49,10 @@
 	                    <input matInput [(ngModel)]="stateInput"  [(formControl)]="requireControl" type="time">
 	                </mat-form-field>
 	            </div>
+		            <div *ngIf="validTypes.indexOf(selectedItem.type) === -1" style="display: inline-block">
+		              <mat-icon class="unsupported-type" matTooltip="The type of {{selectedItem.label}} is not supported." matTooltipPosition="below">error</mat-icon>
+		            </div>
+	            
 	            </div>
 	            <div *ngIf="selectedItem.type === 'CustomTime'">
 	                <div>
@@ -97,6 +101,21 @@
 	                        </mat-select>
 	                    </mat-form-field>
 	                </div>
+                    <div *ngIf="selectedItem.type === 'DateTime'">
+	                    is
+	                    <mat-form-field>
+	                        <input #datePicker matInput [matDatepicker]="picker" placeholder="Choose a date" [(formControl)]="rateControl">
+	                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+	                        <mat-datepicker #picker></mat-datepicker>
+	                    </mat-form-field>
+	                    at
+	                    <mat-form-field style="width: 75px">
+	                        <input matInput [(ngModel)]="stateInput" [(formControl)]="rateControl" type="time">
+	                    </mat-form-field>
+	                </div>
+	                <div *ngIf="validTypes.indexOf(selectedItem.type) === -1" style="display: inline-block">
+                      <mat-icon class="unsupported-type" matTooltip="The type of {{selectedItem.label}} is not supported." matTooltipPosition="below">error</mat-icon>
+	                </div>
 	            </div>
 	            <div *ngIf="selectedItem.type === 'CustomTime'">
 	                <div>
@@ -109,18 +128,6 @@
 	                        <input matInput [(ngModel)]="secondTimeInput" type="time" [(formControl)]="requireControl">
 	                    </mat-form-field>
 	                </div>
-	            </div>
-	            <div *ngIf="selectedItem.type === 'DateTime'">
-	                is
-	                <mat-form-field>
-	                    <input #datePicker matInput [matDatepicker]="picker" placeholder="Choose a date" [(formControl)]="rateControl">
-	                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-	                    <mat-datepicker #picker></mat-datepicker>
-	                </mat-form-field>
-	                at
-	                <mat-form-field style="width: 75px">
-	                    <input matInput [(ngModel)]="stateInput" [(formControl)]="rateControl" type="time">
-	                </mat-form-field>
 	            </div>
 	        </div>
 	        <div *ngIf="modalType==='action'">
@@ -153,6 +160,9 @@
                     </mat-select>
                 </mat-form-field>
             </div>
+            <div *ngIf="validTypes.indexOf(selectedItem.type) === -1" style="display: inline-block">
+                <mat-icon class="unsupported-type" matTooltip="The type of {{selectedItem.label}} is not supported." matTooltipPosition="below">error</mat-icon>
+            </div>
         </div>
         </div>
         <div class="dialog-buttons" mat-dialog-actions>
@@ -162,7 +172,8 @@
                 [disabled]="(!daysChosen && modalType !== 'condition')
                 || (!rateControl.valid && selectedItem.type !== 'Switch' && selectedOperator.value !=='?')
                 || (modalType === 'condition' && selectedItem.type === 'CustomTime' && !requireControl.valid)
-                || (selectedItem.type === 'DateTime' && (!rateControl.valid || !requireControl.valid))" (click)="save()" tabindex="-1">Save</button>
+                || (selectedItem.type === 'DateTime' && (!rateControl.valid || !requireControl.valid))
+                || validTypes.indexOf(selectedItem.type) === -1" (click)="save()" tabindex="-1">Save</button>
         </div>
     </div>
 </section>

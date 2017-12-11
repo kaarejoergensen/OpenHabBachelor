@@ -13,6 +13,7 @@ import {Validators, FormControl} from '@angular/forms';
   styleUrls: ['./module-creator-dialog.component.css']
 })
 export class ModuleCreatorDialogComponent implements OnInit {
+  validTypes = ['Switch', 'Number', 'CustomTime', 'DateTime'];
   rateControl = new FormControl('', Validators.required);
   requireControl = new FormControl('', Validators.required);
   thing: ThingModel;
