@@ -89,6 +89,7 @@ export class OverviewComponent implements OnInit {
               ThingItemMapperHelperService.addThingToRule(rule, things);
             }
           }
+          this.sharedProperties.setThings(things);
           this.isLoading = false;
           if (handleCreateResult) {
             this.handleCreateResult(this.sharedProperties.getResult());

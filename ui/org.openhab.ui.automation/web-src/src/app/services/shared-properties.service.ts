@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class SharedPropertiesService {
   private result: any;
   private rule: RuleModel;
+  private things: ThingModel[];
 
 
   constructor() {
@@ -26,10 +27,19 @@ export class SharedPropertiesService {
   setRule(rule: RuleModel): void {
     this.rule = rule;
   }
+  
+  setThings(things: ThingModel[]): void {
+    this.things = things;
+  }
+  
+  getThings(): ThingModel[] {
+    return this.things;
+  }
 
   reset(): void {
     this.result = null;
     this.rule = null;
+    this.things = null;
   }
  
 }

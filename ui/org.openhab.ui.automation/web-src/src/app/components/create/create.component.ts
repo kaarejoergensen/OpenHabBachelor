@@ -47,54 +47,24 @@ export class CreateComponent implements OnInit {
   
   ngOnInit(): void {
     this.rule = new RuleModel();
+    this.things = this.sharedProperties.getThings();
+    this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
     const editString = this.route.snapshot.queryParams['edit'] || undefined;
     if (editString && editString === 'true'
         && this.sharedProperties.getRule() !== undefined && this.sharedProperties.getRule() !== null) {
       this.edit = true;
       this.rule = this.sharedProperties.getRule();
+      ThingItemMapperHelperService.addThingToRule(this.rule, this.things);
+      this.step = 5;
     } else {
       this.edit = false;
       this.sharedProperties.reset();
+      this.next();
     }
-    this.getItemsAndThings();
   }
   constructor(private itemService: ItemService, private sharedProperties: SharedPropertiesService,
   private thingService: ThingService, private ruleService: RuleService, private location: Location,
   private route: ActivatedRoute, private router: Router) { }
-
-  getItemsAndThings(): void {
-    let items: ItemModel[];
-    let things: ThingModel[];
-    this.itemService.getItems()
-    .concat(this.thingService.getThings())
-    .subscribe(res => {
-      if (ThingItemMapperHelperService.isThingArray(res)) {
-        console.log('Fetched ' + res.length + ' things');
-        things = res;
-      } else if (ThingItemMapperHelperService.isItemArray(res)) {
-        console.log('Fetched ' + res.length + ' items');
-        items = res;
-      }
-      if (things && things.length > 0 && items && items.length > 0) {
-        this.initializeThingsAndItems(things, items);
-      } else if (things && items) {
-        this.step = -1;
-      }
-    },
-    error => this.step = -2);
-  }
-  
-  initializeThingsAndItems(things: ThingModel[], items: ItemModel[]): void {
-    this.things = ThingItemMapperHelperService.addItemsToThings(items, things);
-    this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
-    this.things.push(ThingItemMapperHelperService.createTimeThing());
-    if (this.edit) {
-      ThingItemMapperHelperService.addThingToRule(this.rule, this.things);
-      this.step = 5;
-    } else {
-      this.next();
-    }
-  }
 
   next(): void {
     this.step++;
