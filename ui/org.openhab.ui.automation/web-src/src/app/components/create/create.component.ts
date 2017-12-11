@@ -54,7 +54,6 @@ export class CreateComponent implements OnInit {
       this.rule = this.sharedProperties.getRule();
     } else {
       this.edit = false;
-      this.sharedProperties.reset();
     }
     if (this.sharedProperties.getThings()) {
       this.things = this.sharedProperties.getThings();
@@ -66,6 +65,9 @@ export class CreateComponent implements OnInit {
       }
     } else {
       this.getItemsAndThings();
+    }
+    if (!this.edit) {
+      this.sharedProperties.reset();
     }
   }
   constructor(private itemService: ItemService, private sharedProperties: SharedPropertiesService,
