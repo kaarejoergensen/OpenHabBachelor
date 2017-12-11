@@ -1,5 +1,5 @@
 import { Module, RuleDTO } from '../models/rule-do.model';
-export class RuleDTOHelper {
+export class RuleDTOHelperService {
   
   static updateModule(moduleType: string, mod: Module, ruleDTO: RuleDTO): void {
     const modules = this.getModules(moduleType, ruleDTO);

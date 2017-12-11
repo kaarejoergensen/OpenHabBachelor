@@ -263,13 +263,7 @@ describe('Service: RuleMapperHelperService', () => {
           
         it('ruletoDTO should make object equal to openHABRule', () => {
         let ruleMod = new RuleDTO();
-        let json = {};
-        let json2 = {}; 
         ruleMod = RuleMapperHelperService.mapRuleToDTO(testRule); 
-        json = ruleMod.getJSON();
-        json2 = openHABRule.getJSON;
-        console.log(json);
-        console.log(json2);
         expect((ruleMod).uid).toEqual(openHABRule.uid);
         expect((ruleMod).enabled).toEqual(openHABRule.enabled);
         expect((ruleMod).name).toEqual(openHABRule.name);
@@ -277,7 +271,6 @@ describe('Service: RuleMapperHelperService', () => {
         expect((ruleMod).triggers[0].id).toEqual(openHABRule.triggers[0].id);        
         expect((ruleMod).conditions[0].id).toEqual(openHABRule.conditions[0].id);     
         expect((ruleMod).actions[0].id).toEqual(openHABRule.actions[0].id);
-        expect(json).toEqual(json2);
     });
     
       it('ruletoDTO should make JSON equal to openHABRule.getJSON', () => {
