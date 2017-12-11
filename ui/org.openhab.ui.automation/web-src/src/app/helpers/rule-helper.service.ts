@@ -48,7 +48,7 @@ export class RuleHelperService {
     }
   }
 
-  private static getMaxId(rule: RuleModel): string {
+  static getMaxId(rule: RuleModel): string {
     let maxId = 0;
     const modules = [EVENT_TYPE, ACTION_TYPE, CONDITION_TYPE];
     for (let i = 0; i < modules.length; i++) {

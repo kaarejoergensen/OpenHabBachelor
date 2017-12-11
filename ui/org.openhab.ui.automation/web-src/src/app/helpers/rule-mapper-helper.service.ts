@@ -1,6 +1,7 @@
 import {RuleModel, RuleModelModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE} from '../models/rule.model';
 import {RuleDTO, Module} from '../models/rule-do.model';
 import {RuleDTOHelperService} from './rule-dto-helper.service';
+import { RuleHelperService } from './rule-helper.service';
 
 
 
@@ -12,14 +13,14 @@ export class RuleMapperHelperService {
     ruleDTO.uid = rule.uid;
     ruleDTO.name = rule.name;
     ruleDTO.description = rule.description;
-    rule.events.forEach(e => RuleDTOHelperService.updateModule('trigger', this.mapEventToModule(e, ruleDTO), ruleDTO));
+    rule.events.forEach(e => RuleDTOHelperService.updateModule('trigger', this.mapEventToModule(e, ruleDTO, rule), ruleDTO));
     rule.conditions.forEach(c => RuleDTOHelperService.updateModule('condition', this.mapConditionToModule(c), ruleDTO));
     rule.actions.forEach(a => RuleDTOHelperService.updateModule('action', this.mapActionToModule(a), ruleDTO));
   
     return ruleDTO;
   }
 
-  static mapEventToModule(event: RuleModelModule, ruleDTO: RuleDTO): Module {
+  static mapEventToModule(event: RuleModelModule, ruleDTO: RuleDTO, rule: RuleModel): Module {
     if (event.unsupportedModule) {
       return event.unsupportedModule;
     }
@@ -54,6 +55,7 @@ export class RuleMapperHelperService {
       dayOfWeek.label = 'it is a certain day of the week';
       dayOfWeek.description = 'checks for the current day of the week';
       Module.addConfiguration('days', event.days, dayOfWeek);
+      dayOfWeek.id = RuleHelperService.getMaxId(rule);
       RuleDTOHelperService.updateModule('condition', dayOfWeek, ruleDTO);
     }
     return mod;
