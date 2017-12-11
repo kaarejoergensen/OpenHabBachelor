@@ -7,11 +7,16 @@
     <ul *ngIf="mod && mod.id" [@fadeIn] class="itemsdiv" class="items">
         <li style="width: 90% !important;">
             <div *ngIf="mod.unsupportedModule" class="inner-item-disabled">
+                <mat-icon color="warn">error</mat-icon><br>
                 This {{mod.type}} has been created in openHAB, and can't be edited here.<br>
                 <br>
                 Name: <i>{{mod.label}}</i>.
             </div>
-            <div class="inner-item" (click)="onSelect(mod.thing)" *ngIf="!mod.unsupportedModule">
+            <div *ngIf="!mod.thing" clsas="inner-item-disabled">
+                <mat-icon color="warn">error</mat-icon><br>
+                The device associated with this {{mod.type}} does not exist any longer.
+            </div>
+            <div class="inner-item" (click)="onSelect(mod.thing)" *ngIf="!mod.unsupportedModule && mod.thing">
                 <div *ngIf="mod.type === 'event'">
                     <div *ngIf="mod.itemName && item">
                         <div *ngIf="mod.operator && mod.operator === '?'">

@@ -1,9 +1,14 @@
 import {RuleMapperHelperService} from '../../helpers/rule-mapper-helper.service';
+import {ThingItemMapperHelperService} from '../../helpers/thing-item-mapper-helper.service';
+import {ItemModel} from '../../models/item.model';
 import {RuleModel} from '../../models/rule.model';
 import {RuleDTO} from '../../models/rule-do.model';
+import {ThingModel} from '../../models/thing.model';
+import {ItemService} from '../../services/item.service';
 import {ModuleTypeService} from '../../services/module-type.service';
 import {RuleService} from '../../services/rule.service';
 import {SharedPropertiesService} from '../../services/shared-properties.service';
+import {ThingService} from '../../services/thing.service';
 import {Component, OnInit, Inject} from '@angular/core';
 import {Location} from '@angular/common';
 import {MatSnackBar, MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
@@ -13,7 +18,7 @@ import {Router} from '@angular/router';
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css'],
-  providers: [RuleService, ModuleTypeService]
+  providers: [RuleService, ModuleTypeService, ItemService, ThingService]
 })
 export class OverviewComponent implements OnInit {
   rules: RuleModel[];
@@ -22,7 +27,7 @@ export class OverviewComponent implements OnInit {
   loadError = false;
   constructor(private ruleService: RuleService, private sharedProperties: SharedPropertiesService,
     private moduleTypeService: ModuleTypeService, private location: Location, private router: Router,
-    public snackBar: MatSnackBar, private dialog: MatDialog) {}
+    public snackBar: MatSnackBar, private dialog: MatDialog, private itemService: ItemService, private thingService: ThingService) {}
   ngOnInit() {
     this.updateRules(true);
   }
@@ -48,10 +53,7 @@ export class OverviewComponent implements OnInit {
     this.moduleTypeService.getModules().
       subscribe(res => {
         if (res.filter(mt => mt.uid === 'ItemCommandAboveBelowTrigger' || mt.uid === 'BetweenTimesCondition').length === 2) {
-          this.isLoading = false;
-          if (handleCreateResult) {
-            this.handleCreateResult(this.sharedProperties.getResult());
-          }
+          this.handleHasExtensions(handleCreateResult);
         } else {
           this.handleMissingExtensions();
         }
@@ -64,6 +66,36 @@ export class OverviewComponent implements OnInit {
           this.loadError = true;
         }
       });
+  }
+
+  handleHasExtensions(handleCreateResult: boolean) {
+    let items: ItemModel[];
+    let things: ThingModel[];
+    this.itemService.getItems()
+      .concat(this.thingService.getThings())
+      .subscribe(res => {
+        if (ThingItemMapperHelperService.isThingArray(res)) {
+          console.log('Fetched ' + res.length + ' things');
+          things = res;
+        } else if (ThingItemMapperHelperService.isItemArray(res)) {
+          console.log('Fetched ' + res.length + ' items');
+          items = res;
+        }
+        if (things && things.length > 0 && items && items.length > 0) {
+          if (things.length > 0 && items.length > 0) {
+            things = ThingItemMapperHelperService.addItemsToThings(items, things);
+            things.push(ThingItemMapperHelperService.createTimeThing());
+            for (const rule of this.rules) {
+              ThingItemMapperHelperService.addThingToRule(rule, things);
+            }
+          }
+          this.isLoading = false;
+          if (handleCreateResult) {
+            this.handleCreateResult(this.sharedProperties.getResult());
+          }
+        }
+      },
+      error => this.loadError = true);
   }
 
   handleMissingExtensions() {
@@ -134,6 +166,11 @@ export class OverviewComponent implements OnInit {
         }
       },
       error => this.openSnackbar((rule.enabled ? 'Disable' : 'Enable') + ' recipe failed.'));
+  }
+
+  ruleMissingThing(rule: RuleModel): boolean {
+    const modules = rule.actions.concat(rule.conditions, rule.events);
+    return modules.filter(m => m.itemName && !m.thing).length > 0;
   }
 }
 

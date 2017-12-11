@@ -1,5 +1,6 @@
 import { RuleHelperService } from '../../helpers/rule-helper.service';
 import { RuleMapperHelperService } from '../../helpers/rule-mapper-helper.service';
+import { ThingItemMapperHelperService } from '../../helpers/thing-item-mapper-helper.service';
 import { ItemModel } from '../../models/item.model';
 import { RuleModel, RuleModelModule, EVENT_TYPE, CONDITION_TYPE, ACTION_TYPE } from '../../models/rule.model';
 import { ThingModel } from '../../models/thing.model';
@@ -67,10 +68,10 @@ export class CreateComponent implements OnInit {
     this.itemService.getItems()
     .concat(this.thingService.getThings())
     .subscribe(res => {
-      if (this.isThingArray(res)) {
+      if (ThingItemMapperHelperService.isThingArray(res)) {
         console.log('Fetched ' + res.length + ' things');
         things = res;
-      } else if (this.isItemArray(res)) {
+      } else if (ThingItemMapperHelperService.isItemArray(res)) {
         console.log('Fetched ' + res.length + ' items');
         items = res;
       }
@@ -84,78 +85,15 @@ export class CreateComponent implements OnInit {
   }
   
   initializeThingsAndItems(things: ThingModel[], items: ItemModel[]): void {
-    this.things = this.addItemsToThings(items, things);
+    this.things = ThingItemMapperHelperService.addItemsToThings(items, things);
     this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
-    this.things.push(this.createTimeThing());
+    this.things.push(ThingItemMapperHelperService.createTimeThing());
     if (this.edit) {
-      this.addThingToRule();
+      ThingItemMapperHelperService.addThingToRule(this.rule, this.things);
       this.step = 5;
     } else {
       this.next();
     }
-  }
-    
-  addItemsToThings(items: ItemModel[], things: ThingModel[]): ThingModel[] {
-    const thingsWithItems = [];
-    for (const thing of things) {
-      if (thing.channels && thing.channels.length > 0) {
-        for (const channel of thing.channels) {
-          if (channel.linkedItems && channel.linkedItems.length > 0) {
-            for (const linkedItem of channel.linkedItems) {
-              for (const item of items) {
-                if (linkedItem === item.name) {
-                  item.thingName = linkedItem;
-                  if (thing.items !== undefined) {
-                    thing.items.push(item);
-                  } else {
-                    thing['items'] = [];
-                    thing.items.push(item);
-                  }
-                  if (!item.stateDescription || !item.stateDescription.readOnly) {
-                    if (thing.editableItems !== undefined) {
-                      thing.editableItems.push(item);
-                    } else {
-                      thing['editableItems'] = [];
-                      thing.editableItems.push(item);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    return things.filter(t => t.items !== undefined && t.items.length > 0);
-  }
-
-  addThingToRule(): void {
-    const modules = this.rule.events.concat(this.rule.actions, this.rule.conditions);
-    for (const mod of modules) {
-      if (mod.unsupportedModule) {
-        console.log('addThingToRule mod unsupported, not adding thing: ' + mod.id + ' ' + mod.label);
-        continue;
-      }
-      if (!mod.itemName) {
-        console.log('addThingToRule mod itemName null, adding CustomTime: ' + JSON.stringify(mod));
-      } 
-      const things = this.things.filter(t => t.items.filter(i => i.name === mod.itemName).length > 0);
-      if (things.length > 0) {
-        mod.thing = things[0];
-      } else {
-        console.log('no thing found for module ' + JSON.stringify(mod));
-      }
-    }
-  }
-
-  createTimeThing(): ThingModel {
-    const thing = new ThingModel();
-    thing.label = 'Time';
-    const item = new ItemModel();
-    item.type = 'CustomTime';
-    item.label = 'time';
-    thing.items = [item];
-    return thing;
   }
 
   next(): void {
@@ -188,14 +126,6 @@ export class CreateComponent implements OnInit {
     this.creatingRule = false;
     this.sharedProperties.setResult(result);
     this.router.navigate(['/overview']);
-  }
-
-  isThingArray(arr: ThingModel[] | ItemModel[]): arr is ThingModel[] {
-    return arr.length > 0 && (<ThingModel>arr[0]).statusInfo !== undefined;
-  }
-
-  isItemArray(arr: ThingModel[] | ItemModel[]): arr is ItemModel[] {
-    return arr.length > 0 && (<ItemModel>arr[0]).link !== undefined;
   }
 
   cancel(): void {
