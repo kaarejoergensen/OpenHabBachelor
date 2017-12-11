@@ -46,7 +46,7 @@
 	                </mat-form-field>
 	                at
 	                <mat-form-field style="width: 75px">
-	                    <input matInput [(ngModel)]="stateInput"  [(formControl)]="rateControl" type="time">
+	                    <input matInput [(ngModel)]="stateInput"  [(formControl)]="requireControl" type="time">
 	                </mat-form-field>
 	            </div>
 	            </div>
@@ -161,7 +161,8 @@
             <button mat-button 
                 [disabled]="(!daysChosen && modalType !== 'condition')
                 || (!rateControl.valid && selectedItem.type !== 'Switch' && selectedOperator.value !=='?')
-                || (modalType === 'condition' && selectedItem.type === 'CustomTime' && !requireControl.valid)" (click)="save()" tabindex="-1">Save</button>
+                || (modalType === 'condition' && selectedItem.type === 'CustomTime' && !requireControl.valid)
+                || (selectedItem.type === 'DateTime' && (!rateControl.valid || !requireControl.valid))" (click)="save()" tabindex="-1">Save</button>
         </div>
     </div>
 </section>
