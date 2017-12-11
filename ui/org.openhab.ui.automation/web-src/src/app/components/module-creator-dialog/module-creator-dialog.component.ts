@@ -19,7 +19,7 @@ export class ModuleCreatorDialogComponent implements OnInit {
   thing: ThingModel;
   selectedItem: ItemModel;
   modalType: string;
-  @ViewChild('datePicker') datePicker: ElementRef;
+  datePicker: string;
   operators = OPERATORS;
   selectedOperator = this.operators[0];
   switchStates = SWITCH_STATES;
@@ -81,8 +81,8 @@ export class ModuleCreatorDialogComponent implements OnInit {
               }
             } else if (this.selectedItem.type === 'DateTime') {
               const date = new Date(this.mod.state);
-              this.datePicker.nativeElement.value = new DatePipe('en-us').transform(date, 'MM/dd/yyyy');
-              this.stateInput = date.toLocaleTimeString().replace(/\./gi, ':');
+              this.datePicker = date.toISOString();
+              this.stateInput = new DatePipe('en-us').transform(date, 'HH:mm');
             }
           }
         } else if (this.modalType === 'action') {
@@ -161,7 +161,7 @@ export class ModuleCreatorDialogComponent implements OnInit {
           }
         } else if (this.selectedItem.type === 'DateTime') {
           mod.operator = '=';
-          const date = new Date(this.datePicker.nativeElement.value);
+          const date = new Date(this.datePicker);
           const time = this.stateInput;
           const split = time.split(':');
           if (split.length >= 2) {
