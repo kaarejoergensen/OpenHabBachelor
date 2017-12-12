@@ -69,11 +69,13 @@ export class OverviewComponent implements OnInit {
   }
 
   handleHasExtensions(handleCreateResult: boolean) {
-    let items: ItemModel[];
-    let things: ThingModel[];
+    let items: ItemModel[] = [];
+    let things: ThingModel[] = [];
+    let callCounter = 0;
     this.itemService.getItems()
       .concat(this.thingService.getThings())
       .subscribe(res => {
+        callCounter++;
         if (ThingItemMapperHelperService.isThingArray(res)) {
           console.log('Fetched ' + res.length + ' things');
           things = res;
@@ -81,7 +83,7 @@ export class OverviewComponent implements OnInit {
           console.log('Fetched ' + res.length + ' items');
           items = res;
         }
-        if (things && things.length > 0 && items && items.length > 0) {
+        if (callCounter === 2) {
           if (things.length > 0 && items.length > 0) {
             things = ThingItemMapperHelperService.addItemsToThings(items, things);
             things.push(ThingItemMapperHelperService.createTimeThing());

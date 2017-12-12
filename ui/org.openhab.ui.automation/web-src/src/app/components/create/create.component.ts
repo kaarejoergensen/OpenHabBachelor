@@ -60,8 +60,10 @@ export class CreateComponent implements OnInit {
       this.thingsWithEditableItems = this.things.filter(t => t.editableItems && t.editableItems.length > 0);
       if (this.edit) {
         this.step = 5;
-      } else {
+      } else if (this.things.length > 0) {
         this.next();
+      } else {
+        this.step = -1;
       }
     } else {
       this.getItemsAndThings();
@@ -75,11 +77,13 @@ export class CreateComponent implements OnInit {
     private route: ActivatedRoute, private router: Router) {}
 
   getItemsAndThings(): void {
-    let items: ItemModel[];
-    let things: ThingModel[];
+    let items: ItemModel[] = [];
+    let things: ThingModel[] = [];
+    let callCounter = 0;
     this.itemService.getItems()
       .concat(this.thingService.getThings())
       .subscribe(res => {
+        callCounter++;
         if (ThingItemMapperHelperService.isThingArray(res)) {
           console.log('Fetched ' + res.length + ' things');
           things = res;
@@ -87,9 +91,9 @@ export class CreateComponent implements OnInit {
           console.log('Fetched ' + res.length + ' items');
           items = res;
         }
-        if (things && things.length > 0 && items && items.length > 0) {
+        if (things.length > 0 && items.length > 0) {
           this.initializeThingsAndItems(things, items);
-        } else if (things && items) {
+        } else if (callCounter === 2) {
           this.step = -1;
         }
       },
