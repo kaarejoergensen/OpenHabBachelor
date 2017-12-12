@@ -25,6 +25,6 @@
 		<mat-slide-toggle [checked]="rule.enabled" (change)="enableDisableRule(rule)" style="width: 10%; height: auto;"></mat-slide-toggle>
 		<div style="width: 10%"><button mat-icon-button (click)="openCreate(rule)" matTooltip="Edit recipe" matTooltipPosition="below"><mat-icon>edit</mat-icon></button></div>
 		<div style="width: 10%"><button mat-icon-button (click)="deleteRule(rule)" matTooltip="Delete recipe" matTooltipPosition="below"><mat-icon>delete</mat-icon></button></div>
-		<div *ngIf="ruleMissingThing(rule)" style="width: 10%"><button mat-icon-button color="warn" matTooltip="Recipe is built on device(s) that does not longer exist" matTooltipPosition="below"><mat-icon>error</mat-icon></button></div>
+		<div *ngIf="ruleMissingThing(rule)" style="width: 10%"><button mat-icon-button color="warn" matTooltip="Recipe is built on device(s) that does not exist" matTooltipPosition="below"><mat-icon>error</mat-icon></button></div>
 	</mat-list-item> </mat-list>
 </div>

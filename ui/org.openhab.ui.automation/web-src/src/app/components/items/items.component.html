@@ -14,7 +14,7 @@
             </div>
             <div *ngIf="!mod.thing" clsas="inner-item-disabled">
                 <mat-icon color="warn">error</mat-icon><br>
-                The device associated with this {{mod.type}} does not exist any longer.
+                The device associated with this {{mod.type}} does not exist.
             </div>
             <div class="inner-item" (click)="onSelect(mod.thing)" *ngIf="!mod.unsupportedModule && mod.thing">
                 <div *ngIf="mod.type === 'event'">
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <button mat-raised-button color="warn" (click)="onDeleteMod()">Delete</button>
-            <button mat-raised-button (click)="onSelect(mod.thing)">Edit</button>
+            <button [disabled]="mod.unsupportedModule || !mod.thing" mat-raised-button (click)="onSelect(mod.thing)">Edit</button>
         </li>
     </ul>
 </div>
