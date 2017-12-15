@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Kåre Jørgensen - Initial Contribution
  *
  */
-public class AboveBelowModuleHandlerFactory extends BaseModuleHandlerFactory {
+public class ModuleExtensionHandlerFactory extends BaseModuleHandlerFactory {
 
     public static final String MODULE_HANDLER_FACTORY_NAME = "[AboveBelowModuleHandlerFactory]";
     private static final Collection<String> TYPES;
@@ -49,9 +49,9 @@ public class AboveBelowModuleHandlerFactory extends BaseModuleHandlerFactory {
     @SuppressWarnings("rawtypes")
     private ServiceRegistration factoryRegistration;
     private Map<String, AboveBelowTriggerHandler> triggerHandlers;
-    private Logger logger = LoggerFactory.getLogger(AboveBelowModuleHandlerFactory.class);
+    private Logger logger = LoggerFactory.getLogger(ModuleExtensionHandlerFactory.class);
 
-    public AboveBelowModuleHandlerFactory(BundleContext bc) {
+    public ModuleExtensionHandlerFactory(BundleContext bc) {
         triggerHandlers = new HashMap<String, AboveBelowTriggerHandler>();
         activate(bc);
     }

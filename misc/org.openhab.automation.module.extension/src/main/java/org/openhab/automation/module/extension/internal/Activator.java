@@ -8,7 +8,7 @@
  */
 package org.openhab.automation.module.extension.internal;
 
-import org.openhab.automation.module.extension.internal.handler.AboveBelowModuleHandlerFactory;
+import org.openhab.automation.module.extension.internal.handler.ModuleExtensionHandlerFactory;
 import org.openhab.automation.module.extension.internal.type.TypeProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -21,14 +21,14 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
     private TypeProvider mtProvider;
-    private AboveBelowModuleHandlerFactory handlerFactory;
+    private ModuleExtensionHandlerFactory handlerFactory;
 
     @Override
     public void start(BundleContext context) throws Exception {
         mtProvider = new TypeProvider();
         mtProvider.register(context);
 
-        handlerFactory = new AboveBelowModuleHandlerFactory(context);
+        handlerFactory = new ModuleExtensionHandlerFactory(context);
         handlerFactory.register(context);
     }
 
