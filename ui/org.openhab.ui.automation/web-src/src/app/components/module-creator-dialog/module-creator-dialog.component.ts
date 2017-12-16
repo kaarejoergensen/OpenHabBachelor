@@ -196,13 +196,24 @@ export class ModuleCreatorDialogComponent implements OnInit {
     this.dialogRef.close({thing: this.thing, mod: this.mod});
   }
   updateRateControl(): void {
-    if (this.selectedItem.type && this.selectedItem.stateDescription && this.selectedItem.stateDescription.minimum && this.selectedItem.stateDescription.maximum) {
-      this.rateControl = new FormControl('', [Validators.min(this.selectedItem.stateDescription.minimum), Validators.max(this.selectedItem.stateDescription.maximum), Validators.required]);
-    } else if (this.selectedItem.stateDescription && this.selectedItem.stateDescription.pattern && this.selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')) {
+    if (this.selectedItem.type && this.hasMinMax(this.selectedItem)) {
+      const min = Validators.min(this.selectedItem.stateDescription.minimum);
+      const max = Validators.max(this.selectedItem.stateDescription.maximum);
+      this.rateControl = new FormControl('', [min, max, Validators.required]);
+    } else if (this.isPercentageType(this.selectedItem)) {
       this.rateControl = new FormControl('', [Validators.min(0), Validators.max(100), Validators.required]);
     } else {
       this.rateControl = new FormControl('', Validators.required);
     }
+  }
+  
+  hasMinMax(item: ItemModel): boolean {
+    return (item.stateDescription && item.stateDescription.minimum && item.stateDescription.maximum) ? true : false;
+  }
+  
+  isPercentageType(item: ItemModel): boolean {
+    return (this.selectedItem.stateDescription && this.selectedItem.stateDescription.pattern && 
+      this.selectedItem.stateDescription.pattern.split(' ').pop().startsWith('%')) ? true : false;
   }
 
   onChange(): void {
