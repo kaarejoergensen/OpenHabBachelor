@@ -29,7 +29,6 @@ export class ModuleCreatorDialogComponent implements OnInit {
   stateInput;
   secondTimeInput;
   mod: RuleModelModule;
-  daysChosen = true;
 
   constructor(private sharedProperties: SharedPropertiesService, private cdRef: ChangeDetectorRef,
     public dialogRef: MatDialogRef<ModuleCreatorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -41,9 +40,6 @@ export class ModuleCreatorDialogComponent implements OnInit {
   ngOnInit(): void {
     if ((this.modalType === CONDITION_TYPE || this.modalType === EVENT_TYPE) && this.thing.items) {
       this.selectedItem = this.thing.items[0];
-      if (this.selectedItem.type === 'CustomTime') {
-        this.daysChosen = false;
-      }
       if (this.modalType === EVENT_TYPE) {
         this.operators = OPERATORS_EVENT;
         this.switchStates = SWITCH_STATES_EVENT;
@@ -122,11 +118,9 @@ export class ModuleCreatorDialogComponent implements OnInit {
     if (index > -1) {
       this.selectedDays.splice(index, 1);
       if (this.selectedDays.length === 0) {
-      this.daysChosen = false; 
       }
     } else {
       this.selectedDays.push(day);
-      this.daysChosen = true;
     }
   }
 
