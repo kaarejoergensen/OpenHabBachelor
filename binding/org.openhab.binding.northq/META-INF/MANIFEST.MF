@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: NorthQBinding Binding
-Bundle-SymbolicName: org.openhab.binding.northqbinding;singleton:=true
+Bundle-Name: NorthQ Binding
+Bundle-SymbolicName: org.openhab.binding.northq;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -21,12 +21,12 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.northqbinding,
- org.openhab.binding.northqbinding.handler,
+ org.openhab.binding.northq,
+ org.openhab.binding.northq.handler,
  org.osgi.framework,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.northqbinding,
- org.openhab.binding.northqbinding.handler
+Export-Package: org.openhab.binding.northq,
+ org.openhab.binding.northq.handler
 Bundle-ActivationPolicy: lazy

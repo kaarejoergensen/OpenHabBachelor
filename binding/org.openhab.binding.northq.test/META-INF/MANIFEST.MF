@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: NorthQBinding Binding Tests
+Bundle-Name: NorthQ Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-SymbolicName: org.openhab.binding.northqbinding.test;singleton:=true
+Bundle-SymbolicName: org.openhab.binding.northq.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.2.0.qualifier
-Export-Package: org.openhab.binding.northqbinding;uses:="org.eclipse.smarthome.test"
-Fragment-Host: org.openhab.binding.northqbinding
+Export-Package: org.openhab.binding.northq;uses:="org.eclipse.smarthome.test"
+Fragment-Host: org.openhab.binding.northq
 Import-Package: 
  groovy.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -25,8 +25,8 @@ Import-Package:
  org.hamcrest;core=split,
  org.junit;version="4.0.0",
  org.mockito,
- org.openhab.binding.northqbinding,
- org.openhab.binding.northqbinding.handler,
+ org.openhab.binding.northq,
+ org.openhab.binding.northq.handler,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j

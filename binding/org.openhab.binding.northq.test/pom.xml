@@ -10,9 +10,9 @@
 		<version>2.2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.openhab.binding.northqbinding.test</artifactId>
+	<artifactId>org.openhab.binding.northq.test</artifactId>
 	
-	<name>NorthQBinding Binding Tests</name>
+	<name>NorthQ Binding Tests</name>
 	<packaging>eclipse-test-plugin</packaging>
 
 	<build>
