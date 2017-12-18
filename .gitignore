@@ -90,8 +90,8 @@ hs_err_pid*
 # End of https://www.gitignore.io/api/java,intellij
 org.openhab.binding.northqbinding/target/
 /binding/*
-!/binding/org.openhab.binding.northqbinding/
-!/binding/org.openhab.binding.northqbinding.test/
+!/binding/org.openhab.binding.northq/
+!/binding/org.openhab.binding.northq.test/
 /io/
 /ui/*
 !/ui/org.openhab.ui.automation
