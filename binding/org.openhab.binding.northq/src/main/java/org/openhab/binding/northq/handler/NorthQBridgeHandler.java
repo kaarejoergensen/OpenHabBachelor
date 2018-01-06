@@ -142,6 +142,10 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
     public synchronized void startAutomaticRefresh() {
         if (qStickBridge != null) {
             if (refreshJob == null || refreshJob.isCancelled() || refreshJob.getDelay(TimeUnit.SECONDS) > 0) {
+                logger.debug("Starting automatic refresh");
+                if (refreshJob != null) {
+                    refreshJob.cancel(true);
+                }
                 refreshJob = scheduler.scheduleWithFixedDelay(networkRunable, 0, REFRESH, TimeUnit.SECONDS);
             }
         }
@@ -334,6 +338,7 @@ public class NorthQBridgeHandler extends ConfigStatusBridgeHandler {
         }
         boolean result = handlers.add(handler);
         if (result) {
+            logger.debug("Handler {} added to handlers.", handler.toString());
             startAutomaticRefresh();
             for (NorthQThing thing : things) {
                 handler.onThingStateChanged(thing);
